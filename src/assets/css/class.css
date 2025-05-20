@@ -1,0 +1,29 @@
+/* src/assets/css/class.css */
+
+/*
+  클래스 스타일을 정의한다.
+*/
+
+/* 변수 파일 불러오기 */
+@import './vars.css';
+
+
+
+.btn {
+  padding: 0.5rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.btn-secondary {
+  background-color: var(--color-blue-60);
+  color: white;
+}
+
+.btn-primary {
+  background-color: var(--color-lightgrey);
+  color: black;
+}

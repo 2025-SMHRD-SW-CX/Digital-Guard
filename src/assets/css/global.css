@@ -8,11 +8,6 @@
 @import './vars.css';
 
 
-/* --------------- */
-
-
-/* 아래 정의된 것들은 예시임 */
-
 /* 1) 리셋 & box-sizing */
 *, *::before, *::after {
   box-sizing: border-box;

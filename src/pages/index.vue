@@ -1,11 +1,14 @@
-<script setup>
-import HelloWorld from '../components/HelloWorld.vue'
-</script>
-
 <template>
-  <HelloWorld></HelloWorld>
-  <button class="btn">버튼</button>
+  <WorkFlow/>
+  <!-- <button class="btn">버튼</button> -->
+  <!-- <router-link to="/about" tag="button" class="btn">
+    About 버튼
+  </router-link> -->
 </template>
+
+<script setup>
+import WorkFlow from '@/components/WorkFlow.vue'
+</script>
 
 <style scoped>
 .btn {
