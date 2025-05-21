@@ -1,58 +1,30 @@
 <template>
   <div class="wrapper">
     <!-- 슬라이드 + 페이드 전환: pageNum이 변경될 때마다 enter/leave 애니메이션 실행 -->
-    <transition
-      name="slide"
-      mode="out-in"
-      @before-enter="lock"
-      @before-leave="lock"
-      @after-enter="unlock"
-      @after-leave="unlock"
-    >
-      <div
-        v-if="current"
-        :key="pageNum"
-        class="desc-wrapper"
-      >
+    <transition name="slide" mode="out-in" @before-enter="lock" @before-leave="lock" @after-enter="unlock"
+      @after-leave="unlock">
+      <div v-if="current" :key="pageNum" class="desc-wrapper">
         <!-- 타이틀과 부제 -->
         <h1>{{ current.title }}</h1>
         <p class="subtitle">{{ current.subtitle }}</p>
 
         <!-- 워크플로우 이미지: pageNum에 따라 동적 경로 적용 -->
-        <img
-          :src="`/images/workflow${pageNum}.png`"
-          :alt="`워크플로우 ${pageNum} 이미지`"
-        />
+        <img :src="`/images/workflow${pageNum}.png`" :alt="`워크플로우 ${pageNum} 이미지`" />
       </div>
     </transition>
 
     <!-- 다음 버튼: 마지막 페이지 전엔 표시, 애니메이션 중엔 비활성화 -->
-    <div
-      v-if="pageNum < pageData.length"
-      class="btn-wrapper"
-    >
-      <div
-        class="next-btn"
-        @click="goNextPage"
-        :class="{ disabled: isAnimating }"
-      >
-        <img
-          src="/images/workflow_next_btn.png"
-          alt="다음 버튼"
-        />
+    <div v-if="pageNum < pageData.length" class="btn-wrapper">
+      <div class="next-btn" @click="goNextPage" :class="{ disabled: isAnimating }">
+        <img src="/images/workflow_next_btn.png" alt="다음 버튼" />
       </div>
     </div>
 
     <!-- 페이지 4 이상일 때 가입/로그인 버튼 페이드인 -->
     <transition name="fadein" mode="out-in">
-      <div
-        v-if="pageNum >= pageData.length"
-        :key="pageNum"
-        class="credential-buttons"
-      >
-        <button id="register-btn" class="btn w-100 btn-primary">
-          가입하기
-        </button>
+      <div v-if="pageNum >= pageData.length" :key="pageNum" class="credential-buttons">
+        <router-link id="register-btn" class="btn w-100 btn-primary" :to="{ path: '/about' }">가입하기</router-link>
+
         <button id="login-btn" class="btn w-100 btn-secondary">
           로그인하기
         </button>
@@ -82,7 +54,7 @@ const current = computed(() => pageData[pageNum.value - 1])
 const isAnimating = ref(false)
 
 // 전환 시작/종료 시 플래그 설정
-function lock()   { isAnimating.value = true }
+function lock() { isAnimating.value = true }
 function unlock() { isAnimating.value = false }
 
 // 다음 페이지로 이동 (애니메이션 중이거나 마지막일 경우 무시)
@@ -92,7 +64,7 @@ function goNextPage() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 /* wrapper: 전체 화면을 고정 크기로 설정 */
 .wrapper {
   position: fixed;
@@ -107,10 +79,26 @@ function goNextPage() {
 .slide-leave-active {
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
-.slide-enter-from { transform: translateX(100%);  opacity: 0 }
-.slide-enter-to   { transform: translateX(0);     opacity: 1 }
-.slide-leave-from { transform: translateX(0);     opacity: 1 }
-.slide-leave-to   { transform: translateX(-100%); opacity: 0 }
+
+.slide-enter-from {
+  transform: translateX(100%);
+  opacity: 0
+}
+
+.slide-enter-to {
+  transform: translateX(0);
+  opacity: 1
+}
+
+.slide-leave-from {
+  transform: translateX(0);
+  opacity: 1
+}
+
+.slide-leave-to {
+  transform: translateX(-100%);
+  opacity: 0
+}
 
 /* -------------------------------------------------- */
 /* 텍스트/이미지 영역 스타일                         */
@@ -127,7 +115,8 @@ function goNextPage() {
   text-align: center;
   word-break: keep-all;
 }
-.desc-wrapper > img {
+
+.desc-wrapper>img {
   max-height: 15rem;
   max-width: 100%;
   width: auto;
@@ -139,10 +128,11 @@ function goNextPage() {
 /* -------------------------------------------------- */
 .btn-wrapper {
   position: absolute;
-  bottom: 15%;
+  bottom: 20%;
   right: 5%;
   display: flex;
 }
+
 .next-btn {
   width: 3rem;
   height: 3rem;
@@ -150,11 +140,13 @@ function goNextPage() {
   align-items: center;
   justify-content: center;
 }
+
 .next-btn.disabled {
   pointer-events: none;
   opacity: 0.5;
 }
-.next-btn > img {
+
+.next-btn>img {
   width: 1rem;
 }
 
@@ -165,15 +157,21 @@ function goNextPage() {
 .fadein-leave-active {
   transition: opacity 0.4s ease 1s;
 }
+
 .fadein-enter-from,
-.fadein-leave-to { opacity: 0 }
+.fadein-leave-to {
+  opacity: 0
+}
+
 .fadein-enter-to,
-.fadein-leave-from { opacity: 1 }
+.fadein-leave-from {
+  opacity: 1
+}
 
 /* 버튼 그룹 스타일링                               */
 .credential-buttons {
   position: absolute;
-  bottom: 10%;
+  bottom: 15%;
   width: 100%;
   display: flex;
   flex-direction: column;

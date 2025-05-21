@@ -16,6 +16,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // 모든 .scss / <style lang="scss"> 앞에 이 내용이 자동으로 삽입됩니다.
+        additionalData: `
+          @use "@/assets/scss/global.scss" as *;
+        `
+      }
+    }
+  },
   plugins: [
     vue(),
     Pages({

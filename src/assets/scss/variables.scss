@@ -1,0 +1,27 @@
+/* src/assets/css/variables.scss */
+
+/*
+    변수를 선언하는 파일이다. 색상, 폰트, 간격, 모서리 굴림 등 css스타일에 자주 사용되는 값을 변수로 저장해 쓸 수 있다.
+*/
+
+$color-primary: #283a97;
+$color-secondary: #f6a00c;
+$color-background: #ffffff;
+$color-text: #333333;
+$color-blue-60: #61A7FD;
+$color-lightgrey: #D8DEE9;
+
+/* 폰트 */
+$font-base: 'Noto Sans KR', sans-serif;
+$font-size-base: 16px;
+$line-height-base: 1.5;
+
+/* 간격 */
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+
+/* 모서리 굴림 */
+$radius-sm: 4px;
+$radius-md: 8px;

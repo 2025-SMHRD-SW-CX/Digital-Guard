@@ -1,17 +1,17 @@
-/* src/assets/css/class.css */
+/* src/assets/css/class.scss */
 
 /*
   클래스 스타일을 정의한다.
 */
 
 /* 변수 파일 불러오기 */
-@import './vars.css';
-
+@use './variables.scss' as *;
 
 
 .btn {
   padding: 0.5rem 0.25rem;
   border-radius: 0.25rem;
+  text-align: center;
 }
 
 .w-100 {
@@ -19,11 +19,11 @@
 }
 
 .btn-secondary {
-  background-color: var(--color-blue-60);
-  color: white;
+  background-color: $color-lightgrey;
+  color: black;
 }
 
 .btn-primary {
-  background-color: var(--color-lightgrey);
-  color: black;
+  background-color: $color-blue-60;
+  color: white;
 }
