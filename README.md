@@ -26,5 +26,3 @@ git push origin dev_kjh
 이렇게 브랜치를 만들어서 푸쉬하고 난 뒤, GitHub 레포지토리로 가서 <b>Pull Request를 생성</b>하세요.
 
 
-### __직접 master에 push한 경우 무조건 보고하세요__
-
