@@ -1,4 +1,4 @@
-/* src/assets/css/class.scss */
+/* src/assets/scss/class.scss */
 
 /*
   클래스 스타일을 정의한다.
@@ -12,18 +12,37 @@
   padding: 0.5rem 0.25rem;
   border-radius: 0.25rem;
   text-align: center;
+  display: block;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15pt;
+  max-width: 350px;
+  min-height: 40px;
+
+  &:hover {
+    background-color: transparent !important;
+  }
+  &:active {
+    background-color: transparent !important;
+  }
 }
 
 .w-100 {
   width: 100%;
 }
 
-.btn-secondary {
-  background-color: $color-lightgrey;
-  color: black;
+.transparent {
+  background-color: transparent;
 }
 
+
 .btn-primary {
-  background-color: $color-blue-60;
-  color: white;
+  background-color: $color-primary;
+  color: $color-white;
 }
+
+.btn-secondary {
+  background-color: $color-secondary;
+  color: $color-dark-gray;
+}
+

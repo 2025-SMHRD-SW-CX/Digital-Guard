@@ -1,0 +1,59 @@
+// animation.scss
+
+@mixin fade-transition(
+  $name,
+  $duration: 0.3s,
+  $timing: ease
+) {
+  .#{$name}-enter-active,
+  .#{$name}-leave-active {
+    transition: opacity $duration $timing;
+  }
+
+  .#{$name}-enter-from,
+  .#{$name}-leave-to {
+    opacity: 0;
+  }
+
+  .#{$name}-enter-to,
+  .#{$name}-leave-from {
+    opacity: 1;
+  }
+}
+
+/// X축 슬라이드 애니메이션 mixin
+/// @param $name     : transition name (forward/back 등)
+/// @param $start-x  : enter-from 시 translateX 값 (예: 100%, -100%)
+/// @param $duration : transition 지속시간 (기본 0.4s)
+/// @param $timing   : easing (기본 ease)
+@mixin slide-transition(
+  $name,
+  $start-x,
+  $duration: 0.4s,
+  $timing: ease
+) {
+  .slide-#{$name}-enter-from {
+    transform: translateX($start-x);
+    opacity: 0;
+  }
+
+  .slide-#{$name}-enter-to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-#{$name}-leave-to {
+    transform: translateX(-$start-x);
+    opacity: 0;
+  }
+
+  .slide-#{$name}-enter-active,
+  .slide-#{$name}-leave-active {
+    transition: transform $duration $timing,
+                opacity   $duration $timing;
+  }
+}
+
+// 사용 예시
+// @include slide-transition(forward,  100%);
+// @include slide-transition(back,    -100%);
