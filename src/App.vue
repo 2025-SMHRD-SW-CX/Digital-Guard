@@ -44,10 +44,10 @@ onMounted(async () => {
 .page-container {
   position: absolute;
   inset: 0;
-  overflow: hidden;      /* 래퍼는 클리핑만 담당 */
+  overflow: auto;      /* 래퍼는 클리핑만 담당 */
 }
 .page-clipper {
-  height: 100%;
+  height: 100vh;
   overflow: auto;        /* 실제 스크롤은 여기서 */
 }
 

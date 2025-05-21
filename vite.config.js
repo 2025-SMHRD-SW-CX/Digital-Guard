@@ -21,7 +21,10 @@ export default defineConfig({
       scss: {
         // 모든 .scss / <style lang="scss"> 앞에 이 내용이 자동으로 삽입됩니다.
         additionalData: `
+          @use "@/assets/scss/variables.scss" as *;
           @use "@/assets/scss/global.scss" as *;
+          @use "@/assets/scss/class.scss" as *;
+          
         `
       }
     }

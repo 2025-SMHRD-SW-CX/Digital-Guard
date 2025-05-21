@@ -1,4 +1,4 @@
-/* src/assets/css/global.scss */
+/* src/assets/scss/global.scss */
 
 /*
   전역적으로 적용될 스타일을 정의한다.
@@ -21,7 +21,7 @@ html {
   font-family: $font-base;
   font-size: $font-size-base;
   line-height: $line-height-base;
-  background-color: $color-background;
+  background-color: $color-white;
   color: $color-text;
 }
 
@@ -67,4 +67,14 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+}
+
+input,
+textarea,
+button,
+select,
+div,
+span,
+a {
+    -webkit-tap-highlight-color: transparent !important;
 }
