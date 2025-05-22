@@ -1,0 +1,91 @@
+<template>
+    <!-- 실습 : 로그인 전에는 아이디 비밀번호 입력창 보여주고
+     로그인 후에는 입력창 안보이게하고, 어서오세요 보여주기 
+     힌트 : v-if
+    -->
+    <div v-if="!isLogin">
+        <label>아이디</label>
+        <!-- idInput을 ref로 연결 -->
+        <input ref="idInput" type="text">
+
+        <label>비밀번호</label>
+        <!-- pwInput을 ref로 연결 -->
+        <input ref="pwInput" type="password">
+    
+        <!-- idInput 변수에는 아이디의 Input 태그가 담기고,
+             pwInput 변수에는 비밀번호의 Input태그가 담긴다. -->
+
+        <!-- 로그인 처리하는 함수를 연결 -->
+        <button @click="login">로그인</button>
+    </div>
+
+    <!-- 로그인 후 보여질 화면 -->
+    <div v-else>
+        어서오세요 {{ userId }} 님
+    </div>
+    <!-- <template> 태그 안에서 한정으로 .value 안적어도 됨 -->
+</template>
+
+<script setup>
+    // vue라는 라이브러리에서 ref라는 것(객체, 메서드 등)을 가져와 사용하겠다
+    // 꼭 vue가 아니어도 사용하는 일반적인 ES6 JS 문법임
+    import { ref } from "vue";
+
+    //로그인에 사용할 정답 아이디와 비밀번호
+    const myId = "abc1234";
+    const myPw = "1234";
+
+    // ID Input 태그와 Pw Input 태그가 담길 공간을 마련
+    const idInput = ref(); //ref(?): ? 위치에 아무것도 안적었으면 빈 공간
+    const pwInput = ref();
+    const userId = ref(''); // 반응형 변수 userId, string타입으로 초기화
+
+    const isLogin = ref(false); // 반응형 변수 isLogin을 만들고 boolean타입으로 초기화
+
+    const login = () => {
+        
+        const idElem = idInput.value;
+        const pwElem = pwInput.value;
+
+        // [object HTMLInputElement]
+        console.log(`아이디: ${idElem.value}, 비밀번호: ${pwElem.value}`);
+        
+
+        isLogin.value = !isLogin.value
+        /*
+            const idInput = ref();
+            태그를 담을 빈 공간 선언
+
+            <input ref="idInput" type="text">
+            원하는 태그에 가서 ref="<변수이름>" 으로 연결해주기
+            -> ref에 명시한 변수 안에 태그가 담긴다.
+
+            const elem = idInput.value;
+            태그의 참조를 가져오기, idInput은 ref객체라서 .value로 안에 있는 값을 꺼내야한다.
+
+            [기존 JS와 비교하면?]
+            cont elem = document.getElementById("id");
+
+            이후 document.get 해서 가져온거처럼 사용하면 끝.
+            elem.value, elem.innerText, elem.innerHtml, elem.src 등 ...
+        */ 
+       
+    
+        // 로그인 로직 이어서 작성
+        if (idElem.value == myId && pwElem.value == myPw){
+            isLogin.value = true; // <- 얘를 반응형 변수로 만들기
+            // userId = idElem.value;
+            userId.value = idElem.value;
+            alert("로그인 되었습니다.");
+        } else {
+            isLogin.value = false;
+            userId.value = ''; // 틀렸을때는 비워주기
+            alert("올바르지 않습니다.");
+        }
+
+    }
+</script>
+<!-- scss는 css의 확정 문법 (css처럼 사용해도 무방) -->
+<style lang="scss" scoped>
+
+</style>

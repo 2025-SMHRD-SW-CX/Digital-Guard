@@ -82,6 +82,7 @@ onMounted(async () => {
   overflow: auto;      /* 래퍼는 클리핑만 담당 */
 }
 .page-clipper {
+
   flex-grow: 1;
   overflow: auto;        /* 실제 스크롤은 여기서 */
   padding: 0 1rem;
