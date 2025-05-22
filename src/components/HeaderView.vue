@@ -9,7 +9,7 @@
 
 .header-wrap {
     border: 1px solid red;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 </style>
