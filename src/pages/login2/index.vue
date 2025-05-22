@@ -8,7 +8,7 @@
         type="text"
         placeholder="아이디를 입력하세요"
         v-model="userId"
-        :class="['input', { 'error-border': showError }]"
+        :class="['input', { 'error-border': showError, 'normal-border': !userId }]"
         />
 
         <!-- 비밀번호 입력 -->
@@ -16,20 +16,16 @@
         type="password"
         placeholder="비밀번호를 입력하세요"
         v-model="password"
-        :class="['input', { 'error-border': showError }]"
+        :class="['input', { 'error-border': showError, 'normal-border': !password }]"
         />
     </div>
-    <!-- 아이디/비밀번호 찾기 -->
-    <div class="find-section">
-      <span class="find-link">아이디 찾기</span>
-      <span class="divider">|</span>
-      <span class="find-link">비밀번호 찾기</span>
-    </div>
-
+    
     <!-- 오류 메시지 -->
     <div v-if="showError" class="error-message">
-      아이디나 비밀번호를 잘못 입력하셨습니다. 다시 한번 확인해주세요.
-    </div>
+    아이디나 비밀번호를 잘못 입력하셨습니다.
+  <br />
+  <span class="error-line-2">다시 한번 확인해주세요.</span>
+</div>
 
     <!-- 로그인 버튼 -->
     <div class="login-button-wrapper">
@@ -43,10 +39,17 @@
       </button>
     </div>
 
+    <!-- 아이디/비밀번호 찾기 -->
+    <div class="find-section">
+      <span class="find-link">아이디 찾기</span>
+      <span class="divider">|</span>
+      <span class="find-link">비밀번호 찾기</span>
+    </div>
+
     <!-- 구분선 + 텍스트 -->
     <div class="divider-with-text">
       <span class="line"></span>
-      <span class="divider-text">다른 앱과 연동을 해 두셨다면</span>
+      <span class="divider-text">다른 앱과 연동을 하셨다면</span>
       <span class="line"></span>
     </div>
 
@@ -59,27 +62,50 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      userId: "",
-      password: "",
-      showError: false,
-    };
-  },
-  methods: {
-    handleLogin() {
+<script setup>
+
+import { ref } from 'vue';
+
+const userId = ref("");
+const password = ref("");
+const showError = ref(false);
+
+const handleLogin = () => {
       // 예시 조건: 아이디와 비밀번호가 둘 다 "admin"일 때만 통과
-      if (this.userId === "admin" && this.password === "admin") {
+      if (userId.value === "admin" && password.value === "admin") {
         alert("로그인 성공!");
-        this.showError = false;
+        showError.value = false;
       } else {
-        this.showError = true;
+        showError.value = true;
       }
-    },
-  },
-};
+    }
+
+  const isValidInput = () => {
+    if (showError.value) {
+
+    }
+  }
+
+// export default {
+//   data() {
+//     return {
+//       userId: "",
+//       password: "",
+//       showError: false,
+//     };
+//   },
+//   methods: {
+//     handleLogin() {
+//       // 예시 조건: 아이디와 비밀번호가 둘 다 "admin"일 때만 통과
+//       if (this.userId === "admin" && this.password === "admin") {
+//         alert("로그인 성공!");
+//         this.showError = false;
+//       } else {
+//         this.showError = true;
+//       }
+//     },
+//   },
+// };
 </script>
 
 <style lang="scss" scoped>
@@ -126,6 +152,10 @@ export default {
   border-color: red;
 }
 
+.normal-border {
+  border-color: #ccc;
+}
+
 /* 로그인 버튼 래퍼 */
 .login-button-wrapper {
   display: flex;
@@ -136,7 +166,7 @@ export default {
 /* 로그인 버튼 */
 .login-button {
   width: 100%;
-  max-width: 350px;
+  
   height: 48px;
   font-size: 15px;
   font-weight: 800;
@@ -246,7 +276,7 @@ export default {
   background-size: 90%;
 }
 
-/* 네이버 (새 이미지 + 150% 크기) */
+/* 네이버 */
 .naver {
   background-color: white;
   background-image: url('https://mblogthumb-phinf.pstatic.net/MjAyMjEyMTVfMTE0/MDAxNjcxMDkwNjU3NTkw.KoGra3iQfkuqnbSFoQ7PA3YMqnExItsdfOLk960Rxnkg.umx5uLYTj2TEMhx7rMA5uNxvyJD2T42OSeSFsxNUQygg.PNG.y2kwooga/%EB%84%A4%EC%9D%B4%EB%B2%84_AI-04.png?type=w800');
