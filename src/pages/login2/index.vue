@@ -65,16 +65,19 @@
 <script setup>
 
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const userId = ref("");
 const password = ref("");
 const showError = ref(false);
+const router = useRouter();
 
 const handleLogin = () => {
       // 예시 조건: 아이디와 비밀번호가 둘 다 "admin"일 때만 통과
       if (userId.value === "admin" && password.value === "admin") {
         alert("로그인 성공!");
         showError.value = false;
+        router.push('/mainView');
       } else {
         showError.value = true;
       }
