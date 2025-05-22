@@ -1,142 +1,108 @@
 <template>
   <div class="signup-container">
-    <!-- 로고 -->
-    <div class="logo-container">
-      <img src="/images/brand.png" alt="Digital Guard Logo" class="logo-image" />
-    </div>
-
-    <!-- 안내 문구 -->
     <p class="intro-text">회원 가입을 위해 정보를 입력해주세요.</p>
-
-    <!-- 입력 폼 -->
     <form class="form-block" @submit.prevent="openConfirmation">
-      <!-- 아이디 입력 -->
+      <!-- 아이디 -->
       <div class="input-group">
-        <input
-          v-model="form.username"
-          type="text"
-          placeholder="아이디"
-          class="custom-input"
-          @input="validateUsername"
-        />
-        <p v-if="form.username.trim() === ''" class="input-message warning-text">아이디를 입력해주세요.</p>
+        <input v-model="username" type="text" placeholder="아이디" class="custom-input" @input="validateUsername" />
+        <p v-if="username.trim() === ''" class="input-message warning-text">아이디를 입력해주세요.</p>
         <p v-else-if="!isUsernameValid" class="input-message warning-text">아이디는 영문과 숫자만 입력할 수 있습니다.</p>
         <p v-else class="input-message info-text">사용할 수 있는 아이디입니다.</p>
       </div>
 
-      <!-- 비밀번호 입력 -->
-      <div class="input-group">
-        <input
-          v-model="form.password"
-          type="password"
-          placeholder="비밀번호"
-          class="custom-input"
-          @input="validatePassword"
-        />
-        <p v-if="form.password && !isPasswordValid" class="input-message warning-text">
-          비밀번호는 영문+숫자+특수기호를 포함해 8자 이상이어야 합니다.
-        </p>
+      <!-- 비밀번호 -->
+      <div class="input-group password-wrapper">
+        <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="비밀번호" class="custom-input with-toggle" @input="validatePassword" />
+        <button type="button" class="toggle-button" @click="showPassword = !showPassword">
+          {{ showPassword ? '🙈' : '👁' }}
+        </button>
+        <p v-if="password && !isPasswordValid" class="input-message warning-text">비밀번호는 영문+숫자+특수기호를 포함해 8자 이상이어야 합니다.</p>
       </div>
 
       <!-- 비밀번호 확인 -->
-      <div class="input-group">
-        <input
-          v-model="form.passwordConfirm"
-          type="password"
-          placeholder="비밀번호 확인"
-          class="custom-input"
-        />
-        <p v-if="form.passwordConfirm !== ''" class="input-message">
-          <span v-if="form.password === form.passwordConfirm" class="info-text">비밀번호가 일치합니다.</span>
+      <div class="input-group password-wrapper">
+        <input :type="showPasswordConfirm ? 'text' : 'password'" v-model="passwordConfirm" placeholder="비밀번호 확인" class="custom-input with-toggle" />
+        <button type="button" class="toggle-button" @click="showPasswordConfirm = !showPasswordConfirm">
+          {{ showPasswordConfirm ? '🙈' : '👁' }}
+        </button>
+        <p v-if="passwordConfirm !== ''" class="input-message">
+          <span v-if="password === passwordConfirm" class="info-text">비밀번호가 일치합니다.</span>
           <span v-else class="warning-text">비밀번호가 일치하지 않습니다.</span>
         </p>
       </div>
 
       <!-- 이름 -->
       <div class="input-group">
-        <input
-          v-model="form.name"
-          type="text"
-          placeholder="이름"
-          class="custom-input"
-          @input="filterKoreanName"
-        />
+        <input v-model="name" type="text" placeholder="이름" class="custom-input" @input="filterKoreanName" />
       </div>
 
       <!-- 생년월일 -->
       <div class="input-group">
-        <input
-          v-model="form.birth"
-          type="text"
-          placeholder="생년월일 (ex. 16081103)"
-          class="custom-input"
-          @input="filterOnlyNumber('birth')"
-        />
+        <input v-model="birth" type="text" placeholder="생년월일 (ex. 16081103)" class="custom-input" @input="() => filterOnlyNumber('birth')" />
       </div>
 
       <!-- 전화번호 -->
       <div class="input-group">
-        <input
-          v-model="form.phone"
-          type="text"
-          placeholder="전화번호입력(- 없이 입력)"
-          class="custom-input"
-          @input="filterOnlyNumber('phone')"
-        />
+        <input v-model="phone" type="text" placeholder="전화번호입력(- 없이 입력)" class="custom-input" @input="() => filterOnlyNumber('phone')" />
       </div>
 
-      <!-- 이메일 -->
-      <div class="input-group">
-        <input
-          v-model="form.email"
-          type="email"
-          placeholder="이메일 (비밀번호 찾기 등에 이용 필수 아님)"
-          class="custom-input"
-          @input="validateEmail"
-        />
-        <p v-if="form.email && !isEmailValid" class="input-message warning-text">
-          @이하의 주소를 입력해주세요.
-        </p>
-      </div>
+<!-- 이메일 -->
+<div class="input-group">
+  <div class="email-inline">
+    <input
+      v-model="emailId"
+      type="text"
+      placeholder="이메일 아이디"
+      class="email-id-input"
+    />
+    <span class="at-sign">@</span>
+    <select v-model="selectedDomain" class="email-select">
+      <option disabled value="">도메인 선택</option>
+      <option value="gmail.com">gmail.com</option>
+      <option value="naver.com">naver.com</option>
+      <option value="daum.net">daum.net</option>
+      <option value="self">직접 입력</option>
+    </select>
+    <input
+      v-if="selectedDomain === 'self'"
+      v-model="customDomain"
+      type="text"
+      placeholder="직접 입력"
+      class="custom-domain-input"
+    />
+  </div>
+  <p v-if="!isEmailValid" class="input-message warning-text">
+    올바른 이메일 형식을 입력해주세요.
+  </p>
+</div>
 
-      <!-- 성별 선택 -->
+
+      <!-- 성별 -->
       <div class="gender-container">
         <div class="gender-buttons">
-          <button :class="genderClass('male')" @click.prevent="selectGender('male')">남자</button>
-          <button :class="genderClass('female')" @click.prevent="selectGender('female')">여자</button>
+          <button :class="genderClass('male')" @click.prevent="() => selectGender('male')">남자</button>
+          <button :class="genderClass('female')" @click.prevent="() => selectGender('female')">여자</button>
         </div>
       </div>
 
-      <!-- 학교 입력 -->
+      <!-- 학교 -->
       <div class="input-group">
-        <input
-          v-model="form.school"
-          type="text"
-          placeholder="다니는 학교를 선택해주세요"
-          class="custom-input"
-          @input="filterKoreanSchool"
-        />
+        <input v-model="school" type="text" placeholder="다니는 학교를 선택해주세요" class="custom-input" @input="filterKoreanSchool" />
       </div>
 
       <!-- 약관 동의 -->
       <div class="checkbox-block">
-        <input
-          type="checkbox"
-          id="agree"
-          class="form-checkbox"
-          v-model="form.agree"
-          @click.prevent="openTermsPopup"
-        />
+        <input type="checkbox" id="agree" class="form-checkbox" :checked="agree" @change="openTermsPopup" />
         <label for="agree">이용·인증약관 및 개인정보 처리방침 동의</label>
       </div>
 
       <!-- 가입 버튼 -->
-      <button type="submit" class="submit-button" :disabled="!canSubmit">
-        휴대폰 인증 후 회원 가입
+      <button class="submit-button" :disabled="!canSubmit">
+        회원 가입
       </button>
     </form>
 
-    <!-- 약관 팝업 모달 -->
+    <!-- 약관 팝업 -->
     <div v-if="showTerms" class="terms-modal">
       <div class="terms-box">
         <h3>개인정보처리 지침 및 이용약관 보기</h3>
@@ -247,14 +213,14 @@
       </div>
     </div>
 
-    <!-- 확인 모달 -->
+    <!-- 확인 팝업 -->
     <div v-if="showConfirmation" class="terms-modal">
       <div class="terms-box confirmation-box">
         <h3>회원가입</h3>
         <hr />
         <p>입력하신 정보로 회원가입을 진행하시겠습니까?</p>
         <div class="confirmation-buttons">
-          <button class="submit-button" @click="confirmSignup">네</button>
+          <button class="submit-button" @click="submitForm">네</button>
           <button class="submit-button" @click="cancelSignup">아니오</button>
         </div>
       </div>
@@ -262,88 +228,145 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      form: {
-        username: '', password: '', passwordConfirm: '', name: '', birth: '',
-        phone: '', email: '', gender: '', school: '', agree: false,
-      },
-      isUsernameValid: true,
-      isPasswordValid: true,
-      isEmailValid: true,
-      showTerms: false,
-      showConfirmation: false,
-    };
-  },
-  computed: {
-    canSubmit() {
-      return (
-        this.form.username.trim() !== '' &&
-        this.isUsernameValid &&
-        this.form.password !== '' &&
-        this.isPasswordValid &&
-        this.form.passwordConfirm !== '' &&
-        this.form.password === this.form.passwordConfirm &&
-        this.form.agree
-      );
-    },
-  },
-  methods: {
-    selectGender(gender) {
-      this.form.gender = gender;
-    },
-    genderClass(g) {
-      return [
-        'gender-button',
-        this.form.gender === g ? 'selected' : 'not-selected',
-      ];
-    },
-    validateUsername() {
-      const regex = /^[A-Za-z0-9]+$/;
-      this.isUsernameValid = regex.test(this.form.username);
-    },
-    validatePassword() {
-      const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}\-_+=~`|:;"'<>,.?/]).{8,}$/;
-      this.isPasswordValid = regex.test(this.form.password);
-    },
-    filterKoreanName() {
-      this.form.name = this.form.name.replace(/[^\uAC00-\uD7A3]/g, '');
-    },
-    filterKoreanSchool() {
-      this.form.school = this.form.school.replace(/[^\uAC00-\uD7A3]/g, '');
-    },
-    filterOnlyNumber(field) {
-      this.form[field] = this.form[field].replace(/[^0-9]/g, '').slice(0, field === 'birth' ? 8 : 11);
-    },
-    validateEmail() {
-      const parts = this.form.email.split('@');
-      this.isEmailValid = parts.length === 2 && parts[1].trim() !== '';
-    },
-    openTermsPopup() {
-      this.showTerms = true;
-    },
-    acceptTerms() {
-      this.form.agree = true;
-      this.showTerms = false;
-    },
-    openConfirmation() {
-      if (this.canSubmit) this.showConfirmation = true;
-    },
-    confirmSignup() {
-      this.showConfirmation = false;
-      alert('회원가입이 완료되었습니다.');
-    },
-    cancelSignup() {
-      this.showConfirmation = false;
-    },
-  },
+<script setup>
+import { reactive, ref, computed, toRefs } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { onMounted } from 'vue';
+import { db } from '@/services/supabase'
+
+const fecthData = async () => {
+    const { data, error } = await db
+        .from('user') //user테이블 조회
+        .select('*');
+
+    if (error) {
+        console.error('데이터 조회 실패', error);
+    } else {
+        console.log(data);
+    }
+}
+
+// 컴포넌트가 렌더링될 때 실행됨
+onMounted(async () => {
+    await fecthData();
+})
+
+const router = useRouter();
+
+const form = reactive({
+  username: '',
+  password: '',
+  passwordConfirm: '',
+  name: '',
+  birth: '',
+  phone: '',
+  gender: '',
+  school: '',
+  agree: false,
+});
+
+const {
+  username, password, passwordConfirm, name,
+  birth, phone, gender, school, agree,
+} = toRefs(form);
+
+// 이메일 관련
+const emailId = ref('');
+const selectedDomain = ref('');
+const customDomain = ref('');
+const email = computed(() => {
+  if (!emailId.value) return '';
+  const domain = selectedDomain.value === 'self' ? customDomain.value : selectedDomain.value;
+  return `${emailId.value}@${domain}`;
+});
+
+// 상태 및 유효성
+const showPassword = ref(false);
+const showPasswordConfirm = ref(false);
+const showTerms = ref(false);
+const showConfirmation = ref(false);
+
+const isUsernameValid = ref(true);
+const isPasswordValid = ref(true);
+const isEmailValid = computed(() => {
+  const emailValue = email.value;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+});
+
+const canSubmit = computed(() => {
+  return (
+    username.value.trim() !== '' &&
+    isUsernameValid.value &&
+    password.value !== '' &&
+    isPasswordValid.value &&
+    passwordConfirm.value !== '' &&
+    password.value === passwordConfirm.value &&
+    isEmailValid.value &&
+    agree.value
+  );
+});
+
+// 메서드
+const selectGender = (selectedGender) => {
+  gender.value = selectedGender;
+};
+
+const genderClass = (g) => {
+  return ['gender-button', gender.value === g ? 'selected' : 'not-selected'];
+};
+
+const validateUsername = () => {
+  isUsernameValid.value = /^[A-Za-z0-9]+$/.test(username.value);
+};
+
+const validatePassword = () => {
+  isPasswordValid.value = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}\-_+=~`|:;"'<>,.?/]).{8,}$/.test(password.value);
+};
+
+const filterKoreanName = () => {
+  name.value = name.value.replace(/[^\uAC00-\uD7A3]/g, '');
+};
+
+const filterKoreanSchool = () => {
+  school.value = school.value.replace(/[^\uAC00-\uD7A3]/g, '');
+};
+
+const filterOnlyNumber = (field) => {
+  form[field] = form[field].replace(/[^0-9]/g, '').slice(0, field === 'birth' ? 8 : 11);
+};
+
+const openTermsPopup = (e) => {
+  e.preventDefault();
+  showTerms.value = true;
+};
+
+const acceptTerms = () => {
+  agree.value = true;
+  showTerms.value = false;
+};
+
+const openConfirmation = () => {
+  if (canSubmit.value) {
+    showConfirmation.value = true;
+  }
+};
+
+const submitForm = () => {
+  showConfirmation.value = false;
+  alert('회원가입이 완료되었습니다.');
+  router.push('/login2');
+};
+
+const cancelSignup = () => {
+  showConfirmation.value = false;
 };
 </script>
 
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 .signup-container {
   font-family: 'Roboto', sans-serif;
   display: flex;
@@ -352,22 +375,14 @@ export default {
   padding: 2rem 1rem;
   box-sizing: border-box;
 }
-.logo-container {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 1rem;
-}
-.logo-image {
-  height: 24px;
-  width: auto;
-}
+
 .intro-text {
   font-weight: bold;
   margin-bottom: 1rem;
   text-align: center;
   width: 100%;
 }
+
 .form-block {
   width: 100%;
   max-width: 340px;
@@ -376,11 +391,13 @@ export default {
   gap: 0.75rem;
   align-items: stretch;
 }
+
 .input-group {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
+
 .custom-input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -389,26 +406,54 @@ export default {
   font-size: 16px;
   box-sizing: border-box;
 }
+
 .custom-input::placeholder {
   font-size: 15px;
   color: #9ca3af;
 }
+
 .input-message {
   margin-top: 0.25rem;
   line-height: 1.4;
   font-size: 14px;
 }
+
 .warning-text {
   color: #ef4444;
 }
+
 .info-text {
   color: #1e3a8a;
 }
+
+.password-wrapper {
+  position: relative;
+}
+
+.with-toggle {
+  padding-right: 3rem;
+}
+
+.toggle-button {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #4b5563;
+  padding: 0;
+  line-height: 1;
+}
+
 .gender-container {
   display: flex;
   justify-content: center;
   width: 100%;
 }
+
 .gender-buttons {
   display: flex;
   gap: 0.5rem;
@@ -416,24 +461,26 @@ export default {
   max-width: 340px;
   box-sizing: border-box;
 }
+
 .gender-button {
   flex: 1;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   font-weight: bold;
   font-size: 16px;
-  line-height: 1.5;
   border: 1px solid #1e3a8a;
-  box-sizing: border-box;
 }
+
 .selected {
   background-color: #1e3a8a;
   color: #fff;
 }
+
 .not-selected {
   background-color: #e5e7eb;
   color: #444;
 }
+
 .checkbox-block {
   display: flex;
   align-items: center;
@@ -442,10 +489,8 @@ export default {
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   font-size: 14px;
-  width: 100%;
-  max-width: 340px;
-  box-sizing: border-box;
 }
+
 .submit-button {
   width: 100%;
   max-width: 340px;
@@ -456,13 +501,14 @@ export default {
   border-radius: 0.5rem;
   margin-top: 1rem;
   cursor: not-allowed;
-  box-sizing: border-box;
 }
+
 .submit-button:enabled {
   background-color: #1e3a8a;
   color: #fff;
   cursor: pointer;
 }
+
 .terms-modal {
   position: fixed;
   top: 0;
@@ -475,6 +521,7 @@ export default {
   align-items: center;
   z-index: 999;
 }
+
 .terms-box {
   background: white;
   padding: 1rem;
@@ -487,6 +534,7 @@ export default {
   gap: 1rem;
   align-items: center;
 }
+
 .terms-content {
   height: 200px;
   overflow-y: auto;
@@ -498,6 +546,7 @@ export default {
   line-height: 1.4;
   width: 100%;
 }
+
 .confirmation-box {
   background: white;
   padding: 1rem;
@@ -511,23 +560,6 @@ export default {
   gap: 1rem;
 }
 
-.confirmation-box h3 {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.confirmation-box hr {
-  width: 100%;
-  border: none;
-  border-top: 1px solid #ccc;
-}
-
-.confirmation-box p {
-  font-size: 15px;
-  margin: 0.5rem 0;
-}
-
 .confirmation-buttons {
   display: flex;
   justify-content: center;
@@ -535,4 +567,38 @@ export default {
   width: 100%;
 }
 
+/* 이메일 입력 전용 스타일 */
+.email-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.email-id-input {
+  width: 140px;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #1e3a8a;
+  border-radius: 0.5rem;
+  font-size: 15px;
+}
+
+.at-sign {
+  font-weight: bold;
+}
+
+.email-select {
+  padding: 0.6rem;
+  font-size: 14px;
+  border: 1px solid #1e3a8a;
+  border-radius: 0.5rem;
+}
+
+.custom-domain-input {
+  width: 140px;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #1e3a8a;
+  border-radius: 0.5rem;
+  font-size: 15px;
+}
 </style>
