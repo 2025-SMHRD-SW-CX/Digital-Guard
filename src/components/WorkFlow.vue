@@ -39,7 +39,7 @@
 
           <!-- 마지막 페이지(4)일 때 가입/로그인 버튼 -->
           <div v-else class="credential-group">
-            <router-link id="register-btn" :to="{ path: '/about' }">
+            <router-link id="register-btn" :to="{ path: '/home' }">
               가입하기
             </router-link>
           </div>
@@ -128,6 +128,8 @@ function skipTutorial() {
   word-wrap: break-word;
   word-break: keep-all;
   text-wrap: balance;
+  z-index: 10;
+  background-color: white;
 }
 
 /* --------------------------------------------------
