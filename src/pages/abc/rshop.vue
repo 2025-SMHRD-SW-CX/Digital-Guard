@@ -2,7 +2,7 @@
   <div class="page-wrapper">
     <header class="top-bar">
       <span class="back">←</span>
-      <img src=C:\Users\smhrd\Desktop\project\Digital-Guard\public\images\brand.png alt="Digital Guard"
+      <img src="/images/brand.png" alt="Digital Guard"
         class="logo-image" />
       <span class="icons" @click="addToCart">🛒</span>
     </header>
@@ -12,7 +12,7 @@
         <img src="/images/올리브영.png" alt="올리브영 기프트카드" class="card-image" />
       </div>
       <section class="product-info">
-        <img src=C:\Users\smhrd\Desktop\project\Digital-Guard\public\images\olive-logo.png alt="OLIVE YOUNG"
+        <img src=/images/olive-logo.png alt="OLIVE YOUNG"
           class="brand-logo" />
         <h2 class="title">기프트 카드 2만원권</h2>
         <div class="rating">
