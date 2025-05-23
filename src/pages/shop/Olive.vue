@@ -77,7 +77,8 @@
 <script setup>
 import { ref , onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { globalStore } from '@/services/globalStore.js'
+import { useShopStore } from '@/stores/shop';
+const shopStore = useShopStore();
 
 
 const router = useRouter()
@@ -94,19 +95,19 @@ const product = {
 }
 
 onMounted(() => {
-  liked.value = globalStore.wish.some(i => i.id === product.id)
+  liked.value = shopStore.wish.some(i => i.id === product.id)
 })
 
 function toggleLike() {
-  const isWished = globalStore.wish.some(i => i.id === product.id)
+  const isWished = shopStore.wish.some(i => i.id === product.id)
 
   if (isWished) {
-    globalStore.wish = globalStore.wish.filter(i => i.id !== product.id)
+    shopStore.wish = shopStore.wish.filter(i => i.id !== product.id)
     liked.value = false
     likeCount.value -= 1
     alert('찜이 해제되었습니다!')
   } else {
-    globalStore.wish.push(product)
+    shopStore.wish.push(product)
     liked.value = true
     likeCount.value += 1
     alert('찜하셨습니다!')
@@ -114,9 +115,9 @@ function toggleLike() {
 }
 
 function addToCart() {
-  const exists = globalStore.cart.find(i => i.id === product.id)
+  const exists = shopStore.cart.find(i => i.id === product.id)
   if (!exists) {
-    globalStore.cart.push(product)
+    shopStore.cart.push(product)
     alert('장바구니에 담겼습니다!')
   } else {
     alert('이미 장바구니에 있습니다.')

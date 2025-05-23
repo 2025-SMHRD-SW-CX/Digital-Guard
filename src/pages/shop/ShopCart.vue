@@ -7,16 +7,16 @@
     </header>
 
     <!-- 비어있을 때 -->
-    <div v-if="globalStore.cart.length === 0">
+    <div v-if="shopStore.cart.length === 0">
       장바구니가 비어 있습니다.
     </div>
 
     <!-- 장바구니 아이템 -->
-    <div v-for="item in globalStore.cart" :key="item.id" class="cart-item">
+    <div v-for="item in shopStore.cart" :key="item.id" class="cart-item">
       <input
         type="checkbox"
         :value="item.id"
-        v-model="globalStore.selectedCartIds"
+        v-model="shopStore.selectedCartIds"
       />
       <img :src="item.image" class="item-image" />
       <div class="item-info">
@@ -36,10 +36,11 @@
 </template>
 
 <script setup>
-import { globalStore } from '@/services/globalStore.js'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useShopStore } from '@/stores/shop';
 
+const shopStore = useShopStore();
 const router = useRouter()
 
 function goBack() {
@@ -47,21 +48,21 @@ function goBack() {
 }
 
 function remove(id) {
-  globalStore.cart = globalStore.cart.filter(i => i.id !== id)
-  globalStore.selectedCartIds = globalStore.selectedCartIds.filter(
+  shopStore.cart = shopStore.cart.filter(i => i.id !== id)
+  shopStore.selectedCartIds = shopStore.selectedCartIds.filter(
     sid => sid !== id
   )
 }
 
 const totalPrice = computed(() =>
-  globalStore.cart
-    .filter(i => globalStore.selectedCartIds.includes(i.id))
+  shopStore.cart
+    .filter(i => shopStore.selectedCartIds.includes(i.id))
     .reduce((sum, item) => sum + item.price, 0)
 )
 
 function buy() {
-  const selected = globalStore.cart.filter(i =>
-    globalStore.selectedCartIds.includes(i.id)
+  const selected = shopStore.cart.filter(i =>
+    shopStore.selectedCartIds.includes(i.id)
   )
 
   if (selected.length === 0) {
@@ -69,7 +70,7 @@ function buy() {
     return
   }
 
-  globalStore.orderItems = selected
+  shopStore.orderItems = selected
   router.push('/shop/OrderPage')
 }
 </script>
