@@ -22,7 +22,7 @@ export const TITLE_MAP = {
     main: '',         // 헤더 숨김
     shop: '포인트샵',
     rshop: '상품 상세',
-    survey: '설문',
+    survey: '설문조사',
     education: '교육',
     mypage: '마이페이지',
 };
