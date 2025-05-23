@@ -8,7 +8,7 @@
       <img :src="iconSrc('survey')" alt="설문" />
     </button>
 
-    <div class="footer-logo-wrap" @click="go('/mainView')">
+    <div class="footer-logo-wrap" @click="go('/main')">
       <img src="/images/logo.png" class="footer-logo" alt="로고" />
     </div>
 
@@ -30,7 +30,7 @@ import { usePathToken } from '@/composables/usePathToken'
 const router = useRouter()
 const { firstToken, tokenDepth, isActive } = usePathToken()
 
-const footerActiveTabs = ['mainView', 'education', 'survey', 'shop', 'mypage']
+const footerActiveTabs = ['main', 'education', 'survey', 'shop', 'mypage']
 const showFooter = computed(() =>
   tokenDepth.value === 1 && footerActiveTabs.includes(firstToken.value)
 )
