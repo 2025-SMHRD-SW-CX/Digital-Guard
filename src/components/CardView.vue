@@ -1,22 +1,21 @@
 <template>
-    <div class="slot-wrap">
-        <slot></slot>
-    </div>
+  <div
+    class="card"
+    
+  >
+    <slot></slot>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 
-.slot-wrap {
-    border: 2px solid gray;
-    border-radius: 1rem;
-    padding: 1rem;
-    margin-bottom: 2vh;
+.card {
+  background-color: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
 }
-.skyblue {
-    border: 2px solid #cceeff;
-  background-color: #cceeff !important;
-  border-radius: 1.5vw;
-  padding: 4vw 3vw;
-}
-
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div class="main-container">
     <!-- 오늘의 미션 카드 -->
-    <div class="card">
-      <p class="card-title">오늘의 미션</p>
+    <CardView>
+      <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
           <path class="circle-bg"
@@ -10,75 +10,72 @@
                    a 15.9155 15.9155 0 0 1 0 31.831
                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
           <path class="circle"
-                stroke-dasharray="86, 100"
+                stroke-dasharray="71.4, 100"
                 d="M18 2.0845
                    a 15.9155 15.9155 0 0 1 0 31.831
                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
         </svg>
         <div class="progress-text">
-          6<tspan class="small">/7</tspan>
+          5<small class="fraction">/7</small>
         </div>
       </div>
-      <p class="card-subtext">7일차 미완료</p>
-      <p class="reward-info">7일 완주 시 <span class="highlight">1000P + 100P</span><span class="small">(10%)</span><br>보상받기까지 단 하루!</p>
-    </div>
+      <p class="card-subtext">6일차 미완료</p>
+      <p class="reward-info">7일 완주 시 <span class="highlight">1000P + 100P</span><span class="small">(10%)</span><br>보상받기까지 2일 남았어요!<br>조금만 더 화이팅✨</p>
+    </CardView>
 
     <!-- 퀴즈 카드 -->
-    <div class="card">
-      <p class="card-title">인기 아이템</p>
+    <CardView class="card">
+      <p class="card-title">마라톤 챌린지</p>
       <p class="quiz-question">Q. 불법웹툰 사이트 방문만으로도 처벌 대상이 된다.</p>
       <div class="quiz-buttons">
         <button class="btn-ox blue">O</button>
         <button class="btn-ox red">X</button>
       </div>
-    </div>
+    </CardView>
 
     <!-- 포인트샵 카드 -->
-    <div class="card">
+    <CardView class="card">
       <p class="card-title">인기 아이템</p>
       <div class="shop-items">
-        <div class="item">
-          <img src="/images/coffee.png" alt="컴포즈 아메리카노">
-        </div>
-        <div class="item">
-          <img src="/images/cu.png" alt="CU 쿠폰">
-        </div>
-        <div class="item">
-          <img src="/images/more.png" alt="더보기">
+        <div v-for="(item, i) in shopItems" :key="i" class="item">
+          <div v-if="i < 2" class="rank-badge" :class="{ first: i === 0, second: i === 1 }">{{ i + 1 }}위</div>
+          <img :src="item.img" :alt="item.alt" />
+          <div class="item-info">
+            <p class="item-name">{{ item.name }}</p>
+            <p class="item-price" v-if="item.price">{{ item.price }}P</p>
+          </div>
         </div>
       </div>
-    </div>
+    </CardView>
   </div>
 </template>
 
 <script setup>
-// Composition API 기반, 별도 기능은 이 화면에 없음
+import CardView from '@/components/CardView.vue'
+
+const shopItems = [
+  { img: '/images/coffee.png', name: '컴포즈 아메리카노', price: 1600, alt: '컴포즈 아메리카노 상품 이미지' },
+  { img: '/images/cu.png', name: 'CU 3,000P 쿠폰', price: 2700, alt: 'CU 3,000포인트 쿠폰 이미지' },
+  { img: '/images/more.png', name: '더 보기', alt: '포인트샵 더보기 버튼 이미지' }
+]
 </script>
 
 <style lang="scss" scoped>
 .main-container {
   background-color: #f5f5f5;
-  padding: 2vh 5vw;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 2vh;
   align-items: center;
 }
 
-.card {
-  background-color: #fff;
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  padding: 2rem;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-}
-
 .card-title {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .progress-circle {
@@ -117,18 +114,20 @@
   font-weight: bold;
 }
 
-.progress-text .small {
+.fraction {
   font-size: 1.2rem;
 }
 
 .card-subtext {
   margin-top: 1rem;
   font-weight: bold;
+  text-align: center;
 }
 
 .reward-info {
   font-size: 1rem;
   margin-top: 0.5rem;
+  text-align: center;
 }
 
 .reward-info .highlight {
@@ -144,6 +143,10 @@
 .quiz-question {
   font-size: 1rem;
   margin: 1rem 0;
+  word-break: keep-all;
+  white-space: normal;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .quiz-buttons {
@@ -153,13 +156,23 @@
 }
 
 .btn-ox {
-  width: 3.5rem;
+  min-width: 4.5rem;
   height: 3.5rem;
-  border-radius: 50%;
+  padding: 0 1.2rem;
+  border-radius: 1.8rem;
   font-size: 1.5rem;
   font-weight: bold;
   color: #fff;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-ox:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
 }
 
 .btn-ox.blue {
@@ -174,10 +187,58 @@
   display: flex;
   justify-content: space-around;
   margin-top: 1rem;
+  gap: 1rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.rank-badge {
+  position: absolute;
+  top: -0.5rem;
+  left: -0.3rem;
+  background-color: #3ba2ff;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  z-index: 1;
 }
 
 .item img {
-  width: 4rem;
-  height: auto;
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  text-align: center;
+  white-space: normal;
+  max-width: 6.5rem;
+  word-break: keep-all;
+}
+
+.item-price {
+  font-size: 0.75rem;
+  color: #555;
+  text-align: center;
+  white-space: nowrap;
 }
 </style>

@@ -6,8 +6,7 @@
 
     <div></div>
     <section class="welcome-message">
-      <h2>디지털 가드 가입을</h2>
-      <h2>환영합니다.</h2>
+      <h2>디지털 가드 가입을 환영합니다.</h2>
     </section>
   </div>
 </template>
@@ -28,28 +27,31 @@ const goToLogin = () =>{
 
 <style scoped>
 .welcome-page {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center; /* 중앙 정렬 */
+  justify-content: center;
   padding: 40px 20px;
   font-family: 'Noto Sans KR', sans-serif;
 }
 
 .image-container {
-  width: 100%;
-  max-width: 350px; /* 최대 이미지 크기 제한 */
+  height: 100%;
+  max-height: 30vh;
   margin-bottom: 30px;
 }
 
 .image-container img {
-  width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   border-radius: 12px;
 }
 
 .welcome-message {
-  line-height: 1.5rem;
-  font-size: 28px;
+  text-wrap: balance;
+  word-break: keep-all;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #283A97;
   text-align: center;
