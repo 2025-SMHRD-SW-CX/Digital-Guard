@@ -37,6 +37,11 @@
 </template>
 
 <script setup>
+
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
 const inputPhoneNumber = () => {
     setTimeout(() => {
     alert("전화번호로 찾기 선택됨");
@@ -45,7 +50,7 @@ const inputPhoneNumber = () => {
 
 const inputEmail = () => {
     setTimeout(() => {
-    alert("이메일로 찾기 선택됨");
+    router.push('/findUserId/findUserIdEmail');
   }, 10);
 }
 </script>

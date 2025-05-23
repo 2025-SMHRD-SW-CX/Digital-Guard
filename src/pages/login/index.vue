@@ -39,9 +39,9 @@
 
     <!-- 아이디/비밀번호 찾기 -->
     <div class="find-section">
-      <span class="find-link">아이디 찾기</span>
+      <span class="find-link" @click="goToFindId">아이디 찾기</span>
       <span class="divider">|</span>
-      <span class="find-link">비밀번호 찾기</span>
+      <span class="find-link" @click="goToFindPw">비밀번호 찾기</span>
     </div>
 
     <!-- 구분선 + 텍스트 -->
@@ -63,6 +63,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const userId = ref('')
 const userPw = ref('')
@@ -77,10 +79,20 @@ const handleLogin = () => {
     showError.value = true
   }
 }
+
+const goToFindId = () => {
+  router.push('/findUserId') 
+}
+
+const goToFindPw = () => {
+  router.push('/findUserPw') 
+}
+
 </script>
 
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
 
 
 /* 전체 모바일 컨테이너 */

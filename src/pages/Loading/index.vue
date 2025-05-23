@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
 .loading-text {
   font-size: 45px;
   margin-bottom: 2px;
-  color: #fff; /* 밝은 색으로 대비 */
+  color: #fff; 
   line-height: 0;
 }
 
