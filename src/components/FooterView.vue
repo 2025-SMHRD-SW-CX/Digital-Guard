@@ -30,7 +30,7 @@ import { usePathToken } from '@/composables/usePathToken'
 const router = useRouter()
 const { firstToken, tokenDepth, isActive } = usePathToken()
 
-const footerActiveTabs = ['main', 'education', 'survey', 'shop', 'mypage']
+const footerActiveTabs = ['main', 'education', 'survey', 'shop', 'mypage', 'marathon']
 const showFooter = computed(() =>
   tokenDepth.value === 1 && footerActiveTabs.includes(firstToken.value)
 )
