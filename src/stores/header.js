@@ -19,7 +19,7 @@ export const useHeaderStore = defineStore('header', {
 })
 
 export const TITLE_MAP = {
-    mainView: '',         // 헤더 숨김
+    main: '',         // 헤더 숨김
     shop: '포인트샵',
     rshop: '상품 상세',
     survey: '설문',
