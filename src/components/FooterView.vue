@@ -6,8 +6,7 @@
     <button class="footer-btn" :class="{ active: isActive('survey') }" @click="goToSurvey">
       <img src="/images/footer_survey.png" alt="설문" />
     </button>
-
-    <div class="footer-logo-wrap" @click="goToMainView">
+    <div class="footer-logo-wrap" @click="goToHome">
       <img src="/images/logo.png" class="footer-logo" alt="로고" />
     </div>
     <button class="footer-btn" :class="{ active: isActive('shop') }" @click="goToShop">
@@ -27,21 +26,33 @@ import { useRoute, useRouter } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const goToEdu = () => {
-  router.push('/education')
-}
-const goToSurvey = () => {
-  router.push('/survey')
-}
-const goToShop = () => {
-  router.push('/shop')
-}
-const goToMypage = () => {
-  router.push('/mypage')
-}
-const goToMainView = () => {
-    router.push('/mainView')
-}
+const footerActiveTabs = ['mainView', 'education', 'survey', 'shop', 'mypage']
+
+// 1단계 경로의 첫 토큰 추출
+const firstToken = computed(() => {
+  return route.path.split('/').filter(Boolean)[0] ?? ''
+})
+const tokenDepth = computed(() => {
+  return route.path.split('/').filter(Boolean).length
+})
+
+// 푸터를 보여줄지 결정
+const showFooter = computed(() => {
+  // 1depth만, login, signupView, '', mainView는 숨김
+  return (
+    tokenDepth.value === 1 &&
+    footerActiveTabs.includes(firstToken.value)
+  )
+})
+
+// 버튼 활성화 여부
+const isActive = (tab) => firstToken.value === tab
+
+const goToEdu = () => router.push('/education')
+const goToSurvey = () => router.push('/survey')
+const goToShop = () => router.push('/shop')
+const goToMypage = () => router.push('/mypage')
+const goToHome = () => router.push('/mainView')
 </script>
 
 <style lang="scss" scoped>
