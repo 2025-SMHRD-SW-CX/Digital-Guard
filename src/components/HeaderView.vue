@@ -1,13 +1,13 @@
 <template>
     <!-- 헤더 -->
-    <div class="header-wrap" v-if="header.show">
+    <div class="header-wrap">
         <img src="/images/brand.png" v-if="!header.title">
         <div class="title-indicator" v-else>
             <img @click="clickBackBtn" src="/images/prev_page.png">
             <p>{{ header.title }}</p>
         </div>
 
-        <div class="indicator-wrap">
+        <div class="indicator-wrap" v-if="header.show">
             <div id="user" class="key-icon-wrap">
                 <div class="icon">
                     <img src="/images/user_icon.png">
@@ -40,9 +40,14 @@ const route = useRoute()
 const router = useRouter()
 
 const clickBackBtn = () => {
-    if (header.backUrl) router.push(header.backUrl)
-    else router.back()
+    const tokens = route.path.split('/').filter(Boolean);
+    if (tokens.length === 1) {
+        router.push('/mainView');
+    } else {
+        router.back();
+    }
 }
+
 
 function getFirstPathToken() {
     const tokens = route.path.split('/').filter(Boolean)

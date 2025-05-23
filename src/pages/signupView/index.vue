@@ -372,7 +372,7 @@ const cancelSignup = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 0 1rem;
   box-sizing: border-box;
 }
 
