@@ -5,15 +5,10 @@
       <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
-          <path class="circle-bg"
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-          <path class="circle"
-            stroke-dasharray="71.4, 100"
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+          <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="circle" stroke-dasharray="71.4, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
         </svg>
-        <div class="progress-text">
-          5<small class="fraction">/7</small>
-        </div>
+        <div class="progress-text">5<small class="fraction">/7</small></div>
       </div>
       <p class="card-subtext">6일차 미완료</p>
       <p class="reward-info">
@@ -23,12 +18,17 @@
     </CardView>
 
     <!-- 퀴즈 카드 -->
-    <CardView>
+    <CardView class="challenge-card">
+      <!-- 오버레이 메시지 -->
+      <div v-if="correctlyAnswered" class="overlay-message">
+        오늘의 챌린지를 완료하였습니다. <span class="highlight">포인트 지급 완료!</span>
+      </div>
+
       <p class="card-title">마라톤 챌린지</p>
       <p class="quiz-question">Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?</p>
       <div class="quiz-buttons">
-        <button class="btn-ox blue" :disabled="answered" @click="checkAnswer(true)">O</button>
-        <button class="btn-ox red" :disabled="answered" @click="checkAnswer(false)">X</button>
+        <button class="btn-ox blue" :disabled="correctlyAnswered" @click="checkAnswer(true)">O</button>
+        <button class="btn-ox red" :disabled="correctlyAnswered" @click="checkAnswer(false)">X</button>
       </div>
     </CardView>
 
@@ -58,38 +58,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import Swal from 'sweetalert2'
-import confetti from 'canvas-confetti'
-import CardView from '@/components/CardView.vue'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
+import confetti from 'canvas-confetti';
+import CardView from '@/components/CardView.vue';
 
-const router = useRouter()
+const router = useRouter();
 
-const answered = ref(false)
-const point = ref(200) // 초기 포인트
+const correctlyAnswered = ref(false);
+const point = ref(200);
 
 function myClickHandler() {
-  alert('카드클릭!')
+  router.push('/marathon')
 }
 
 function goToShop() {
-  router.push('/shop')
+  router.push('/shop');
 }
 
 function checkAnswer(userAnswer) {
-  if (answered.value) return
-  answered.value = true
-
-  const isCorrect = userAnswer === true
+  const isCorrect = userAnswer === true;
   const reasonText = isCorrect
     ? '✅ 불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
-    : '❌ 불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.'
+    : '❌ 불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.';
 
-  const earned = isCorrect ? 10 : 0
+  const earned = isCorrect ? 10 : 0;
+
   if (isCorrect) {
-    point.value += earned
-    confetti({ spread: 10, origin: { y: 0.6 } })
+    correctlyAnswered.value = true;
+    point.value += earned;
+    confetti({ spread: 10, origin: { y: 0.6 } });
   }
 
   Swal.fire({
@@ -106,16 +105,16 @@ function checkAnswer(userAnswer) {
     cancelButtonColor: '#aaa',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.push('/shop')
+      router.push('/shop');
     }
-  })
+  });
 }
 
 const shopItems = [
   { img: '/images/coffee.png', name: '컴포즈 아메리카노', price: 1600, alt: '컴포즈 아메리카노 상품 이미지' },
   { img: '/images/cu.png', name: 'CU 3,000P 쿠폰', price: 2700, alt: 'CU 3,000포인트 쿠폰 이미지' },
   { img: '/images/more.png', name: '더 보기', alt: '포인트샵 더보기 버튼 이미지' }
-]
+];
 </script>
 
 <style lang="scss" scoped>
@@ -125,6 +124,35 @@ const shopItems = [
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
+}
+
+.challenge-card {
+  position: relative;
+}
+
+.overlay-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+.overlay-message .highlight {
+  color: #3ba2ff;
+  font-weight: bold;
+  margin-left: 0.3rem;
 }
 
 .card-title {
@@ -200,11 +228,6 @@ const shopItems = [
 .reward-info .highlight {
   color: #3ba2ff;
   font-weight: bold;
-}
-
-.reward-info .small {
-  font-size: 0.8rem;
-  color: #999;
 }
 
 .quiz-question {

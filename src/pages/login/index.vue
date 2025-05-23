@@ -64,22 +64,39 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from "vue-router";
+import Swal from 'sweetalert2';
+
 const router = useRouter();
 
 const userId = ref('')
 const userPw = ref('')
 const showError = ref(false)
 
-const handleLogin = () => {
-  // 예시 조건: 아이디와 비밀번호가 둘 다 "admin"일 때만 통과
+const handleLogin = async () => {
   if (userId.value === 'admin' && userPw.value === 'admin') {
-    alert('로그인 성공!')
-    showError.value = false
-    router.push('/main')
+    showError.value = false;
+
+    await Swal.fire({
+      icon: 'success',
+      title: '로그인 성공!',
+      text: '메인 페이지로 이동합니다 😊',
+      confirmButtonColor: '#1e3a8a',
+      confirmButtonText: '확인'
+    });
+
+    router.push('/main');
   } else {
-    showError.value = true
+    showError.value = true;
+
+    await Swal.fire({
+      icon: 'error',
+      title: '로그인 실패',
+      text: '아이디 또는 비밀번호를 확인해주세요.',
+      confirmButtonColor: '#ef4444',
+      confirmButtonText: '다시 시도'
+    });
   }
-}
+};
 
 const goToFindId = () => {
   router.push('/findUserId') 

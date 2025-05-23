@@ -46,36 +46,22 @@
         <input v-model="phone" type="text" placeholder="전화번호입력(- 없이 입력)" class="custom-input" @input="() => filterOnlyNumber('phone')" />
       </div>
 
-<!-- 이메일 -->
-<div class="input-group">
-  <div class="email-inline">
-    <input
-      v-model="emailId"
-      type="text"
-      placeholder="이메일 아이디"
-      class="email-id-input"
-    />
-    <span class="at-sign">@</span>
-    <select v-model="selectedDomain" class="email-select">
-      <option disabled value="">도메인 선택</option>
-      <option value="gmail.com">gmail.com</option>
-      <option value="naver.com">naver.com</option>
-      <option value="daum.net">daum.net</option>
-      <option value="self">직접 입력</option>
-    </select>
-    <input
-      v-if="selectedDomain === 'self'"
-      v-model="customDomain"
-      type="text"
-      placeholder="직접 입력"
-      class="custom-domain-input"
-    />
-  </div>
-  <p v-if="!isEmailValid" class="input-message warning-text">
-    올바른 이메일 형식을 입력해주세요.
-  </p>
-</div>
-
+      <!-- 이메일 -->
+      <div class="input-group">
+        <div class="email-inline">
+          <input v-model="emailId" type="text" placeholder="이메일 아이디" class="email-id-input" />
+          <span class="at-sign">@</span>
+          <select v-model="selectedDomain" class="email-select">
+            <option disabled value="">도메인 선택</option>
+            <option value="gmail.com">gmail.com</option>
+            <option value="naver.com">naver.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="self">직접 입력</option>
+          </select>
+          <input v-if="selectedDomain === 'self'" v-model="customDomain" type="text" placeholder="직접 입력" class="custom-domain-input" />
+        </div>
+        <p v-if="!isEmailValid" class="input-message warning-text">올바른 이메일 형식을 입력해주세요.</p>
+      </div>
 
       <!-- 성별 -->
       <div class="gender-container">
@@ -97,160 +83,16 @@
       </div>
 
       <!-- 가입 버튼 -->
-      <button class="submit-button" :disabled="!canSubmit">
-        회원 가입
-      </button>
+      <button class="submit-button" :disabled="!canSubmit">회원 가입</button>
     </form>
-
-    <!-- 약관 팝업 -->
-    <div v-if="showTerms" class="terms-modal">
-      <div class="terms-box">
-        <h3>개인정보처리 지침 및 이용약관 보기</h3>
-        <div class="terms-content">
-          <h1>개인정보처리방침</h1>
-          <p><strong>[디지털가드]</strong>(이하 "회사"라 함)는 이용자의 개인정보를 중요시하며, 「개인정보 보호법」 등 관련 법령을 준수하고 있습니다. 본 개인정보처리방침은 이용자가 제공한 개인정보가 어떤 용도와 방식으로 이용되고 있으며, 개인정보 보호를 위해 어떤 조치가 취해지고 있는지 알려드리기 위한 것입니다.</p>
-
-          <h2>1. 개인정보 수집 항목 및 수집 방법</h2>
-          <p>회사는 회원가입, 서비스 이용, 고객상담 등을 위해 다음과 같은 개인정보를 수집합니다.</p>
-          <ul>
-            <li><strong>수집 항목</strong>
-              <ul>
-                <li>필수항목: 이름, 이메일, 비밀번호, 서비스 이용기록, 접속 로그, 쿠키, 접속 IP</li>
-                <li>선택항목: 프로필 이미지, 생년월일 등</li>
-              </ul>
-            </li>
-            <li><strong>수집 방법</strong>: 회원가입 및 서비스 이용 시 직접 입력, 고객센터 문의, 자동 수집</li>
-          </ul>
-
-          <h2>2. 개인정보 수집 및 이용 목적</h2>
-          <ul>
-            <li>회원 관리: 본인 확인, 서비스 제공을 위한 사용자 식별</li>
-            <li>서비스 제공 및 개선: 콘텐츠 제공, 맞춤형 서비스 제공, 오류 해결</li>
-            <li>마케팅 및 광고 활용(동의한 경우): 신규 서비스 안내, 이벤트 정보 제공</li>
-            <li>법적 의무 이행 및 분쟁 대응</li>
-          </ul>
-
-          <h2>3. 개인정보의 보유 및 이용 기간</h2>
-          <ul>
-            <li>회원 탈퇴 시 또는 수집·이용 목적 달성 시 지체 없이 파기</li>
-            <li>관련 법령에 따른 보관
-              <ul>
-                <li>계약 또는 청약철회 기록: 5년</li>
-                <li>대금 결제 및 재화 공급 기록: 5년</li>
-                <li>소비자 불만 또는 분쟁처리 기록: 3년</li>
-                <li>접속 로그: 3개월</li>
-              </ul>
-            </li>
-          </ul>
-
-          <h2>4. 개인정보 제3자 제공</h2>
-          <p>회사는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만, 다음의 경우에는 예외로 합니다.</p>
-          <ul>
-            <li>이용자가 사전에 동의한 경우</li>
-            <li>법령에 의거하거나 수사기관의 요청이 있는 경우</li>
-          </ul>
-
-          <h2>5. 개인정보 처리의 위탁</h2>
-          <table border="1" cellpadding="5">
-            <thead>
-              <tr>
-                <th>수탁자</th>
-                <th>위탁업무 내용</th>
-                <th>보유 및 이용기간</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Amazon Web Services</td>
-                <td>인프라(서버) 운영</td>
-                <td>회원 탈퇴 또는 계약 종료 시까지</td>
-              </tr>
-              <tr>
-                <td>(예: SendGrid)</td>
-                <td>이메일 발송 시스템 운영</td>
-                <td>동일</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h2>6. 이용자 및 법정대리인의 권리와 행사 방법</h2>
-          <ul>
-            <li>개인정보 열람, 정정, 삭제, 처리 정지 요구 가능</li>
-            <li>회원 탈퇴 또는 삭제 요청은 [설정] 또는 고객센터 이용</li>
-            <li>만 14세 미만 아동은 법정대리인의 동의 필요</li>
-          </ul>
-
-          <h2>7. 개인정보의 파기 절차 및 방법</h2>
-          <ul>
-            <li><strong>파기 절차</strong>: 목적 달성 후 즉시 파기</li>
-            <li><strong>파기 방법</strong>:
-              <ul>
-                <li>전자 파일: 복구 불가능한 방법으로 영구 삭제</li>
-                <li>종이 문서: 분쇄 또는 소각</li>
-              </ul>
-            </li>
-          </ul>
-
-          <h2>8. 개인정보 보호를 위한 기술적/관리적 대책</h2>
-          <ul>
-            <li>개인정보 암호화 저장 및 전송</li>
-            <li>접근 제한 및 권한 관리</li>
-            <li>보안 프로그램 설치 및 주기적 점검</li>
-          </ul>
-
-          <h2>9. 개인정보 보호책임자</h2>
-          <ul>
-            <li><strong>성명</strong>: 홍길동</li>
-            <li><strong>직책</strong>: 개인정보 보호책임자</li>
-            <li><strong>연락처</strong>: privacy@digital.guard.com</li>
-          </ul>
-
-          <h2>10. 고지의 의무</h2>
-          <p>본 개인정보처리방침은 법령 또는 회사 정책에 따라 변경될 수 있으며, 변경 시 사전 공지합니다.</p>
-          <p><strong>시행일자</strong>: 2025년 5월 21일</p>
-        </div>
-        <button class="submit-button" @click="acceptTerms">동의하고 닫기</button>
-      </div>
-    </div>
-
-    <!-- 확인 팝업 -->
-    <div v-if="showConfirmation" class="terms-modal">
-      <div class="terms-box confirmation-box">
-        <h3>회원가입</h3>
-        <hr />
-        <p>입력하신 정보로 회원가입을 진행하시겠습니까?</p>
-        <div class="confirmation-buttons">
-          <button class="submit-button" @click="submitForm">네</button>
-          <button class="submit-button" @click="cancelSignup">아니오</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref, computed, toRefs } from 'vue';
+import { reactive, ref, computed, toRefs, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
-import { onMounted } from 'vue';
-import { db } from '@/services/supabase'
-
-const fecthData = async () => {
-    const { data, error } = await db
-        .from('user') //user테이블 조회
-        .select('*');
-
-    if (error) {
-        console.error('데이터 조회 실패', error);
-    } else {
-        console.log(data);
-    }
-}
-
-// 컴포넌트가 렌더링될 때 실행됨
-onMounted(async () => {
-    await fecthData();
-})
+import { db } from '@/services/supabase';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 
@@ -284,8 +126,6 @@ const email = computed(() => {
 // 상태 및 유효성
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
-const showTerms = ref(false);
-const showConfirmation = ref(false);
 
 const isUsernameValid = ref(true);
 const isPasswordValid = ref(true);
@@ -307,7 +147,7 @@ const canSubmit = computed(() => {
   );
 });
 
-// 메서드
+// 유효성 및 기타 메서드
 const selectGender = (selectedGender) => {
   gender.value = selectedGender;
 };
@@ -336,30 +176,63 @@ const filterOnlyNumber = (field) => {
   form[field] = form[field].replace(/[^0-9]/g, '').slice(0, field === 'birth' ? 8 : 11);
 };
 
-const openTermsPopup = (e) => {
+const openTermsPopup = async (e) => {
   e.preventDefault();
-  showTerms.value = true;
-};
+  const { isConfirmed } = await Swal.fire({
+    title: '<div style="white-space: normal; font-size: 20px; text-align: center;">개인정보처리방침 및 약관 동의</div>',
+    html: `
+      <div style="text-align: left; max-height: 300px; overflow-y: auto; font-size: 14px;">
+        <h3>1. 개인정보 수집 항목</h3>
+        <p>이름, 이메일, 비밀번호 등</p>
+        <h3>2. 이용 목적</h3>
+        <p>회원 관리, 서비스 제공 등</p>
+        <h3>3. 보관 기간</h3>
+        <p>회원 탈퇴 시 또는 법령에 따른 기간</p>
+        <p style="margin-top:1rem;"><strong>※ 전체 약관은 스크롤하여 확인해 주세요.</strong></p>
+      </div>
+    `,
+    confirmButtonText: '동의합니다',
+    confirmButtonColor: '#1e3a8a',
+    showCancelButton: true,
+    cancelButtonText: '닫기',
+    width: 600,
+    padding: '1.5rem',
+  });
 
-const acceptTerms = () => {
-  agree.value = true;
-  showTerms.value = false;
-};
-
-const openConfirmation = () => {
-  if (canSubmit.value) {
-    showConfirmation.value = true;
+  if (isConfirmed) {
+    agree.value = true;
   }
 };
 
-const submitForm = () => {
-  showConfirmation.value = false;
-  alert('회원가입이 완료되었습니다.');
-  router.push('/welcome');
+
+const openConfirmation = () => {
+  if (!canSubmit.value) return;
+
+  Swal.fire({
+    title: '회원가입',
+    text: '입력하신 정보로 회원가입을 진행하시겠습니까?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: '네',
+    confirmButtonColor: '#1e3a8a',
+    cancelButtonText: '아니오',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      submitForm();
+    }
+  });
 };
 
-const cancelSignup = () => {
-  showConfirmation.value = false;
+const submitForm = () => {
+  Swal.fire({
+    icon: 'success',
+    title: '회원가입 완료!',
+    text: '로그인 페이지로 이동합니다.',
+    confirmButtonText: '확인',
+    confirmButtonColor: '#1e3a8a',
+  }).then(() => {
+    router.push('/welcome');
+  });
 };
 </script>
 

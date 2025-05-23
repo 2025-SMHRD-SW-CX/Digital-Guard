@@ -1,5 +1,5 @@
 <template>
-  <div class="welcome-page" @click="goToLogin">
+  <div class="welcome-page">
     <div class="image-container">
       <img src="/images/fluent-emoji-high-contrast_party-popper.png" alt="환영 이미지" />
     </div>
@@ -16,6 +16,7 @@ defineOptions({
   name: "WelcomePage",
 });
 
+import { onMounted } from 'vue';
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -23,6 +24,11 @@ const router = useRouter();
 const goToLogin = () =>{
     router.push('/login');
 }
+onMounted(() => {
+  setTimeout(() => {
+    goToLogin();
+  }, 3000); // 3초 뒤 실행 (3000ms)
+});
 </script>
 
 <style scoped>
