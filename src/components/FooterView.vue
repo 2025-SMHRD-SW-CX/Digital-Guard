@@ -1,58 +1,50 @@
 <template>
   <div class="footer-wrap" v-if="showFooter">
-    <button class="footer-btn" :class="{ active: isActive('education') }" @click="goToEdu">
-      <img src="/images/footer_edu.png" alt="교육" />
+    <button class="footer-btn" @click="go('/education')">
+      <img :src="iconSrc('education')" alt="교육" />
     </button>
-    <button class="footer-btn" :class="{ active: isActive('survey') }" @click="goToSurvey">
-      <img src="/images/footer_survey.png" alt="설문" />
+
+    <button class="footer-btn" @click="go('/survey')">
+      <img :src="iconSrc('survey')" alt="설문" />
     </button>
-    <div class="footer-logo-wrap" @click="goToHome">
+
+    <div class="footer-logo-wrap" @click="go('/mainView')">
       <img src="/images/logo.png" class="footer-logo" alt="로고" />
     </div>
-    <button class="footer-btn" :class="{ active: isActive('shop') }" @click="goToShop">
-      <img src="/images/footer_shop.png" alt="상점" />
+
+    <button class="footer-btn" @click="go('/shop')">
+      <img :src="iconSrc('shop')" alt="상점" />
     </button>
-    <button class="footer-btn" :class="{ active: isActive('mypage') }" @click="goToMypage">
-      <img id="mypage-icon" src="/images/footer_mypage.png" alt="마이페이지" />
+
+    <button class="footer-btn" @click="go('/mypage')">
+      <img :src="iconSrc('mypage')" alt="마이페이지" />
     </button>
   </div>
 </template>
 
-
 <script setup>
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { usePathToken } from '@/composables/usePathToken'
 
 const router = useRouter()
-const route = useRoute()
+const { firstToken, tokenDepth, isActive } = usePathToken()
 
 const footerActiveTabs = ['mainView', 'education', 'survey', 'shop', 'mypage']
+const showFooter = computed(() =>
+  tokenDepth.value === 1 && footerActiveTabs.includes(firstToken.value)
+)
 
-// 1단계 경로의 첫 토큰 추출
-const firstToken = computed(() => {
-  return route.path.split('/').filter(Boolean)[0] ?? ''
-})
-const tokenDepth = computed(() => {
-  return route.path.split('/').filter(Boolean).length
-})
+const iconSrc = (tab) => {
+  const base = `/images/footer/${tab}`
+  return isActive(tab)
+    ? `${base}-active.png`
+    : `${base}.png`
+}
 
-// 푸터를 보여줄지 결정
-const showFooter = computed(() => {
-  // 1depth만, login, signupView, '', mainView는 숨김
-  return (
-    tokenDepth.value === 1 &&
-    footerActiveTabs.includes(firstToken.value)
-  )
-})
-
-// 버튼 활성화 여부
-const isActive = (tab) => firstToken.value === tab
-
-const goToEdu = () => router.push('/education')
-const goToSurvey = () => router.push('/survey')
-const goToShop = () => router.push('/shop')
-const goToMypage = () => router.push('/mypage')
-const goToHome = () => router.push('/mainView')
+const go = (path) => {
+  router.push(path)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -62,7 +54,6 @@ const goToHome = () => router.push('/mainView')
   justify-content: space-between;
   padding: 0 1rem;
   height: 3.5rem;
-  z-index: 0;
   position: relative;
 }
 
@@ -81,32 +72,20 @@ const goToHome = () => router.push('/mainView')
   background: none;
   border: none;
   padding: 0;
-  height: 2rem;
+  height: 2.3rem;
   display: flex;
   align-items: center;
   transform: translateY(30%);
-
 
   img {
     width: 100%;
     height: 100%;
     display: block;
-    opacity: 0.7;
   }
 
   &:hover {
     cursor: pointer;
     opacity: 0.8;
-  }
-
-  &.active img {
-    opacity: 1; // 기본보다 더 선명하게
-    filter: drop-shadow(0 0 8px $color-primary); // 강조 효과 (선택)
-    border-bottom: 2px solid $color-primary; // 밑줄 강조 등 자유롭게
-  }
-
-  #mypage-icon {
-    height: 2.3rem;
   }
 }
 </style>

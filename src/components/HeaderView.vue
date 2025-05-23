@@ -32,50 +32,30 @@
 
 <script setup>
 import { watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useHeaderStore, TITLE_MAP } from '@/stores/header'
+import { usePathToken } from '@/composables/usePathToken'
 
-const header = useHeaderStore()
-const route = useRoute()
 const router = useRouter()
+const header = useHeaderStore()
+const { firstToken } = usePathToken()
 
 const clickBackBtn = () => {
-    const tokens = route.path.split('/').filter(Boolean);
-    if (tokens.length === 1) {
-        router.push('/mainView');
+    const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
+    depth === 1 ? router.push('/mainView') : router.back()
+}
+
+watch(firstToken, (token) => {
+    if (!(token in TITLE_MAP)) {
+        header.setShow(false)
+        header.setTitle(null)
     } else {
-        router.back();
+        header.setShow(true)
+        header.setTitle(TITLE_MAP[token] || null)
     }
-}
-
-
-function getFirstPathToken() {
-    const tokens = route.path.split('/').filter(Boolean)
-    return tokens[0] ?? ''
-}
-
-watch(
-    () => route.path,
-    () => {
-        const token = getFirstPathToken()
-        if (!(token in TITLE_MAP)) {
-            // 1. 매핑 안됨 → 숨김
-            header.setShow(false)
-            header.setTitle(null)
-        } else if (TITLE_MAP[token] === '') {
-            // 2. 빈 문자열 → 보이긴 하되 브랜드이미지 (title = null)
-            header.setShow(true)
-            header.setTitle(null)
-        } else {
-            // 3. 타이틀 있음 → 보이고 타이틀 표시
-            header.setShow(true)
-            header.setTitle(TITLE_MAP[token])
-        }
-    },
-    { immediate: true }
-)
-
+}, { immediate: true })
 </script>
+
 
 
 <style lang="scss" scoped>
