@@ -1,5 +1,5 @@
 <template>
-    <div class="order-page">
+    <div class="order-page" v-if="shopStore.orderItems.length">
         <header class="header">
             <h1>주문/결제</h1>
         </header>
@@ -31,7 +31,7 @@
         <!-- 주문 상품 선택 -->
         <section class="product-section">
             <h2>주문 상품</h2>
-            <div v-for="item in globalStore.orderItems" :key="item.id" class="product-box">
+            <div v-for="item in shopStore.orderItems" :key="item.id" class="product-box">
                 <input type="checkbox" :value="item.id" v-model="selectedIds" />
                 <img :src="item.image" class="product-img" />
                 <div class="product-info">
@@ -48,7 +48,7 @@
             <h2>구매</h2>
             <div class="summary-row">
                 <!-- <span>보유 포인트</span><span>{{ userPoint.toLocaleString() }} Point</span> -->
-                 <span>보유 포인트</span><span>{{ userStore.totalReward }} Point</span>
+                <span>보유 포인트</span><span>{{ userStore.totalReward }} Point</span>
             </div>
             <div class="summary-row">
                 <span>결제 포인트</span><span>- {{ totalPrice.toLocaleString() }} Point</span>
@@ -68,12 +68,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { globalStore } from '@/services/globalStore.js'
+import { useShopStore } from '@/stores/shop';
 import { useUserStore } from '@/stores/user.js'
 import { useHead } from '@vueuse/head'
 
 const router = useRouter()
 const userStore = useUserStore();
+const shopStore = useShopStore();
 
 // 배송정보
 const selectedRequest = ref('')
@@ -93,11 +94,16 @@ useHead({
     ]
 })
 
+if (!shopStore.orderItems.length) {
+    alert("잘못된 접근입니다! 주문하신 상품 목록이 없습니다.");
+    router.back();
+}
+
 // 선택된 상품 ID
-const selectedIds = ref(globalStore.orderItems.map(item => item.id))
+const selectedIds = ref(shopStore.orderItems.map(item => item.id))
 
 const totalPrice = computed(() =>
-    globalStore.orderItems
+    shopStore.orderItems
         .filter(i => selectedIds.value.includes(i.id))
         .reduce((sum, item) => sum + item.price, 0)
 )
@@ -126,6 +132,7 @@ onMounted(() => {
     }
 
 
+
     // setTimeout(() => {
     //     console.log('차감됨');
     //     userStore.addPoint(-5000);
@@ -139,7 +146,7 @@ function submitOrder() {
 
 
 
-    const orderedItems = globalStore.orderItems.filter(i => selectedIds.value.includes(i.id))
+    const orderedItems = shopStore.orderItems.filter(i => selectedIds.value.includes(i.id))
 
     userStore.addPoint(-totalPrice.value)
 
@@ -190,8 +197,8 @@ ${productList}
     if (!userConfirmed) return
 
     // 장바구니 정리
-    globalStore.cart = globalStore.cart.filter(i => !selectedIds.value.includes(i.id))
-    globalStore.selectedCartIds = globalStore.selectedCartIds.filter(id => !selectedIds.value.includes(id))
+    shopStore.cart = shopStore.cart.filter(i => !selectedIds.value.includes(i.id))
+    shopStore.selectedCartIds = shopStore.selectedCartIds.filter(id => !selectedIds.value.includes(id))
 
     alert("✅ 결제가 완료되었습니다!")
     router.push('/shop/OrderFinish')

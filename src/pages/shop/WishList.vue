@@ -7,13 +7,13 @@
     </header>
 
     <!-- 찜 목록이 비어있을 때 -->
-    <div v-if="globalStore.wish.length === 0">
+    <div v-if="shopStore.wish.length === 0">
       찜한 상품이 없습니다.
     </div>
 
     <!-- 찜한 상품 목록 -->
     <div
-      v-for="item in globalStore.wish"
+      v-for="item in shopStore.wish"
       :key="item.id"
       class="wishlist-item"
     >
@@ -31,25 +31,26 @@
 </template>
 
 <script setup>
-import { globalStore } from '@/services/globalStore.js'
 import { useRouter } from 'vue-router'
+import { useShopStore } from '@/stores/shop';
 
 const router = useRouter()
+const shopStore = useShopStore();
 
 function goBack() {
   router.back()
 }
 
 function remove(id) {
-  globalStore.wish = globalStore.wish.filter(i => i.id !== id)
+  shopStore.wish = shopStore.wish.filter(i => i.id !== id)
 }
 
 function addToCart(item) {
-  const exists = globalStore.cart.find(i => i.id === item.id)
+  const exists = shopStore.cart.find(i => i.id === item.id)
   if (exists) {
     alert(`${item.name}은(는) 이미 장바구니에 담겨 있습니다!`)
   } else {
-    globalStore.cart.push(item)
+    shopStore.cart.push(item)
     alert(`${item.name} 장바구니에 담겼습니다!`)
   }
 }

@@ -1,13 +1,14 @@
 <template>
-  <div class="page-wrapper">
-    <header class="top-bar">
+  <div>
+  <!-- <div class="page-wrapper"> -->
+    <!-- <header class="top-bar">
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
       <div class="header-icons">
         <span class="icon" @click="goToCart">🛍️</span>
         <span class="icon" @click="goToWishlist">❤️</span>
         </div>
-    </header>
+    </header> -->
 
     <main class="content">
       <div class="image-wrapper">
@@ -76,7 +77,8 @@
 <script setup>
 import { ref , onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { globalStore } from '@/services/globalStore.js'
+import { useShopStore } from '@/stores/shop';
+const shopStore = useShopStore();
 
 
 const router = useRouter()
@@ -93,19 +95,19 @@ const product = {
 }
 
 onMounted(() => {
-  liked.value = globalStore.wish.some(i => i.id === product.id)
+  liked.value = shopStore.wish.some(i => i.id === product.id)
 })
 
 function toggleLike() {
-  const isWished = globalStore.wish.some(i => i.id === product.id)
+  const isWished = shopStore.wish.some(i => i.id === product.id)
 
   if (isWished) {
-    globalStore.wish = globalStore.wish.filter(i => i.id !== product.id)
+    shopStore.wish = shopStore.wish.filter(i => i.id !== product.id)
     liked.value = false
     likeCount.value -= 1
     alert('찜이 해제되었습니다!')
   } else {
-    globalStore.wish.push(product)
+    shopStore.wish.push(product)
     liked.value = true
     likeCount.value += 1
     alert('찜하셨습니다!')
@@ -113,9 +115,9 @@ function toggleLike() {
 }
 
 function addToCart() {
-  const exists = globalStore.cart.find(i => i.id === product.id)
+  const exists = shopStore.cart.find(i => i.id === product.id)
   if (!exists) {
-    globalStore.cart.push(product)
+    shopStore.cart.push(product)
     alert('장바구니에 담겼습니다!')
   } else {
     alert('이미 장바구니에 있습니다.')
@@ -142,6 +144,7 @@ function purchase() {
 
 
 <style scoped>
+/*
 .page-wrapper {
   width: 100%;
   max-width: 402px;
@@ -153,6 +156,7 @@ function purchase() {
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
 }
+*/
 
 .top-bar {
   height: 50px;

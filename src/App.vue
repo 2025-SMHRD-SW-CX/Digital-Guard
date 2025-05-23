@@ -82,7 +82,7 @@ onMounted(async () => {
   flex-grow: 1;
   overflow: auto;
   /* 실제 스크롤은 여기서 */
-  padding: 0 1rem;
+  padding: 0 1rem 1rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;

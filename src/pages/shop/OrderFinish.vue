@@ -47,8 +47,9 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { globalStore } from '@/services/globalStore.js'
 import { computed, onMounted, ref } from 'vue'
+import { useShopStore } from '@/stores/shop';
+const shopStore = useShopStore();
 
 const router = useRouter()
 
@@ -86,8 +87,8 @@ onMounted(() => {
   const saved = JSON.parse(localStorage.getItem('orderInfo'))
   console.log(saved)
   if (saved) {
-    globalStore.orderInfo = saved
-    console.log(globalStore.orderInfo)
+    shopStore.orderInfo = saved
+    console.log(shopStore.orderInfo)
     orderInfo.value = saved;
     console.log('야호', orderInfo.value)
   }
