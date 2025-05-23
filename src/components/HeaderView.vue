@@ -7,13 +7,15 @@
             <p>{{ header.title }}</p>
         </div>
 
+        <!-- TODO 나중에 로그인로직 구현하고나면 아래 주석 해제 -->
+        <!-- <div class="indicator-wrap" v-if="header.show && user.isLogined()"> -->
         <div class="indicator-wrap" v-if="header.show">
             <div id="user" class="key-icon-wrap">
                 <div class="icon">
                     <img src="/images/user_icon.png">
                 </div>
                 <div class="value">
-                    <p>홍길동</p>
+                    <p>{{ user.nickname }}</p>
                 </div>
             </div>
 
@@ -22,7 +24,7 @@
                     <img src="/images/point_icon.png">
                 </div>
                 <div class="value">
-                    <p>200</p>
+                    <p>{{ user.totalReward }}</p>
                 </div>
             </div>
 
@@ -34,15 +36,17 @@
 import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHeaderStore, TITLE_MAP } from '@/stores/header'
+import { useUserStore } from '@/stores/user'
 import { usePathToken } from '@/composables/usePathToken'
 
 const router = useRouter()
 const header = useHeaderStore()
+const user = useUserStore();
 const { firstToken } = usePathToken()
 
 const clickBackBtn = () => {
     const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
-    depth === 1 ? router.push('/mainView') : router.back()
+    depth === 1 ? router.push('/main') : router.back()
 }
 
 watch(firstToken, (token) => {
