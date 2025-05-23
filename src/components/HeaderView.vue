@@ -42,7 +42,7 @@ const { firstToken } = usePathToken()
 
 const clickBackBtn = () => {
     const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
-    depth === 1 ? router.push('/mainView') : router.back()
+    depth === 1 ? router.push('/main') : router.back()
 }
 
 watch(firstToken, (token) => {

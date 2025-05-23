@@ -75,6 +75,7 @@ const handleLogin = () => {
   if (userId.value === 'admin' && userPw.value === 'admin') {
     alert('로그인 성공!')
     showError.value = false
+    router.push('/main')
   } else {
     showError.value = true
   }
