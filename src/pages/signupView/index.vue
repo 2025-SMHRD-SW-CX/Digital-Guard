@@ -355,7 +355,7 @@ const openConfirmation = () => {
 const submitForm = () => {
   showConfirmation.value = false;
   alert('회원가입이 완료되었습니다.');
-  router.push('/login2');
+  router.push('/welcome');
 };
 
 const cancelSignup = () => {
