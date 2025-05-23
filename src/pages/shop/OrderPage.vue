@@ -47,7 +47,8 @@
         <section class="summary-section">
             <h2>구매</h2>
             <div class="summary-row">
-                <span>보유 포인트</span><span>{{ userPoint.toLocaleString() }} Point</span>
+                <!-- <span>보유 포인트</span><span>{{ userPoint.toLocaleString() }} Point</span> -->
+                 <span>보유 포인트</span><span>{{ userStore.totalReward }} Point</span>
             </div>
             <div class="summary-row">
                 <span>결제 포인트</span><span>- {{ totalPrice.toLocaleString() }} Point</span>
@@ -68,9 +69,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { globalStore } from '@/services/globalStore.js'
+import { useUserStore } from '@/stores/user.js'
 import { useHead } from '@vueuse/head'
 
 const router = useRouter()
+const userStore = useUserStore();
 
 // 배송정보
 const selectedRequest = ref('')
@@ -99,7 +102,7 @@ const totalPrice = computed(() =>
         .reduce((sum, item) => sum + item.price, 0)
 )
 
-const remainingPoint = computed(() => userPoint.value - totalPrice.value)
+const remainingPoint = computed(() => userStore.totalReward - totalPrice.value)
 
 function isValidPhone(phone) {
     const regex = /^01[016789]-\d{3,4}-\d{4}$/;
@@ -121,6 +124,12 @@ onMounted(() => {
         address.value = saved.address
         selectedRequest.value = saved.request
     }
+
+
+    // setTimeout(() => {
+    //     console.log('차감됨');
+    //     userStore.addPoint(-5000);
+    // }, 5000);
 })
 function submitOrder() {
     if (!selectedRequest.value) return alert("배송 요청사항을 선택해 주세요.")
@@ -128,7 +137,11 @@ function submitOrder() {
     if (!isValidPhone(phone.value)) return alert("올바른 전화번호 형식이 아닙니다. 예: 010-1234-5678")
     if (remainingPoint.value < 0) return alert("포인트가 부족합니다.")
 
+
+
     const orderedItems = globalStore.orderItems.filter(i => selectedIds.value.includes(i.id))
+
+    userStore.addPoint(-totalPrice.value)
 
     // ✅ 주문 정보를 전역 상태에 저장
     localStorage.setItem('orderInfo', JSON.stringify({
@@ -138,7 +151,8 @@ function submitOrder() {
         request: selectedRequest.value,
         orderedItems: orderedItems, // ✅ 주문 상품 저장
         totalPrice: totalPrice.value, // ✅ 결제 포인트 저장
-        remainingPoint: remainingPoint.value // ✅ 남은 포인트 저장
+        // remainingPoint: remainingPoint.value // ✅ 남은 포인트 저장
+        remainingPoint: userStore.totalReward
     }))
 
     // ✅ 주문 내역 리스트에 추가 (마이페이지용)-----------------------------------

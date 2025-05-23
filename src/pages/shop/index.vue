@@ -30,7 +30,7 @@ searchQueryse<template>
 
         <!-- 상품 목록 -->
         <section class="product-list">
-            <div v-for="item in filteredItems" :key="item.id" class="product-card">
+            <div v-for="item in filteredItems" :key="item.id" class="product-card" @click="goToDetail(item)">
                 <img :src="item.image" class="product-image" />
                 <div class="brand">{{ item.brand }}</div>
                 <div class="name">{{ item.name }}</div>
@@ -40,19 +40,25 @@ searchQueryse<template>
                         <span class="discount" v-if="item.discount">-{{ item.discount }}%</span>
                     </div>
                     <div class="icons">
-                        <button class="heart" @click="toggleLike(item)">
+                        <button class="heart" @click.stop="toggleLike(item)">
                             {{ item.liked ? '❤️' : '🤍' }}
                         </button>
-                        <button class="cart" @click="addToCart(item)">🛒</button>
+                        <button class="cart" @click.stop="addToCart(item)">🛒</button>
                     </div>
                 </div>
 
             </div>
         </section>
     </div>
+
 </template>
 
 <script setup>
+
+// const test = () => {
+//     alert("구현중입니다")
+// }
+
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { globalStore } from '@/services/globalStore.js'
@@ -72,6 +78,13 @@ function handleClickOutside(e) {
         showSortMenu.value = false
     }
 }
+function goToDetail(item) {
+    if (item.route) {
+        router.push(`/shop/${item.route}`)
+    } else {
+        alert('해당 상품 상세 페이지가 준비되지 않았습니다.')
+    }
+}
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
 })
@@ -87,18 +100,19 @@ const sortLabel = computed(() => {
     }
 })
 
+
 function toggleSortMenu() {
     showSortMenu.value = !showSortMenu.value
 }
 function goToCart() {
-  if (confirm("장바구니로 이동하시겠습니까?")) {
-    router.push('/shop/ShopCart')
-  }
+    if (confirm("장바구니로 이동하시겠습니까?")) {
+        router.push('/shop/ShopCart')
+    }
 }
 function goToWishlist() {
-  if (confirm("찜목록으로 이동하시겠습니까?")) {
-    router.push('/shop/WishList')
-  }
+    if (confirm("찜목록으로 이동하시겠습니까?")) {
+        router.push('/shop/WishList')
+    }
 }
 
 const items = ref([
@@ -109,6 +123,7 @@ const items = ref([
         name: '모바일 상품권 3천원권',
         price: 2700,
         discount: 10,
+        route: 'cu3000',
         liked: false
     },
     {
@@ -118,6 +133,7 @@ const items = ref([
         name: '아메리카노',
         price: 1600,
         discount: 10,
+        route: 'compose',
         liked: false
     },
     {
@@ -127,6 +143,7 @@ const items = ref([
         name: '기프티콘 2만원권',
         price: 18000,
         discount: 10,
+        route: 'Olive',
         liked: false,
 
     },
@@ -404,51 +421,51 @@ const items = ref([
 ])
 
 const filteredItems = computed(() => {
-  let result = items.value.map(item => {
-    // ✅ 찜 목록에 있는 상품이면 liked = true
-    item.liked = globalStore.wish.some(w => w.id === item.id)
-    return item
-  })
+    let result = items.value.map(item => {
+        // ✅ 찜 목록에 있는 상품이면 liked = true
+        item.liked = globalStore.wish.some(w => w.id === item.id)
+        return item
+    })
 
-  // 정렬
-  if (sortType.value === 'low') {
-    result = result.sort((a, b) => a.price - b.price)
-  } else if (sortType.value === 'high') {
-    result = result.sort((a, b) => b.price - a.price)
-  }
+    // 정렬
+    if (sortType.value === 'low') {
+        result = result.sort((a, b) => a.price - b.price)
+    } else if (sortType.value === 'high') {
+        result = result.sort((a, b) => b.price - a.price)
+    }
 
-  // 검색 필터
-  return result.filter(item =>
-    item.brand.includes(searchQuery.value) || item.name.includes(searchQuery.value)
-  )
+    // 검색 필터
+    return result.filter(item =>
+        item.brand.includes(searchQuery.value) || item.name.includes(searchQuery.value)
+    )
 })
 
 
 function toggleLike(item) {
-  item.liked = !item.liked
+    item.liked = !item.liked
 
-  if (item.liked) {
-    const exists = globalStore.wish.find(i => i.id === item.id)
-    if (!exists) {
-      globalStore.wish.push(item)
+    if (item.liked) {
+        const exists = globalStore.wish.find(i => i.id === item.id)
+        if (!exists) {
+            globalStore.wish.push(item)
+        }
+        alert(`${item.name} 찜 하셨습니다!`)
+    } else {
+        globalStore.wish = globalStore.wish.filter(i => i.id !== item.id)
+        alert(`${item.name} 찜 취소하셨습니다.`)
     }
-    alert(`${item.name} 찜 하셨습니다!`)
-  } else {
-    globalStore.wish = globalStore.wish.filter(i => i.id !== item.id)
-    alert(`${item.name} 찜 취소하셨습니다.`)
-  }
 }
 
 
 function addToCart(item) {
-  const exists = globalStore.cart.find(i => i.id === item.id)
-  
-  if (exists) {
-    alert(`${item.name}은(는) 이미 장바구니에 담겨 있습니다!`)
-  } else {
-    globalStore.cart.push(item)
-    alert(`${item.name} 장바구니에 담겼습니다!`)
-  }
+    const exists = globalStore.cart.find(i => i.id === item.id)
+
+    if (exists) {
+        alert(`${item.name}은(는) 이미 장바구니에 담겨 있습니다!`)
+    } else {
+        globalStore.cart.push(item)
+        alert(`${item.name} 장바구니에 담겼습니다!`)
+    }
 }
 
 </script>
@@ -601,14 +618,18 @@ function addToCart(item) {
     z-index: 10;
     min-width: 120px;
 }
+
 .search-container {
-  flex: 1; /* 이걸 추가 */
-  position: relative;
-  display: flex; /* inline-block 대신 flex */
+    flex: 1;
+    /* 이걸 추가 */
+    position: relative;
+    display: flex;
+    /* inline-block 대신 flex */
 }
 
 .search-bar {
-    padding-right: 30px; /* 아이콘 공간 확보 */
+    padding-right: 30px;
+    /* 아이콘 공간 확보 */
     height: 30px;
     font-size: 14px;
 }
