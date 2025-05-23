@@ -1,29 +1,26 @@
 <template>
 
-    <div class="app-wrapper">
-      <!-- 1) 로더 페이드 애니메이션 -->
-      <transition name="loader-fade" mode="out-in">
-        <LoadingScreen v-if="isLoading" key="loader" />
-      </transition>
+  <div class="app-wrapper">
+    <!-- 1) 로더 페이드 애니메이션 -->
+    <transition name="loader-fade" mode="out-in">
+      <LoadingScreen v-if="isLoading" key="loader" />
+    </transition>
 
-      <!-- 2) 메인 페이지 애니메이션 + 스크롤 영역 -->
+    <!-- 2) 메인 페이지 애니메이션 + 스크롤 영역 -->
+    <div v-if="!isLoading" class="page-container">
+
       <transition name="page-fade-float" mode="out-in">
-        <div
-          v-if="!isLoading"
-          :key="route.fullPath"
-          class="page-container"
-        >
-          <!-- 애니메이션 래퍼 -->
-          <div class="page-clipper">
-            <!-- 실제 스크롤되는 영역 -->
-            <HeaderView></HeaderView>
-            <router-view />
-          </div>
-
-          <FooterView></FooterView>
-          <!-- 여기까지 공통레이아웃 -->
+        <!-- 애니메이션 래퍼 -->
+        <div class="page-clipper" :key="route.fullPath">
+          <!-- 실제 스크롤되는 영역 -->
+          <HeaderView></HeaderView>
+          <router-view />
         </div>
       </transition>
+
+      <FooterView></FooterView>
+      <!-- 여기까지 공통레이아웃 -->
+    </div>
   </div>
 
 </template>
@@ -62,11 +59,11 @@ onMounted(async () => {
   await router.isReady()
   setTimeout(() => { isLoading.value = false }, 3000)
 })
+
+
 </script>
 
 <style lang="scss" scoped>
-
-
 /* -------------------------------------------------------------------------- */
 /* 애니메이션용 래퍼 + 내부 스크롤 영역                                         */
 /* -------------------------------------------------------------------------- */
@@ -76,12 +73,15 @@ onMounted(async () => {
   flex-direction: column;
   height: 100vh;
   inset: 0;
-  overflow: auto;      /* 래퍼는 클리핑만 담당 */
+  overflow: auto;
+  /* 래퍼는 클리핑만 담당 */
 }
+
 .page-clipper {
 
   flex-grow: 1;
-  overflow: auto;        /* 실제 스크롤은 여기서 */
+  overflow: auto;
+  /* 실제 스크롤은 여기서 */
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
@@ -94,6 +94,7 @@ onMounted(async () => {
 .loader-fade-leave-active {
   transition: opacity 0.4s ease;
 }
+
 .loader-fade-leave-to {
   opacity: 0;
 }
@@ -106,6 +107,7 @@ onMounted(async () => {
     opacity 0.3s ease 0.2s,
     transform 0.3s ease 0.2s;
 }
+
 .page-fade-float-leave-active {
   transition: opacity 0.2s ease;
 }
@@ -114,10 +116,12 @@ onMounted(async () => {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .page-fade-float-enter-to {
   opacity: 1;
   transform: translateY(0);
 }
+
 .page-fade-float-leave-to {
   opacity: 0;
 }

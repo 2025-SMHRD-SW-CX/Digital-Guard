@@ -85,7 +85,9 @@ const DATA = [
 ];
 
 export const useSurveyStore = defineStore('survey', {
-    state: () => ([ ...DATA ]),
+    state: () => ({
+        data: [ ...DATA ]
+    }),
     actions: {
         
     }

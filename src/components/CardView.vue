@@ -2,6 +2,9 @@
   <div
     class="card"
     @click="handleClick"
+    :style="{
+        padding: props.padding
+    }"
   >
     <slot></slot>
   </div>
@@ -12,6 +15,10 @@ const props = defineProps({
   onClick: {
     type: Function,
     default: null
+  },
+  padding: {
+    type: Text,
+    default: "2rem"
   }
 })
 
@@ -28,7 +35,7 @@ function handleClick(event) {
   background-color: #fff;
   border-radius: 1.2rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.253);
-  padding: 2rem;
+//   padding: 2rem;
   width: 100%;
   max-width: 400px;
   text-align: center;
