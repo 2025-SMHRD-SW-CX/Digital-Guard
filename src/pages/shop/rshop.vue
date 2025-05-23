@@ -2,9 +2,11 @@
   <div class="page-wrapper">
     <header class="top-bar">
       <span class="back">←</span>
-      <img src="/images/brand.png" alt="Digital Guard"
-        class="logo-image" />
-      <span class="icons" @click="addToCart">🛒</span>
+      <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
+      <div class="header-icons">
+        <span class="icon" @click="goToWishlist">❤️</span>
+        <span class="icon" @click="goToCart">🛍️</span>
+      </div>
     </header>
 
     <main class="content">
@@ -12,8 +14,7 @@
         <img src="/images/올리브영.png" alt="올리브영 기프트카드" class="card-image" />
       </div>
       <section class="product-info">
-        <img src=/images/olive-logo.png alt="OLIVE YOUNG"
-          class="brand-logo" />
+        <img src=/images/olive-logo.png alt="OLIVE YOUNG" class="brand-logo" />
         <h2 class="title">기프트 카드 2만원권</h2>
         <div class="rating">
           ⭐⭐⭐⭐⭐ <span class="review">(134개의 후기)</span>
@@ -42,7 +43,7 @@
       <section class="store-info">
         <img src="/images/olive-banner.png" alt="올리브영 로고" class="banner" />
         <p class="store-text">전국 올리브영 매장과<br />온라인몰에서 포인트처럼 사용 가능</p>
-        <!-- <img src="/images/올리브영상세설명.jpg" alt="올리브영상세설명" class="banner" /> -->
+        <img src="/images/올리브영상세설명.jpg" alt="올리브영상세설명" class="banner" />
       </section>
     </main>
 
@@ -66,7 +67,7 @@ export default {
   name: "Rshop",
   methods: {
     purchase() {
-      alert("구매가 완료되었습니다!");
+      alert("결제창으로 넘어갑니다!");
     },
   },
 };
@@ -74,6 +75,9 @@ export default {
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const liked = ref(false)
 const likeCount = ref(1423)
@@ -81,9 +85,20 @@ const likeCount = ref(1423)
 function toggleLike() {
   liked.value = !liked.value
   likeCount.value += liked.value ? 1 : -1
+  alert(liked.value ? "찜하셨습니다!" : "찜이 해제되었습니다.")
 }
 function addToCart() {
   alert("장바구니에 담겼습니다!")
+}
+function goToCart() {
+  if (confirm("장바구니로 이동하시겠습니까?")) {
+    router.push('/shop/ShopCart')
+  }
+}
+function goToWishlist() {
+  if (confirm("찜목록으로 이동하시겠습니까?")) {
+    router.push('/shop/WishList')
+  }
 }
 </script>
 
@@ -113,6 +128,7 @@ function addToCart() {
   font-size: 16px;
   border-bottom: 1px solid #eee;
 }
+
 .like-box {
   background: black;
   color: white;
@@ -123,36 +139,47 @@ function addToCart() {
   align-items: center;
   justify-content: center;
   width: 64px;
-  min-height: 56px;             /* ✅ 높이 맞춤 */
+  min-height: 56px;
+  /* ✅ 높이 맞춤 */
 }
+
 .like-btn {
-  background: transparent;    /* ✅ 배경 없애기 */
+  background: transparent;
+  /* ✅ 배경 없애기 */
   border: none;
   font-size: 20px;
   color: red;
   cursor: pointer;
-  padding: 0;                 /* ✅ 여백 제거 */
+  padding: 0;
+  /* ✅ 여백 제거 */
   line-height: 1;
 }
+
 .like-btn:hover {
   transform: scale(1.2);
 }
+
 .like-count {
   font-size: 12px;
   margin-top: 4px;
   color: #333;
 }
+
 .content {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
 }
+
 .buy-button {
   flex: 1;
   height: 48px;
-  display: flex;              /* ✅ 버튼 안에서 텍스트 정렬 */
-  align-items: center;        /* 수직 가운데 정렬 */
-  justify-content: center;    /* 수평 가운데 정렬 */
+  display: flex;
+  /* ✅ 버튼 안에서 텍스트 정렬 */
+  align-items: center;
+  /* 수직 가운데 정렬 */
+  justify-content: center;
+  /* 수평 가운데 정렬 */
   background: black;
   color: white;
   font-size: 16px;
@@ -160,6 +187,7 @@ function addToCart() {
   border-radius: 8px;
   white-space: nowrap;
 }
+
 .card-image {
   width: 100%;
   border-radius: 8px;
@@ -170,6 +198,7 @@ function addToCart() {
   font-size: 14px;
   font-weight: bold;
 }
+
 .like-wrapper {
   display: flex;
   flex-direction: column;
@@ -262,11 +291,14 @@ function addToCart() {
   border-top: 1px solid #eee;
   background: white;
 }
+
 .bottom-actions {
   display: flex;
-  align-items: flex-start;      /* 핵심: 위쪽 정렬 */
+  align-items: flex-start;
+  /* 핵심: 위쪽 정렬 */
   gap: 12px;
 }
+
 /* .bottom-bar button {
   width: 100%;
   padding: 14px;
@@ -327,5 +359,14 @@ function addToCart() {
 
 .icon-buttons button:hover {
   transform: scale(1.2);
+}
+.header-icons {
+  display: flex;
+  gap: 8px;
+  font-size: 20px;
+  cursor: pointer;
+}
+.icon {
+  cursor: pointer;
 }
 </style>
