@@ -1,63 +1,66 @@
 <template>
-  <!-- 푸터 -->
-  <div class="footer-wrap">
-    <button class="footer-btn" @click="goToEdu">
-      <img src="/images/footer_edu.png" alt="교육" />
-    </button>
-    <button class="footer-btn" @click="goToSurvey">
-      <img src="/images/footer_survey.png" alt="설문" />
+  <div class="footer-wrap" v-if="showFooter">
+    <button class="footer-btn" @click="go('/education')">
+      <img :src="iconSrc('education')" alt="교육" />
     </button>
 
-    <div class="footer-logo-wrap" @click="goToHome">
+    <button class="footer-btn" @click="go('/survey')">
+      <img :src="iconSrc('survey')" alt="설문" />
+    </button>
+
+    <div class="footer-logo-wrap" @click="go('/mainView')">
       <img src="/images/logo.png" class="footer-logo" alt="로고" />
     </div>
 
-    <button class="footer-btn" @click="goToShop">
-      <img src="/images/footer_shop.png" alt="상점" />
+    <button class="footer-btn" @click="go('/shop')">
+      <img :src="iconSrc('shop')" alt="상점" />
     </button>
-    <button class="footer-btn" @click="goToMypage">
-      <img src="/images/footer_mypage.png" alt="마이페이지" />
+
+    <button class="footer-btn" @click="go('/mypage')">
+      <img :src="iconSrc('mypage')" alt="마이페이지" />
     </button>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePathToken } from '@/composables/usePathToken'
 
 const router = useRouter()
+const { firstToken, tokenDepth, isActive } = usePathToken()
 
-const goToEdu = () => {
-  router.push('/education')
+const footerActiveTabs = ['mainView', 'education', 'survey', 'shop', 'mypage']
+const showFooter = computed(() =>
+  tokenDepth.value === 1 && footerActiveTabs.includes(firstToken.value)
+)
+
+const iconSrc = (tab) => {
+  const base = `/images/footer/${tab}`
+  return isActive(tab)
+    ? `${base}-active.png`
+    : `${base}.png`
 }
-const goToSurvey = () => {
-  router.push('/survey')
-}
-const goToShop = () => {
-  router.push('/shop')
-}
-const goToMypage = () => {
-  router.push('/mypage')
-}
-const goToHome = () => {
-    router.push('/mainView')
+
+const go = (path) => {
+  router.push(path)
 }
 </script>
 
 <style lang="scss" scoped>
 .footer-wrap {
-  border: 1px solid blue;
-  background-color: rgb(202, 233, 239);
+  background-color: $color-thin-sky;
   display: flex;
   justify-content: space-between;
-  padding: 5px 10px;
-  z-index: 0;
-  
+  padding: 0 1rem;
+  height: 3.5rem;
+  position: relative;
 }
 
 .footer-logo-wrap {
-  border: 1px solid purple;
-  height: 60px;
+  height: 4rem;
   position: relative;
+  bottom: 0.6rem;
 }
 
 .footer-logo {
@@ -69,17 +72,15 @@ const goToHome = () => {
   background: none;
   border: none;
   padding: 0;
-  height: 35px;
+  height: 2.3rem;
   display: flex;
   align-items: center;
   transform: translateY(30%);
-  
-
 
   img {
+    width: 100%;
     height: 100%;
     display: block;
-    
   }
 
   &:hover {

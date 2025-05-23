@@ -41,16 +41,20 @@ const userEmail = ref('')
 const showError = ref(false)
 const router = useRouter()
 
+// 등록된 이메일 리스트
+const registeredEmails = ['test@example.com', 'hello@example.com', 'user123@example.com']
+
+// 이메일 제출 핸들러
 const handleEmailSubmit = () => {
-  // 예시: 이메일이 "test@example.com"일 경우 성공
-  if (userEmail.value === 'test@example.com') {
+  if (registeredEmails.includes(userEmail.value.trim())) {
     showError.value = false
-    router.push('/show-id') // 아이디 보여주는 페이지로 이동
+    router.push('/findUserId/findUserIdResult')
   } else {
-    showError.value = true
+    showError.value = true  
   }
 }
 </script>
+
 
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');

@@ -1,237 +1,247 @@
 <template>
-  <div class="marathon-page">
-    <!-- 헤더
-    <HeaderView /> -->
-
-    <!-- 본문 컨텐츠 -->
-    <div class="marathon-container">
-      <!-- 상단 프로필 -->
-      <div class="profile-box">
-        <div class="profile-info">
-          <div class="profile-img" />
-          <div class="profile-name">홍길동<br /><span class="level">Lv. 25</span></div>
-        </div>
-        <div class="point-info">
-          <p class="label">나의 포인트</p>
-          <p class="point">17,000p</p>
-        </div>
-      </div>
-
-      <!-- 마라톤 진행도 -->
-      <div class="challenge-progress">
-        <p class="day-status">마라톤챌린지 <strong>6일차</strong></p>
-        <p class="accumulated-point">현재 누적 포인트 <strong>600p + 5%</strong></p>
-        <div class="day-tracker">
-          <div v-for="n in 7" :key="n" class="day-circle" :class="{ active: n <= 6 }">Day {{ n }}</div>
-        </div>
-        <p class="reward-text">7일 완주 시 <strong>1000p + 10%</strong> 적립!</p>
-      </div>
-
-      <!-- 오늘의 챌린지 -->
-      <div class="daily-challenge">
-        <h2>오늘의 마라톤 챌린지</h2>
-        <p class="question">Q. 불법웹툰 사이트 방문만으로도 처벌 대상이 된다.</p>
-        <div class="answer-options">
-          <div class="circle-btn">⭕</div>
-          <div class="circle-btn wrong">❌</div>
+  <div class="main-container">
+    <!-- 오늘의 미션 카드 -->
+    <CardView :onClick="myClickHandler">
+      <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
+      <div class="progress-circle">
+        <svg viewBox="0 0 36 36" class="circular-chart">
+          <path class="circle-bg"
+                d="M18 2.0845
+                   a 15.9155 15.9155 0 0 1 0 31.831
+                   a 15.9155 15.9155 0 0 1 0 -31.831"/>
+          <path class="circle"
+                stroke-dasharray="71.4, 100"
+                d="M18 2.0845
+                   a 15.9155 15.9155 0 0 1 0 31.831
+                   a 15.9155 15.9155 0 0 1 0 -31.831"/>
+        </svg>
+        <div class="progress-text">
+          5<small class="fraction">/7</small>
         </div>
       </div>
+      <p class="card-subtext">6일차 미완료</p>
+      <p class="reward-info">7일 완주 시 <span class="highlight">1000P + 100P</span><span class="small">(10%)</span><br>보상받기까지 2일 남았어요!<br>조금만 더 화이팅✨</p>
+    </CardView>
 
-      <!-- 포인트샵 인기 -->
-      <div class="shop-section">
-        <h3>포인트샵 인기</h3>
-        <div class="shop-items">
-          <div class="item">
-            <img src="/images/coffee.png" alt="컴포즈 아메리카노" />
-            <p>컴포즈 아메리카노</p>
-            <p class="price">1,350p</p>
-          </div>
-          <div class="item">
-            <img src="/images/cu.png" alt="CU 상품권" />
-            <p>CU 모바일 상품권</p>
-            <p class="price">2,700p</p>
-          </div>
-          <div class="item more">
-            <img src="/images/more.png" alt="더 보기" />
-            <p>더 보기</p>
+    <!-- 퀴즈 카드 -->
+    <CardView>
+      <p class="card-title">마라톤 챌린지</p>
+      <p class="quiz-question">Q. 불법웹툰 사이트 방문만으로도 처벌 대상이 된다.</p>
+      <div class="quiz-buttons">
+        <button class="btn-ox blue">O</button>
+        <button class="btn-ox red">X</button>
+      </div>
+    </CardView>
+
+    <!-- 포인트샵 카드 -->
+    <CardView>
+      <p class="card-title">인기 아이템</p>
+      <div class="shop-items">
+        <div v-for="(item, i) in shopItems" :key="i" class="item">
+          <div v-if="i < 2" class="rank-badge" :class="{ first: i === 0, second: i === 1 }">{{ i + 1 }}위</div>
+          <img :src="item.img" :alt="item.alt" />
+          <div class="item-info">
+            <p class="item-name">{{ item.name }}</p>
+            <p class="item-price" v-if="item.price">{{ item.price }}P</p>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- 푸터
-    <FooterView /> -->
+    </CardView>
   </div>
 </template>
 
-<script>
-import HeaderView from '@/components/HeaderView.vue';
-import FooterView from '@/components/FooterView.vue';
+<script setup>
+import CardView from '@/components/CardView.vue'
 
-export default {
-  name: 'MarathonChallenge',
-  components: {
-    HeaderView,
-    FooterView,
-  },
-};
+function myClickHandler(event) {
+  alert('카드클릭!');
+}
+
+const shopItems = [
+  { img: '/images/coffee.png', name: '컴포즈 아메리카노', price: 1600, alt: '컴포즈 아메리카노 상품 이미지' },
+  { img: '/images/cu.png', name: 'CU 3,000P 쿠폰', price: 2700, alt: 'CU 3,000포인트 쿠폰 이미지' },
+  { img: '/images/more.png', name: '더 보기', alt: '포인트샵 더보기 버튼 이미지' }
+]
 </script>
 
-<style scoped>
-.marathon-page {
-  position: relative;
-  padding-bottom: 120px; /* FooterView 공간 확보 */
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.marathon-container {
-  padding: 16px;
-}
-
-/* 프로필 박스 */
-.profile-box {
+<style lang="scss" scoped>
+.main-container {
+  padding: 0rem 1rem;
   display: flex;
-  justify-content: space-between;
-  background-color: #d9f3ff;
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-}
-
-.profile-info {
-  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   align-items: center;
 }
 
-.profile-img {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #ddd;
-  margin-right: 12px;
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.profile-name {
+.progress-circle {
+  position: relative;
+  width: 10rem;
+  height: 10rem;
+  margin: 0 auto;
+}
+
+.circular-chart {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke: #3ba2ff;
+  stroke-width: 3.8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
   font-weight: bold;
 }
 
-.profile-name .level {
-  font-size: 14px;
-  color: #666;
+.fraction {
+  font-size: 1.2rem;
 }
 
-.point-info {
-  text-align: right;
-}
-
-.point-info .label {
-  font-size: 14px;
-  color: #555;
-}
-
-.point-info .point {
-  font-size: 20px;
+.card-subtext {
+  margin-top: 1rem;
   font-weight: bold;
-}
-
-/* 진행도 */
-.challenge-progress {
-  background-color: #e3f4ff;
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 20px;
   text-align: center;
 }
 
-.day-status,
-.accumulated-point,
-.reward-text {
-  margin: 4px 0;
-}
-
-.day-tracker {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-}
-
-.day-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background: #e0e0e0;
-  line-height: 40px;
+.reward-info {
+  font-size: 1rem;
+  margin-top: 0.5rem;
   text-align: center;
-  font-size: 12px;
 }
 
-.day-circle.active {
-  background: #0099ff;
-  color: #fff;
-}
-
-/* 오늘의 챌린지 */
-.daily-challenge {
-  background: #f2fcff;
-  border: 2px solid #a0e6ff;
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-}
-
-.daily-challenge h2 {
+.reward-info .highlight {
+  color: #3ba2ff;
   font-weight: bold;
-  font-size: 18px;
 }
 
-.daily-challenge .question {
-  margin: 10px 0;
+.reward-info .small {
+  font-size: 0.8rem;
+  color: #999;
 }
 
-.answer-options {
+.quiz-question {
+  font-size: 1rem;
+  margin: 1rem 0;
+  word-break: keep-all;
+  white-space: normal;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.quiz-buttons {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin-top: 12px;
+  gap: 2rem;
 }
 
-.circle-btn {
-  width: 80px;
-  height: 80px;
-  border-radius: 40px;
-  background-color: #d0eeff;
-  font-size: 36px;
-  text-align: center;
-  line-height: 80px;
+.btn-ox {
+  min-width: 4.5rem;
+  height: 3.5rem;
+  padding: 0 1.2rem;
+  border-radius: 1.8rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
 }
 
-.circle-btn.wrong {
-  background-color: #ffdede;
+.btn-ox:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
 }
 
-/* 포인트샵 */
-.shop-section {
-  margin-bottom: 20px;
+.btn-ox.blue {
+  background-color: #3ba2ff;
+}
+
+.btn-ox.red {
+  background-color: #ff5f5f;
 }
 
 .shop-items {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: space-around;
+  margin-top: 1rem;
+  gap: 1rem;
 }
 
 .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  flex: 1;
+  position: relative;
+}
+
+.rank-badge {
+  position: absolute;
+  top: -0.5rem;
+  left: -0.3rem;
+  background-color: #3ba2ff;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  z-index: 1;
 }
 
 .item img {
-  width: 60px;
-  height: 60px;
+  width: 5rem;
+  height: 5rem;
   object-fit: contain;
+  margin-bottom: 0.5rem;
 }
 
-.item .price {
-  font-weight: bold;
+.item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  text-align: center;
+  white-space: normal;
+  max-width: 6.5rem;
+  word-break: keep-all;
+}
+
+.item-price {
+  font-size: 0.75rem;
+  color: #555;
+  text-align: center;
+  white-space: nowrap;
 }
 </style>

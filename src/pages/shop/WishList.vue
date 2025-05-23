@@ -20,7 +20,7 @@
       <img :src="item.image" class="item-image" />
       <div class="item-info">
         <div class="item-name">{{ item.name }}</div>
-        <div class="item-price">{{ item.price.toLocaleString() }}원</div>
+        <div class="item-price">{{ item.price.toLocaleString() }}Point</div>
         <div class="buttons">
           <button class="unwish-btn" @click="remove(item.id)">❤️ 해제</button>
           <button class="cart-btn" @click="addToCart(item)">🛒 담기</button>

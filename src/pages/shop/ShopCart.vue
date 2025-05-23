@@ -3,7 +3,7 @@
     <!-- 상단 헤더 -->
     <header class="cart-header">
       <span class="back-icon" @click="goBack">←</span>
-      <h2 class="cart-title">장바구니</h2>
+      <h2 class="cart-title">🛒 장바구니</h2>
     </header>
 
     <!-- 비어있을 때 -->
@@ -21,14 +21,14 @@
       <img :src="item.image" class="item-image" />
       <div class="item-info">
         <div class="item-name">{{ item.name }}</div>
-        <div class="item-price">{{ item.price.toLocaleString() }}원</div>
+        <div class="item-price">{{ item.price.toLocaleString() }}Point</div>
         <button class="delete-btn" @click="remove(item.id)">🗑 삭제</button>
       </div>
     </div>
 
     <!-- 총액 및 구매버튼 -->
     <div class="total">
-      선택된 상품 총액: <strong>{{ totalPrice.toLocaleString() }}원</strong>
+      선택된 상품 총액: <strong>{{ totalPrice.toLocaleString() }}Point</strong>
     </div>
 
     <button class="buy-button" @click="buy">선택한 상품 구매하기</button>
