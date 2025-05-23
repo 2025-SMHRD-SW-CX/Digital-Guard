@@ -1,5 +1,5 @@
 <template>
-  <div class="finish-wrapper">
+  <div class="finish-wrapper" v-if="orderInfo">
     <div class="checkmark">✅</div>
     <h1 class="title">주문이 완료되었습니다!</h1>
     <p class="desc">
@@ -16,8 +16,8 @@
     <div class="order-details">
       <h2>배송정보</h2>
       <div class="info-box">
-        <p><strong>받는 분:</strong> {{ name }} / {{ phone }}</p>
-        <p><strong>주소:</strong> {{ address }}</p>
+        <p><strong>받는 분:</strong> {{ orderInfo.name }} / {{ orderInfo.phone }}</p>
+        <p><strong>주소:</strong> {{ orderInfo.address }}</p>
       </div>
 
       <h2>결제한 상품</h2>
@@ -31,8 +31,8 @@
       </div>
 
       <div class="summary">
-        <p><strong>결제 금액:</strong> <span class="highlight">- {{ totalPrice.toLocaleString() }} Point</span></p>
-        <p><strong>남은 포인트:</strong> {{ remainingPoint.toLocaleString() }} Point</p>
+        <p><strong>결제 금액:</strong> <span class="highlight">- {{ orderInfo.totalPrice.toLocaleString() }} Point</span></p>
+        <p><strong>남은 포인트:</strong> {{ orderInfo.remainingPoint.toLocaleString() }} Point</p>
       </div>
     </div>
   </div>
@@ -41,11 +41,12 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { globalStore } from '@/services/globalStore.js'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const router = useRouter()
 
 function goHome() {
+  // localStorage.removeItem('orderInfo')
   router.push('/mainView')
 }
 function goShop() {
@@ -53,26 +54,42 @@ function goShop() {
 }
 
 // ✅ localStorage에서 orderInfo 복원 (필요할 경우)
+// onMounted(() => {
+//   if (!globalStore.orderInfo.name) {
+//     const saved = JSON.parse(localStorage.getItem('orderInfo'))
+//     if (saved) {
+//       globalStore.orderInfo = {
+//         ...globalStore.orderInfo,
+//         ...saved
+//       }
+//     }
+//   }
+// })
+ console.log(JSON.parse(localStorage.getItem('orderInfo')))
 onMounted(() => {
-  if (!globalStore.orderInfo.name) {
-    const saved = JSON.parse(localStorage.getItem('orderInfo'))
-    if (saved) {
-      globalStore.orderInfo = {
-        ...globalStore.orderInfo,
-        ...saved
-      }
-    }
+  const saved = JSON.parse(localStorage.getItem('orderInfo'))
+  console.log(saved)
+  if (saved) {
+    globalStore.orderInfo = saved
+    console.log(globalStore.orderInfo)
+    orderInfo.value = saved;
+    console.log('야호', orderInfo.value)
   }
+
 })
 
-const orderInfo = globalStore.orderInfo
+// let orderInfo = globalStore.orderInfo
 
-const name = computed(() => orderInfo.name || '')
-const phone = computed(() => orderInfo.phone || '')
-const address = computed(() => orderInfo.address || '')
-const orderedItems = computed(() => orderInfo.orderedItems || [])
-const totalPrice = computed(() => orderInfo.totalPrice || 0)
-const remainingPoint = computed(() => orderInfo.remainingPoint || 0)
+let orderInfo = ref(null);
+
+// const name = computed(() => orderInfo.name || '')
+// const phone = computed(() => orderInfo.phone || '')
+// const address = computed(() => orderInfo.address || '')
+// const orderedItems = computed(() => orderInfo.orderedItems || [])
+// const totalPrice = computed(() => orderInfo.totalPrice || 0)
+// const remainingPoint = computed(() => orderInfo.remainingPoint || 0)
+
+console.log(name)
 </script>
 
 <style scoped>

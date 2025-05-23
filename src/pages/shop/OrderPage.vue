@@ -135,8 +135,27 @@ function submitOrder() {
         name: name.value,
         phone: phone.value,
         address: address.value,
-        request: selectedRequest.value
+        request: selectedRequest.value,
+        orderedItems: orderedItems, // ✅ 주문 상품 저장
+        totalPrice: totalPrice.value, // ✅ 결제 포인트 저장
+        remainingPoint: remainingPoint.value // ✅ 남은 포인트 저장
     }))
+
+    // ✅ 주문 내역 리스트에 추가 (마이페이지용)-----------------------------------
+    const prevOrders = JSON.parse(localStorage.getItem('orderList')) || []
+    prevOrders.push({
+        id: Date.now(),
+        date: new Date().toISOString(),
+        name: name.value,
+        phone: phone.value,
+        address: address.value,
+        request: selectedRequest.value,
+        orderedItems,
+        totalPrice: totalPrice.value,
+        remainingPoint: remainingPoint.value
+    })
+    localStorage.setItem('orderList', JSON.stringify(prevOrders))
+    // ---------------------------------------------------------------------
 
     const productList = orderedItems.map(i => `• ${i.brand} - ${i.name} (${i.price.toLocaleString()}P)`).join('\n')
 
