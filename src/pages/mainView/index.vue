@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <!-- 오늘의 미션 카드 -->
-    <CardView>
+    <CardView :onClick="myClickHandler">
       <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
@@ -24,7 +24,7 @@
     </CardView>
 
     <!-- 퀴즈 카드 -->
-    <CardView class="card">
+    <CardView>
       <p class="card-title">마라톤 챌린지</p>
       <p class="quiz-question">Q. 불법웹툰 사이트 방문만으로도 처벌 대상이 된다.</p>
       <div class="quiz-buttons">
@@ -34,7 +34,7 @@
     </CardView>
 
     <!-- 포인트샵 카드 -->
-    <CardView class="card">
+    <CardView>
       <p class="card-title">인기 아이템</p>
       <div class="shop-items">
         <div v-for="(item, i) in shopItems" :key="i" class="item">
@@ -53,6 +53,10 @@
 <script setup>
 import CardView from '@/components/CardView.vue'
 
+function myClickHandler(event) {
+  alert('카드클릭!');
+}
+
 const shopItems = [
   { img: '/images/coffee.png', name: '컴포즈 아메리카노', price: 1600, alt: '컴포즈 아메리카노 상품 이미지' },
   { img: '/images/cu.png', name: 'CU 3,000P 쿠폰', price: 2700, alt: 'CU 3,000포인트 쿠폰 이미지' },
@@ -62,11 +66,10 @@ const shopItems = [
 
 <style lang="scss" scoped>
 .main-container {
-  background-color: #f5f5f5;
-  padding: 2rem 1.5rem;
+  padding: 0rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2vh;
+  gap: 2rem;
   align-items: center;
 }
 
