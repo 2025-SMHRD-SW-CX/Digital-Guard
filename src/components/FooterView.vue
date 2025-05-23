@@ -55,6 +55,7 @@ const go = (path) => {
   padding: 0 1rem;
   height: 3.5rem;
   position: relative;
+  box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.199);
 }
 
 .footer-logo-wrap {
