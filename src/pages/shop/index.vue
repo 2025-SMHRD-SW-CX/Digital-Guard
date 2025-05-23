@@ -99,7 +99,8 @@ const items = ref([
         name: '기프티콘 2만원권',
         price: 18000,
         discount: 10,
-        liked: true
+        liked: true,
+        
     },
     {
         id: 2,

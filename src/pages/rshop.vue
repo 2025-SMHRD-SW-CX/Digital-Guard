@@ -67,6 +67,7 @@ export default {
   methods: {
     purchase() {
       alert("구매가 완료되었습니다!");
+      router.push('/OrderPage')
     },
   },
 };
