@@ -1,13 +1,14 @@
 <template>
-  <div class="page-wrapper">
-    <header class="top-bar">
+  <div>
+  <!-- <div class="page-wrapper"> -->
+    <!-- <header class="top-bar">
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
       <div class="header-icons">
         <span class="icon" @click="goToCart">🛍️</span>
         <span class="icon" @click="goToWishlist">❤️</span>
         </div>
-    </header>
+    </header> -->
 
     <main class="content">
       <div class="image-wrapper">
@@ -142,6 +143,7 @@ function purchase() {
 
 
 <style scoped>
+/*
 .page-wrapper {
   width: 100%;
   max-width: 402px;
@@ -153,6 +155,7 @@ function purchase() {
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
 }
+*/
 
 .top-bar {
   height: 50px;

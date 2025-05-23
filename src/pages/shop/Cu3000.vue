@@ -1,5 +1,6 @@
 <template>
-  <div class="page-wrapper">
+  <div>
+  <!-- <div class="page-wrapper">
     <header class="top-bar">
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
@@ -7,13 +8,13 @@
         <span class="icon" @click="goToWishlist">❤️</span>
         <span class="icon" @click="goToCart">🛍️</span>
       </div>
-    </header>
+    </header> -->
 
     <main class="content">
       <div class="image-wrapper">
         <img src="/images/cu3000.webp" alt="올리브영 기프트카드" class="card-image" />
       </div>
-      <section class="product-info">s
+      <section class="product-info">
         <img src=/images/olive-logo.png alt="OLIVE YOUNG" class="brand-logo" />
         <h2 class="title">기프트 카드 2만원권</h2>
         <div class="rating">
@@ -142,7 +143,7 @@ function purchase() {
 
 
 <style scoped>
-.page-wrapper {
+/* .page-wrapper {
   width: 100%;
   max-width: 402px;
   height: 874px;
@@ -152,7 +153,7 @@ function purchase() {
   background: #fff;
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
-}
+} */
 
 .top-bar {
   height: 50px;

@@ -117,7 +117,7 @@ const goToFindPw = () => {
 .container {
   /* width: 100vw; */
   margin: 0 auto;
-  padding: 24px;
+  padding: 0 24px;
   font-family: 'Noto Sans KR', sans-serif;
 }
 

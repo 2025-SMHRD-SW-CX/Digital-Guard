@@ -88,7 +88,5 @@ export const useSurveyStore = defineStore('survey', {
     state: () => ({
         data: [ ...DATA ]
     }),
-    actions: {
-        
-    }
+
 })
