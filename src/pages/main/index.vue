@@ -1,35 +1,34 @@
 <template>
   <div class="main-container">
     <!-- 오늘의 미션 카드 -->
-    <CardView :onClick="myClickHandler">
+    <CardView @click="myClickHandler">
       <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
           <path class="circle-bg"
-                d="M18 2.0845
-                   a 15.9155 15.9155 0 0 1 0 31.831
-                   a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
           <path class="circle"
-                stroke-dasharray="71.4, 100"
-                d="M18 2.0845
-                   a 15.9155 15.9155 0 0 1 0 31.831
-                   a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            stroke-dasharray="71.4, 100"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
         </svg>
         <div class="progress-text">
           5<small class="fraction">/7</small>
         </div>
       </div>
       <p class="card-subtext">6일차 미완료</p>
-      <p class="reward-info">7일 완주 시 <span class="highlight">1000P + 100P</span><span class="small">(10%)</span><br>보상받기까지 2일 남았어요!<br>조금만 더 화이팅✨</p>
+      <p class="reward-info">
+        7일 완주 시 <span class="highlight">30P</span><span class="reward-info">추가 지급!</span><br>
+        총<span class="highlight"> 100p</span> 적립까지 2일 남았어요!<br>조금만 더 화이팅✨
+      </p>
     </CardView>
 
     <!-- 퀴즈 카드 -->
     <CardView>
       <p class="card-title">마라톤 챌린지</p>
-      <p class="quiz-question">Q. 불법웹툰 사이트 방문만으로도 처벌 대상이 된다.</p>
+      <p class="quiz-question">Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?</p>
       <div class="quiz-buttons">
-        <button class="btn-ox blue">O</button>
-        <button class="btn-ox red">X</button>
+        <button class="btn-ox blue" :disabled="answered" @click="checkAnswer(true)">O</button>
+        <button class="btn-ox red" :disabled="answered" @click="checkAnswer(false)">X</button>
       </div>
     </CardView>
 
@@ -37,12 +36,20 @@
     <CardView>
       <p class="card-title">인기 아이템</p>
       <div class="shop-items">
-        <div v-for="(item, i) in shopItems" :key="i" class="item">
-          <div v-if="i < 2" class="rank-badge" :class="{ first: i === 0, second: i === 1 }">{{ i + 1 }}위</div>
-          <img :src="item.img" :alt="item.alt" />
-          <div class="item-info">
-            <p class="item-name">{{ item.name }}</p>
-            <p class="item-price" v-if="item.price">{{ item.price }}P</p>
+        <div v-for="(item, i) in shopItems" :key="i">
+          <div v-if="item.name === '더 보기'" class="item" @click="goToShop" style="cursor: pointer">
+            <img :src="item.img" :alt="item.alt" />
+            <div class="item-info">
+              <p class="item-name">{{ item.name }}</p>
+            </div>
+          </div>
+          <div v-else class="item">
+            <div v-if="i < 2" class="rank-badge" :class="{ first: i === 0, second: i === 1 }">{{ i + 1 }}위</div>
+            <img :src="item.img" :alt="item.alt" />
+            <div class="item-info">
+              <p class="item-name">{{ item.name }}</p>
+              <p class="item-price" v-if="item.price">{{ item.price }}P</p>
+            </div>
           </div>
         </div>
       </div>
@@ -51,10 +58,57 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
+import confetti from 'canvas-confetti'
 import CardView from '@/components/CardView.vue'
 
-function myClickHandler(event) {
-  alert('카드클릭!');
+const router = useRouter()
+
+const answered = ref(false)
+const point = ref(200) // 초기 포인트
+
+function myClickHandler() {
+  alert('카드클릭!')
+}
+
+function goToShop() {
+  router.push('/shop')
+}
+
+function checkAnswer(userAnswer) {
+  if (answered.value) return
+  answered.value = true
+
+  const isCorrect = userAnswer === true
+  const reasonText = isCorrect
+    ? '✅ 불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
+    : '❌ 불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.'
+
+  const earned = isCorrect ? 10 : 0
+  if (isCorrect) {
+    point.value += earned
+    confetti({ spread: 10, origin: { y: 0.6 } })
+  }
+
+  Swal.fire({
+    icon: isCorrect ? 'success' : 'error',
+    title: isCorrect ? '정답입니다! 🎉' : '오답입니다 😢',
+    html: `
+      <p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
+      <p style="font-weight: bold; font-size: 1rem;">현재 누적 포인트: <span style="color: #3ba2ff">${point.value}P</span></p>
+    `,
+    showCancelButton: true,
+    confirmButtonText: '포인트샵으로 이동',
+    cancelButtonText: '닫기',
+    confirmButtonColor: '#3ba2ff',
+    cancelButtonColor: '#aaa',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      router.push('/shop')
+    }
+  })
 }
 
 const shopItems = [
@@ -69,7 +123,7 @@ const shopItems = [
   padding: 0rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
@@ -106,6 +160,16 @@ const shopItems = [
   stroke-width: 3.8;
   stroke-linecap: round;
   transition: stroke-dasharray 0.3s;
+  animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0, 100;
+  }
+  100% {
+    stroke-dasharray: 71.4, 100;
+  }
 }
 
 .progress-text {
@@ -171,6 +235,11 @@ const shopItems = [
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease-in-out;
+}
+
+.btn-ox:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-ox:hover {
