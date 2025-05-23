@@ -20,22 +20,29 @@
         <p><strong>주소:</strong> {{ orderInfo.address }}</p>
       </div>
 
-      <h2>결제한 상품</h2>
-      <div v-for="item in orderedItems" :key="item.id" class="order-item">
-        <img :src="item.image" alt="" class="order-img" />
-        <div class="order-info">
-          <p class="order-brand">{{ item.brand }}</p>
-          <p class="order-name">{{ item.name }}</p>
-          <p class="order-price">{{ item.price.toLocaleString() }} Point</p>
+
+      <div class="history-section">
+        <h2>이전 주문 내역</h2>
+        <div v-for="order in orderList" :key="order.id" class="order-history-item">
+          <p><strong>주문일 : </strong> {{ new Date(order.date).toLocaleString() }}</p>
+          <p><strong>받는 분 : </strong> {{ order.name }} / {{ order.phone }}</p>
+          <p><strong>주소 : </strong> {{ order.address }}</p>
+          <p><strong>결제한 상품</strong></p>
+          <ul>
+            <li v-for="item in order.orderedItems" :key="item.id">
+              {{ item.brand }} - {{ item.name }} ({{ item.price.toLocaleString() }}P)
+            </li>
+          </ul>
+          <p><strong>결제 금액:</strong> {{ order.totalPrice.toLocaleString() }}P</p>
+          <p><strong>남은 포인트:</strong> {{ order.remainingPoint.toLocaleString() }}P</p>
+          <hr />
         </div>
       </div>
+      <button class="clear-button" @click="clearOrderList">🗑 주문 목록 초기화</button>
 
-      <div class="summary">
-        <p><strong>결제 금액:</strong> <span class="highlight">- {{ orderInfo.totalPrice.toLocaleString() }} Point</span></p>
-        <p><strong>남은 포인트:</strong> {{ orderInfo.remainingPoint.toLocaleString() }} Point</p>
-      </div>
     </div>
   </div>
+
 </template>
 
 <script setup>
@@ -47,11 +54,20 @@ const router = useRouter()
 
 function goHome() {
   // localStorage.removeItem('orderInfo')
-  router.push('/mainView')
+  router.push('/main')
 }
 function goShop() {
   router.push('/shop')
 }
+function clearOrderList() {
+  const confirmClear = confirm("정말로 모든 주문 내역을 삭제하시겠습니까?")
+  if (!confirmClear) return
+
+  localStorage.removeItem('orderList')
+  orderList.value = [] // 화면에서도 즉시 반영
+  alert("주문 내역이 삭제되었습니다.")
+}
+
 
 // ✅ localStorage에서 orderInfo 복원 (필요할 경우)
 // onMounted(() => {
@@ -65,7 +81,7 @@ function goShop() {
 //     }
 //   }
 // })
- console.log(JSON.parse(localStorage.getItem('orderInfo')))
+console.log(JSON.parse(localStorage.getItem('orderInfo')))
 onMounted(() => {
   const saved = JSON.parse(localStorage.getItem('orderInfo'))
   console.log(saved)
@@ -76,6 +92,12 @@ onMounted(() => {
     console.log('야호', orderInfo.value)
   }
 
+})
+const orderList = ref([])
+
+onMounted(() => {
+  const savedOrders = JSON.parse(localStorage.getItem('orderList')) || []
+  orderList.value = savedOrders.reverse() // 최근 주문이 위로 오게
 })
 
 // let orderInfo = globalStore.orderInfo
@@ -198,5 +220,34 @@ console.log(name)
 .summary .highlight {
   color: red;
   font-weight: bold;
+}
+
+.history-section {
+  margin-top: 40px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.order-history-item {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.clear-button {
+  background: #dc2626;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.clear-button:hover {
+  background: #b91c1c;
 }
 </style>

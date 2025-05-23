@@ -4,16 +4,16 @@
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
       <div class="header-icons">
-        <span class="icon" @click="goToCart">🛍️</span>
         <span class="icon" @click="goToWishlist">❤️</span>
-        </div>
+        <span class="icon" @click="goToCart">🛍️</span>
+      </div>
     </header>
 
     <main class="content">
       <div class="image-wrapper">
-        <img src="/images/올리브영.png" alt="올리브영 기프트카드" class="card-image" />
+        <img src="/images/cu3000.webp" alt="올리브영 기프트카드" class="card-image" />
       </div>
-      <section class="product-info">
+      <section class="product-info">s
         <img src=/images/olive-logo.png alt="OLIVE YOUNG" class="brand-logo" />
         <h2 class="title">기프트 카드 2만원권</h2>
         <div class="rating">
@@ -85,11 +85,11 @@ const liked = ref(false)
 const likeCount = ref(1423)
 
 const product = {
-  id: 1,
-  brand: '올리브영',
-  name: '기프트카드 2만원권',
-  price: 18000,
-  image: '/images/올리브영.png'
+  id: 31,
+  brand: 'CU',
+  name: '모바일 상품권 3천원권',
+  price: 2700,
+  image: '/images/cu3000.webp'
 }
 
 onMounted(() => {
