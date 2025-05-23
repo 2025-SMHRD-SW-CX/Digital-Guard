@@ -21,7 +21,7 @@
 
             <div id="point" class="key-icon-wrap">
                 <div class="icon">
-                    <img src="/images/point_icon.png">
+                    <img src="/images/coin_icon.png">
                 </div>
                 <div class="value">
                     <p>{{ user.totalReward }}</p>
@@ -103,10 +103,6 @@ watch(firstToken, (token) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    // #user {
-    //     // border: 1px solid blue;
-    // }
 
     #point {
         gap: 7%;
