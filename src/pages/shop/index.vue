@@ -61,7 +61,6 @@ const searchQuery = ref('')
 const showSortMenu = ref(false)
 const sortType = ref('default')
 
-
 function setSort(type) {
     sortType.value = type
     showSortMenu.value = false

@@ -39,7 +39,7 @@ const goToMypage = () => {
   router.push('/mypage')
 }
 const goToHome = () => {
-    router.push('/home')
+    router.push('/mainView')
 }
 </script>
 

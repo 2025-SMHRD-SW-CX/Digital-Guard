@@ -13,12 +13,10 @@
           :key="route.fullPath"
           class="page-container"
         >
-          <!-- 공통레이아웃 정의 -->
-          <HeaderView></HeaderView>
-
           <!-- 애니메이션 래퍼 -->
           <div class="page-clipper">
             <!-- 실제 스크롤되는 영역 -->
+            <HeaderView></HeaderView>
             <router-view />
           </div>
 
@@ -74,7 +72,6 @@ onMounted(async () => {
 /* -------------------------------------------------------------------------- */
 .page-container {
   position: absolute;
-  border: 1px solid red;
   display: flex;
   flex-direction: column;
   height: 100vh;
