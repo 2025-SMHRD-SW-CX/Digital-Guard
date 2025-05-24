@@ -6,14 +6,18 @@
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
           <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          <path class="circle" stroke-dasharray="71.4, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path
+            :stroke-dasharray="`${progressPercent}, 100`"
+            class="circle"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
         </svg>
-        <div class="progress-text">5<small class="fraction">/7</small></div>
+        <div class="progress-text">{{ missionProgress }}<small class="fraction">/7</small></div>
       </div>
-      <p class="card-subtext">6일차 미완료</p>
+      <p class="card-subtext">{{ currentDay }}일차 {{ missionProgress < 7 ? '미완료' : '완료' }}</p>
       <p class="reward-info">
-        7일 완주 시 <span class="highlight">30P</span><span class="reward-info">추가 지급!</span><br>
-        총<span class="highlight"> 100p</span> 적립까지 2일 남았어요!<br>조금만 더 화이팅✨
+        7일 연속 참여 시 <span class="highlight">30P</span><span class="reward-info">추가 지급!</span><br>
+        총<span class="highlight"> 100P</span> 적립까지 {{ remainingDays }}일 남았어요!<br>조금만 더 화이팅✨
       </p>
     </CardView>
 
@@ -40,6 +44,9 @@
         </div>
       </div>
       <div class="wishlist-scroll">
+        <div v-if="shopStore.wish.length === 0" class="empty-text">
+          찜한 아이템이 없습니다.<br>포인트샵에서 원하는 아이템을 찾아보세요!
+        </div>
         <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card">
           <img :src="item.image" :alt="item.name" />
           <div class="wishlist-info">
@@ -53,26 +60,66 @@
             </template>
           </div>
         </div>
-        <div v-if="shopStore.wish.length === 0" class="empty-text">찜한 아이템이 없습니다.</div>
       </div>
     </CardView>
+
+    <!-- 정답 모달 -->
+    <ModalView
+      v-model="showCorrectModal"
+      title="정답입니다! 🎉"
+      type="confirm"
+      confirmText="포인트샵으로 이동"
+      cancelText="닫기"
+      @confirm="goToShop"
+    >
+      <template #default>
+        <p class="reason">{{ reasonText }}</p>
+        <div class="point-gain">
+          <img src="/images/coin_icon.png" alt="코인 아이콘" />
+          <span>+{{ CORRECT_REWARD }}</span>
+        </div>
+      </template>
+    </ModalView>
+
+    <!-- 오답 모달 -->
+    <ModalView
+      v-model="showWrongModal"
+      title="오답입니다 😥"
+      type="alert"
+      confirmText="확인"
+    >
+      <template #default>
+        <p class="reason">{{ reasonText }}</p>
+        <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
+      </template>
+    </ModalView>
   </div>
 </template>
-
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import Swal from 'sweetalert2';
 import confetti from 'canvas-confetti';
 import CardView from '@/components/CardView.vue';
+import ModalView from '@/components/ModalView.vue';
 import { useShopStore } from '@/stores/shop';
 
 const router = useRouter();
 const shopStore = useShopStore();
 
-const correctlyAnswered = ref(false);
+const missionProgress = ref(5); // 예: 현재까지 완료한 날짜 수
+const totalDays = 7;
+const currentDay = computed(() => missionProgress.value + 1); // 오늘 도전 중인 날짜
+const progressPercent = computed(() => ((missionProgress.value / totalDays) * 100).toFixed(1));
+const remainingDays = computed(() => totalDays - missionProgress.value);
+
+const CORRECT_REWARD = 10;
 const point = ref(200);
+
+const correctlyAnswered = ref(false);
+const reasonText = ref('');
+const showCorrectModal = ref(false);
+const showWrongModal = ref(false);
 
 const hasInsufficientItems = computed(() =>
   shopStore.wish.some(item => item.price > point.value)
@@ -86,49 +133,35 @@ function goToSurvey() {
   router.push('/survey');
 }
 
+function goToShop() {
+  showCorrectModal.value = false;
+  router.push('/shop');
+}
+
 function checkAnswer(userAnswer) {
   const isCorrect = userAnswer === true;
-  const reasonText = isCorrect
+  reasonText.value = isCorrect
     ? '불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
     : '불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.';
 
-  const earned = isCorrect ? 10 : 0;
-
   if (isCorrect) {
     correctlyAnswered.value = true;
-    point.value += earned;
+    point.value += CORRECT_REWARD;
     confetti({ spread: 10, origin: { y: 0.6 } });
+    showCorrectModal.value = true;
+  } else {
+    showWrongModal.value = true;
   }
-
-  Swal.fire({
-    iconHtml: isCorrect
-      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" fill="#3ba2ff"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" fill="#ff5f5f"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 1 0 5.7 7.1L10.6 12l-4.9 4.9a1 1 0 1 0 1.4 1.4L12 13.4l4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>`,
-    customClass: {
-      icon: 'no-default-icon',
-    },
-    title: isCorrect ? '정답입니다! 🎉' : '오답입니다 😢',
-    html: isCorrect
-      ? `<p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
-         <p style="font-weight: bold; font-size: 1rem;">
-           현재 누적 포인트: <span style="color: #3ba2ff">${point.value}P</span>
-         </p>`
-      : `<p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
-         <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>`,
-    showCancelButton: isCorrect,
-    confirmButtonText: isCorrect ? '포인트샵으로 이동' : '확인',
-    cancelButtonText: isCorrect ? '닫기' : null,
-    confirmButtonColor: '#3ba2ff',
-    cancelButtonColor: '#aaa',
-  }).then((result) => {
-    if (isCorrect && result.isConfirmed) {
-      router.push('/shop');
-    }
-  });
 }
 </script>
 
 <style scoped lang="scss">
+.wishlist-card {
+  transition: transform 0.2s ease;
+}
+.wishlist-card:hover {
+  transform: scale(1.03);
+}
 .wishlist-header {
   display: flex;
   justify-content: space-between;
@@ -261,12 +294,12 @@ function checkAnswer(userAnswer) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: bold;
 }
 
 .fraction {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .card-subtext {
@@ -444,4 +477,61 @@ function checkAnswer(userAnswer) {
   transform: translateX(2px);
 }
 
+.point-info {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+
+  .highlight {
+    color: #3ba2ff;
+  }
+}
+
+.point-gain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.3rem;
+  gap: 0.4rem;
+
+  img {
+    width: 1.2rem;
+    height: 1.2rem;
+    object-fit: contain;
+  }
+
+  span {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #3ba2ff;
+  }
+}
+
+.reason {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.point-gain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.3rem;
+  gap: 0.4rem;
+
+  img {
+    width: 1.2rem;
+    height: 1.2rem;
+    object-fit: contain;
+  }
+
+  span {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #3ba2ff;
+  }
+}
 </style>
