@@ -11,7 +11,7 @@
 
       <transition name="page-fade-float" mode="out-in">
         <!-- 애니메이션 래퍼 -->
-        <div class="page-clipper" :key="route.fullPath">
+        <div class="page-clipper" :key="route.fullPath" ref="scrollContainer">
           <!-- 실제 스크롤되는 영역 -->
           <HeaderView></HeaderView>
           <div class="content"><router-view /></div>
@@ -19,6 +19,7 @@
       </transition>
 
       <FooterView></FooterView>
+      <TopButton :scroll-target="scrollContainer" />
       <!-- 여기까지 공통레이아웃 -->
     </div>
   </div>
@@ -30,35 +31,34 @@
 
 import HeaderView from '@/components/HeaderView.vue';
 import FooterView from '@/components/FooterView.vue'
-
-
-
-
-
-
-
-
-// --------------------------------------
-
-
-
-
-
-
-
-
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import TopButton from '@/components/TopButton.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const scrollContainer = ref(null)
 const isLoading = ref(true)
 const router = useRouter()
 const route = useRoute()
 
 onMounted(async () => {
+  setAppVh()
+  window.addEventListener('resize', setAppVh)
+
   await router.isReady()
   setTimeout(() => { isLoading.value = false }, 3000)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', setAppVh)
+})
+
+function setAppVh() {
+  const vh = window.innerHeight * 0.01
+  document.documentElement.style.setProperty('--app-vh', `${vh * 100}px`)
+}
+
 
 // -------------------------------------------------------
 import { useUserStore } from '@/stores/user'
@@ -74,30 +74,34 @@ if (userStore.totalReward === DEFAULT_POINT) {
 
 </script>
 
+
 <style lang="scss" scoped>
 /* -------------------------------------------------------------------------- */
 /* 애니메이션용 래퍼 + 내부 스크롤 영역                                         */
 /* -------------------------------------------------------------------------- */
 .page-container {
-  position: absolute;
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: var(--app-vh, 100vh); // ← 이 부분만 수정!
   inset: 0;
   overflow: auto;
-  /* 래퍼는 클리핑만 담당 */
 }
 
 .page-clipper {
   flex-grow: 1;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 
   .content {
-    background-color: #e8ecf3;
+    flex-grow: 1;
+    background-color: $color-content-background;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    align-items: center;
   }
 }
 
@@ -138,4 +142,10 @@ if (userStore.totalReward === DEFAULT_POINT) {
 .page-fade-float-leave-to {
   opacity: 0;
 }
+</style>
+
+
+
+<style lang="scss">
+// 이 스타일태그 지우기 x
 </style>

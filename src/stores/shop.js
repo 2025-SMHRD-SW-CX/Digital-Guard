@@ -8,11 +8,12 @@ export const ITEMS = [
         brand: 'CU',
         name: '기프티콘 3천원권',
         price: 2700,
-        // discount: 10,
         originalPrice: 3000, //변환
         route: 'cu3000',
         liked: false,
-        // hasDesc: true
+        // 아래는 ShopItemViewer.vue를 사용하기 위해 각 상품에 추가되는 속성들임
+        brandImage: '/images/cu-logo.PNG',
+        isCoupon: true
     },
     {
         id: 32,
@@ -20,10 +21,11 @@ export const ITEMS = [
         brand: '컴포즈커피',
         name: '아메리카노',
         price: 1600,
-        // discount: 10,
         originalPrice: 1800,
         route: 'compose',
-        liked: false
+        liked: false,
+        brandImage: '/images/compose-logo.png',
+        isCoupon: true
     },
     {
         id: 1,
@@ -31,10 +33,11 @@ export const ITEMS = [
         brand: '올리브영',
         name: '기프티콘 2만원권',
         price: 18000,
-        // discount: 10,
         originalPrice: 20000,
         route: 'Olive',
         liked: false,
+        brandImage: '/images/olive-logo.png',
+        isCoupon: true
 
     },
     {
@@ -43,10 +46,10 @@ export const ITEMS = [
         brand: '데데리트',
         name: '고양이인형 키링',
         price: 5500,
-        // discount: 10,
         originalPrice: 6500,
         route: 'CatKey',
-        liked: false
+        liked: false,
+        brandImage: '/images/데데리트-logo.PNG'
     },
     {
         id: 2,
@@ -54,7 +57,6 @@ export const ITEMS = [
         brand: '메가커피',
         name: '기프티콘 5천원권',
         price: 4500,
-        // discount: 10,
         originalPrice: 5000,
         liked: false
     },
@@ -64,7 +66,6 @@ export const ITEMS = [
         brand: '컴포즈커피',
         name: '기프티콘 5천원권',
         price: 4500,
-        // discount: 10,
         originalPrice: 5000,
         liked: false
     },
@@ -74,7 +75,6 @@ export const ITEMS = [
         brand: '맘스터치',
         name: '싸이버거 세트',
         price: 6500,
-        // discount: 10,
         originalPrice: 7300,
         liked: false
     },
@@ -84,7 +84,6 @@ export const ITEMS = [
         brand: '배달의민족',
         name: '기프티콘 2만원권',
         price: 18000,
-        // discount: 10,
         originalPrice: 20000,
         liked: false
     },
@@ -94,7 +93,6 @@ export const ITEMS = [
         brand: '베스킨라빈스',
         name: '파인트아이스크림',
         price: 8800,
-        // discount: 10,
         originalPrice: 9800,
         liked: false
     },
@@ -104,7 +102,6 @@ export const ITEMS = [
         brand: '설빙',
         name: '인절미설빙',
         price: 8800,
-        // discount: 10,
         originalPrice: 9900,
         liked: false
     },
@@ -114,7 +111,6 @@ export const ITEMS = [
         brand: '신박한패션템',
         name: '미니카세트키링',
         price: 7100,
-        // discount: 10,
         originalPrice: 7900,
         liked: false
     },
@@ -124,7 +120,6 @@ export const ITEMS = [
         brand: '스타벅스',
         name: '아메리카노2잔+생크림카스텔라',
         price: 12500,
-        // discount: 10,
         originalPrice: 13900,
         liked: false
     },
@@ -134,7 +129,6 @@ export const ITEMS = [
         brand: '메가커피',
         name: '아이스아메리카노',
         price: 1800,
-        // discount: 10,
         originalPrice: 2000,
         liked: false
     },
@@ -144,7 +138,6 @@ export const ITEMS = [
         brand: 'GS25',
         name: '초코에몽',
         price: 1400,
-        // discount: 10,
         originalPrice: 1600,
         liked: false
     },
@@ -154,7 +147,6 @@ export const ITEMS = [
         brand: 'CU',
         name: '빙그레)바나나우유',
         price: 1600,
-        // discount: 10,
         originalPrice: 1800,
         liked: false
     },
@@ -164,7 +156,6 @@ export const ITEMS = [
         brand: '롯데리아',
         name: '소프트콘',
         price: 1200,
-        // discount: 10,
         originalPrice: 1300,
         liked: false
     },
@@ -174,7 +165,6 @@ export const ITEMS = [
         brand: '투썸플레이스',
         name: '파베초콜릿케이크(쁘띠)',
         price: 7900,
-        // discount: 10,
         originalPrice: 8800,
         liked: false
     },
@@ -184,7 +174,6 @@ export const ITEMS = [
         brand: 'GS25',
         name: '춘식이초코우유',
         price: 1650,
-        // discount: 10,
         originalPrice: 1850,
         liked: false
     },
@@ -194,7 +183,6 @@ export const ITEMS = [
         brand: 'GS25',
         name: '기프티콘 5천원권',
         price: 4500,
-        // discount: 10,
         originalPrice: 5000,
         liked: false
     },
@@ -204,7 +192,6 @@ export const ITEMS = [
         brand: '세븐일레븐',
         name: '초코송이',
         price: 900,
-        // discount: 10,
         originalPrice: 1000,
         liked: false
     },
@@ -214,7 +201,6 @@ export const ITEMS = [
         brand: '베스킨라빈스',
         name: '아이스모찌(스트로베리)',
         price: 2950,
-        // discount: 10,
         originalPrice: 3300,
         liked: false
     },
@@ -224,7 +210,6 @@ export const ITEMS = [
         brand: '메가커피',
         name: '꿀수박주스',
         price: 3600,
-        // discount: 10,
         originalPrice: 4000,
         liked: false
     },
@@ -234,7 +219,6 @@ export const ITEMS = [
         brand: '아이데이지',
         name: '말랑몰랑 카피바라',
         price: 4400,
-        // discount: 10,
         originalPrice: 4900,
         liked: false
     },
@@ -244,7 +228,6 @@ export const ITEMS = [
         brand: '투썸플레이스',
         name: '떠먹는아박',
         price: 6100,
-        // discount: 10,
         originalPrice: 6800,
         liked: false
     },
@@ -254,7 +237,6 @@ export const ITEMS = [
         brand: '데데리트',
         name: '진지한돌멩이인형',
         price: 8000,
-        // discount: 10,
         originalPrice: 8900,
         liked: false
     },
@@ -264,7 +246,6 @@ export const ITEMS = [
         brand: '예스24',
         name: '세계문학전집32',
         price: 12800,
-        // discount: 10,
         originalPrice: 14200,
         liked: false
     },
@@ -274,7 +255,6 @@ export const ITEMS = [
         brand: '설빙',
         name: '애플망고치즈설빙',
         price: 13000,
-        // discount: 10,
         originalPrice: 14500,
         liked: false
     },
@@ -284,7 +264,6 @@ export const ITEMS = [
         brand: '루시아이',
         name: '뱃살물범 바디플로우',
         price: 14100,
-        // discount: 10,
         originalPrice: 15700,
         liked: false
     },
@@ -294,7 +273,6 @@ export const ITEMS = [
         brand: '청년떡집',
         name: '딸기크림떡',
         price: 15200,
-        // discount: 10,
         originalPrice: 16900,
         liked: false
     },
@@ -304,7 +282,6 @@ export const ITEMS = [
         brand: '굽네치킨',
         name: '고추바사삭+콜라1.25L',
         price: 20000,
-        // discount: 10,
         originalPrice: 22400,
         liked: false
     },
@@ -314,7 +291,6 @@ export const ITEMS = [
         brand: '교촌치킨',
         name: '허니콤보+콜라1.25L',
         price: 23000,
-        // discount: 10,
         originalPrice: 26000,
         liked: false
     },
@@ -324,7 +300,6 @@ export const ITEMS = [
         brand: '이미스',
         name: 'EMIS TONE ON TONE WAPPEN BALL CAP 11종',
         price: 44100,
-        // discount: 10,
         originalPrice: 49000,
         liked: false
     },
@@ -334,7 +309,6 @@ export const ITEMS = [
         brand: '스타벅스',
         name: '기프티콘 2만원권',
         price: 18000,
-        // discount: 10,
         originalPrice: 20000,
         liked: false
     },
