@@ -40,7 +40,9 @@
         <p class="wishlist-title">❤️ 찜한 아이템</p>
         <div v-if="hasInsufficientItems" class="go-survey-label" @click="goToSurvey">
           <span class="go-survey-text">포인트 채우러 가기</span>
-          <img src="/svg/angle-right.svg" alt="포인트 채우기" class="go-survey-icon" />
+          <!-- svg파일이 사라져서 이미지로 대체해놓음 - 주현 -->
+          <!-- <img src="/svg/angle-right.svg" alt="포인트 채우기" class="go-survey-icon" /> -->
+           <img src="/images/next_page.png" alt="포인트 채우기" class="go-survey-icon" />
         </div>
       </div>
       <div class="wishlist-scroll">
@@ -426,6 +428,7 @@ function checkAnswer(userAnswer) {
   color: #aaa;
   padding: 1rem;
 }
+
 .wishlist-header {
   position: relative;
   margin-bottom: 1rem;
