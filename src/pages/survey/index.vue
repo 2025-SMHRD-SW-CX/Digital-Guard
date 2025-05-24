@@ -1,6 +1,6 @@
 <template>
     <CardView padding="1rem" v-for="item in survey.data" :key="item.id">
-        <div class="survey-wrap">
+        <div class="survey-wrap" @click="clickSurvey">
 
             <p class="title">{{ item.title }}</p>
 
@@ -24,21 +24,43 @@
         </div>
 
     </CardView>
+
+    <ModalView v-model="showModal"
+        title="설문조사를 시작할까요?"
+        confirmText="시작!"
+        :backdrop="true"
+    >
+        <div>
+
+        </div>
+    </ModalView>
 </template>
 
 <script setup>
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import CardView from '@/components/CardView.vue';
-
+import ModalView from '@/components/ModalView.vue';
 import { useSurveyStore } from "@/stores/survey";
+
 const survey = useSurveyStore();
 const selectedId = ref(null);
+const showModal = ref(false);
+
+// onMounted(() => {
+//     setTimeout(() => {
+//         showModal.value = true;
+//     }, 3000);
+// })
+
+const clickSurvey = () => {
+    showModal.value = true;
+}
+
 
 </script>
 
 <style lang="scss" scoped>
-
 p {
     margin: 0;
 }

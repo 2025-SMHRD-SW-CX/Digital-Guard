@@ -58,12 +58,7 @@ const go = (path) => {
   height: 3.5rem;
   position: relative;
   box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.199);
-
-  /* Safe area 적용! */
-  padding-bottom: env(safe-area-inset-bottom, 0);
-
-  // 아이폰 구형(구글 CSS 호환용, 필요시)
-  padding-bottom: constant(safe-area-inset-bottom, 0);
+  z-index: 9000;
 }
 
 .footer-logo-wrap {

@@ -1,75 +1,165 @@
 <template>
-  <div class="terms-modal">
-    <div class="modal">
-      <!-- 헤더: prop으로 받은 title이 있을 때만 렌더링 -->
-      <div class="title" v-if="title">
-        <h3>{{ title }}</h3>
-      </div>
-
-      <!-- 본문: 기본 slot으로 대체 가능 -->
-      <div class="content">
-        <slot>
-          <!-- slot에 내용이 없으면 이 문구가 기본으로 나옵니다 -->
-          <p>정말 진행하시겠습니까?</p>
-        </slot>
-      </div>
-
-      <!-- 버튼 영역: named slot, 없을 땐 type에 따라 기본 버튼 렌더링 -->
-      <div class="buttons">
-        <slot name="buttons">
-          <template v-if="type === 'confirm'">
-            <button class="submit-button" @click="onConfirm">네</button>
-            <button class="cancel-button" @click="onCancel">아니오</button>
-          </template>
-          <template v-else>
-            <button class="submit-button" @click="onConfirm">확인</button>
-          </template>
-        </slot>
+  <transition name="backdrop">
+    <div v-if="modelValue" class="terms-modal-backdrop" @click.self="onBackdropClick" />
+  </transition>
+  <transition name="modal-body">
+    <div v-if="modelValue" class="modal-body-wrap">
+      <div class="modal">
+        <div class="title" v-if="title">
+          <h3>{{ title }}</h3>
+        </div>
+        <div class="content">
+          <slot>
+            <p>정말 진행하시겠습니까?</p>
+          </slot>
+        </div>
+        <div class="buttons" v-if="props.useButton">
+          <slot name="buttons">
+            <template v-if="type === 'confirm'">
+              <button class="submit-button" @click="onConfirm">{{ displayConfirmText }}</button>
+              <button class="cancel-button" @click="onCancel">{{ displayCancelText }}</button>
+            </template>
+            <template v-else>
+              <button class="submit-button" @click="onConfirm">{{ displayConfirmText }}</button>
+            </template>
+          </slot>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, computed } from 'vue'
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: null
-  },
-  type: {
-    type: String,
-    default: 'alert',
-    validator: (v) => ['alert', 'confirm'].includes(v)
-  }
+  modelValue: { type: Boolean, default: false },
+  title: { type: String, default: null },
+  type: { type: String, default: 'alert', validator: v => ['alert', 'confirm'].includes(v) },
+  confirmText: { type: String, default: '' },
+  cancelText: { type: String, default: '' },
+  useButton: { type: Boolean, default: true },
+  backdrop: { type: Boolean, default: true } // ← 추가
 })
 
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel', 'update:modelValue'])
+
+const displayConfirmText = computed(() =>
+  props.confirmText || (props.type === 'confirm' ? '네' : '확인')
+)
+const displayCancelText = computed(() => props.cancelText || '아니오')
+
+function close() {
+  emit('update:modelValue', false)
+}
 
 function onConfirm() {
   emit('confirm')
+  close()
 }
 
 function onCancel() {
   emit('cancel')
+  close()
+}
+
+// 배경 클릭시 props.backdrop이 true일 때만 닫기
+function onBackdropClick() {
+  if (props.backdrop) onCancel()
 }
 </script>
 
 <style lang="scss" scoped>
-.terms-modal {
+/* backdrop */
+.backdrop-enter-active,
+.backdrop-leave-active {
+  transition: opacity 0.3s;
+}
+
+.backdrop-enter-from,
+.backdrop-leave-to {
+  opacity: 0;
+}
+
+.backdrop-enter-to,
+.backdrop-leave-from {
+  opacity: 1;
+}
+
+.terms-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9100;
+}
+
+/* modal-body */
+.modal-body-enter-active {
+  animation: modal-bounce-in 0.65s cubic-bezier(.68, -0.55, .27, 1.5) forwards;
+}
+
+.modal-body-leave-active {
+  animation: modal-bounce-out 0.23s cubic-bezier(.55, 0, .55, 1) forwards;
+}
+
+@keyframes modal-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(48px);
+  }
+
+  38% {
+    opacity: 1;
+    transform: scale(1.11) translateY(0);
+  }
+
+  // 1차 팝!
+  66% {
+    transform: scale(0.96) translateY(0);
+  }
+
+  // 더 길게!
+  81% {
+    transform: scale(1.05) translateY(0);
+  }
+
+  // 2차 팝!
+  91% {
+    transform: scale(0.98) translateY(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-bounce-out {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.7) translateY(28px);
+  }
+}
+
+.modal-body-wrap {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 9110;
+  /* backdrop보다 위 */
 }
 
+/* modal 본체 스타일 */
 .modal {
   background: white;
   padding: 1rem;

@@ -69,6 +69,7 @@ watch(firstToken, (token) => {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    z-index: 9000;
 
     img {
         width: 10rem;
