@@ -1,14 +1,14 @@
 <template>
   <div class="container">
     <!-- 제목 -->
-    <h1 class="check-title"></h1>
+    <h4 class="check-title">아이디를 찾기 위해 이메일을 입력해주세요.</h4>
 
     <!-- 입력칸 + 버튼을 같은 래퍼 안에 배치 -->
     <div class="input-wrap">
       <!-- 이메일 입력 -->
       <input
         type="text"
-        placeholder="이메일을 입력하세요"
+        placeholder="이메일"
         v-model="userEmail"
         :class="['input', { 'error-border': showError, 'normal-border': !userEmail }]"
       />
@@ -68,9 +68,9 @@ const handleEmailSubmit = () => {
 
 .check-title {
   color: $color-primary;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
-  text-align: center;
+  // text-align: center;
   margin-bottom: 20px;
 }
 
@@ -91,7 +91,7 @@ const handleEmailSubmit = () => {
 }
 
 .input:focus {
-  border: 2px solid $color-primary;
+  border: 2px solid #ccc;
   outline: none;
 }
 
@@ -123,7 +123,8 @@ const handleEmailSubmit = () => {
 }
 
 .disabled {
-  background-color: #ccc;
+  background-color: $color-secondary;
+  color : $color-dark-gray;
   cursor: not-allowed;
 }
 

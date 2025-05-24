@@ -25,8 +25,8 @@ const props = defineProps({
   border-radius: 8px;
   font-family: 'Noto Sans KR', sans-serif;
   text-align: center;
-  background-color: #e0f0ff; /* 연한 파랑 배경 */
-  color: #2563eb; /* 메인 파랑 */
+  background-color: #e0f0ff; 
+  color: #2563eb;
 }
 
 /* '등록된 아이디는', '입니다.' 텍스트 */
