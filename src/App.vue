@@ -74,12 +74,13 @@ if (userStore.totalReward === DEFAULT_POINT) {
 
 </script>
 
+
 <style lang="scss" scoped>
 /* -------------------------------------------------------------------------- */
 /* 애니메이션용 래퍼 + 내부 스크롤 영역                                         */
 /* -------------------------------------------------------------------------- */
 .page-container {
-  position: absolute;
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -91,13 +92,17 @@ if (userStore.totalReward === DEFAULT_POINT) {
 .page-clipper {
   flex-grow: 1;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 
   .content {
-    background-color: #e8ecf3;
+    flex-grow: 1;
+    background-color: $color-content-background;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    align-items: center;
   }
 }
 
@@ -138,4 +143,10 @@ if (userStore.totalReward === DEFAULT_POINT) {
 .page-fade-float-leave-to {
   opacity: 0;
 }
+</style>
+
+
+
+<style lang="scss">
+// 이 스타일태그 지우기 x
 </style>

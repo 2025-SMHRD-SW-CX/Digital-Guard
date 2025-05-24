@@ -1,3 +1,4 @@
+<!-- HeaderView.vue -->
 <template>
     <!-- 헤더 -->
     <div class="header-wrap">
@@ -66,12 +67,14 @@ watch(firstToken, (token) => {
 
 <style lang="scss" scoped>
 .header-wrap {
-    border-bottom: 1px solid $color-dark-gray;
+    border-bottom: 1px solid #c0c0c0;
     padding: 1rem;
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     z-index: 9000;
+    min-height: 5rem;
 
     img {
         width: 10rem;
@@ -100,8 +103,7 @@ watch(firstToken, (token) => {
 }
 
 .indicator-wrap {
-    // width: 5rem;
-    height: 4rem;
+    height: 3.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;

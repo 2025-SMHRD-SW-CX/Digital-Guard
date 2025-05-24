@@ -1,3 +1,4 @@
+<!-- FooterView.vue -->
 <template>
   <div class="footer-wrap" v-if="showFooter">
     <button class="footer-btn" @click="go('/education')">
@@ -23,34 +24,42 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useFooterStore, FOOTER_MAP } from '@/stores/footer'
 import { usePathToken } from '@/composables/usePathToken'
 
 const router = useRouter()
-const { firstToken, tokenDepth, isActive } = usePathToken()
+const footer = useFooterStore()
+const { firstToken } = usePathToken()
 
-const footerActiveTabs = ['main', 'education', 'survey', 'shop', 'mypage', 'challenge']
-const showFooter = computed(() =>
-  tokenDepth.value === 1 && footerActiveTabs.includes(firstToken.value)
-)
+// 경로 변화 감지해서 푸터 표시 결정
+watch(firstToken, (token) => {
+  if (!(token in FOOTER_MAP)) {
+    footer.setShow(false)
+    footer.setActiveTab(null)
+  } else {
+    footer.setShow(true)
+    footer.setActiveTab(token)
+  }
+}, { immediate: true })
 
+// 기존의 showFooter, isActive 대신 store 사용
+const showFooter = computed(() => footer.show)
 const iconSrc = (tab) => {
   const base = `/images/footer/${tab}`
-  return isActive(tab)
+  return footer.activeTab === tab
     ? `${base}-active.png`
     : `${base}.png`
 }
-
-
-const go = (path) => {
-  router.push(path)
-}
-
+const go = (path) => { router.push(path) }
 </script>
+
 
 <style lang="scss" scoped>
 .footer-wrap {
+  // position: fixed;
+  // bottom: 2rem;
   background-color: $color-thin-sky;
   display: flex;
   justify-content: space-between;

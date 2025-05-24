@@ -1,9 +1,9 @@
 <template>
   <transition name="backdrop">
-    <div v-if="modelValue" class="terms-modal-backdrop" @click.self="onBackdropClick" />
+    <div v-if="modelValue" class="terms-modal-backdrop"></div>
   </transition>
   <transition name="modal-body">
-    <div v-if="modelValue" class="modal-body-wrap">
+    <div v-if="modelValue" class="modal-body-wrap" @click.self="onBackdropClick" >
       <div class="modal">
         <div class="title" v-if="title">
           <h3>{{ title }}</h3>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -155,8 +155,7 @@ function onBackdropClick() {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9110;
-  /* backdrop보다 위 */
+  z-index: 9100; /* 적당히 설정 */
 }
 
 /* modal 본체 스타일 */
@@ -169,6 +168,7 @@ function onBackdropClick() {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  z-index: 9110;
 }
 
 .modal .title {

@@ -1,5 +1,5 @@
 <template>
-  <div class="signup-container">
+  <CardView class="signup-container">
     <p class="intro-text">회원 가입을 위해 정보를 입력해주세요.</p>
     <form class="form-block" @submit.prevent="openConfirmation">
       <!-- 아이디 -->
@@ -85,13 +85,14 @@
       <!-- 가입 버튼 -->
       <button class="submit-button" :disabled="!canSubmit">회원 가입</button>
     </form>
-  </div>
+  </CardView>
 </template>
 
 <script setup>
 import { reactive, ref, computed, toRefs, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { db } from '@/services/supabase';
+import CardView from '@/components/CardView.vue'
 import Swal from 'sweetalert2';
 
 const router = useRouter();

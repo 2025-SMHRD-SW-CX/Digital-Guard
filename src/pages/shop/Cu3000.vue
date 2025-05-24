@@ -52,7 +52,7 @@
       </section>
     </main>
 
-    <footer class="bottom-bar">
+    <div class="bottom-bar">
       <div class="bottom-actions">
         <div class="like-wrapper">
           <button class="like-btn" @click="toggleLike">
@@ -63,7 +63,7 @@
 
         <button class="buy-button" @click="purchase">구매하기</button>
       </div>
-    </footer>
+    </div>
   </div>
 </template>
 
@@ -220,10 +220,10 @@ function purchase() {
 }
 
 .content {
-  flex: 1;
+  /* flex: 1;
   overflow-y: auto;
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: 80px; */
   /* footer 공간 확보 */
 }
 
@@ -346,7 +346,7 @@ function purchase() {
 
 .bottom-bar {
   position: fixed;
-  bottom: 0;
+  bottom: 3.5rem;
   left: 0;
   right: 0;
   max-width: 402px;

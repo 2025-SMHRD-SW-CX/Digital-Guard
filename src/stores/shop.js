@@ -12,7 +12,7 @@ export const ITEMS = [
         originalPrice: 3000, //변환
         route: 'cu3000',
         liked: false,
-        // hasDesc: true
+        descImage: '/images/CU상세페이지.png'
     },
     {
         id: 32,

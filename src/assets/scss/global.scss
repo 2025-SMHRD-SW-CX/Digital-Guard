@@ -44,6 +44,7 @@ h6 {
 
 p {
   margin: 0;
+  text-align: left;
 }
 
 a {
@@ -77,4 +78,5 @@ div,
 span,
 a {
     -webkit-tap-highlight-color: transparent !important;
+    outline: none;
 }
