@@ -1,6 +1,6 @@
 <template>
   <div>
-  <!-- <div class="page-wrapper"> -->
+    <!-- <div class="page-wrapper"> -->
     <!-- <header class="top-bar">
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
@@ -17,23 +17,27 @@
       <section class="product-info">
         <img src=/images/olive-logo.png alt="OLIVE YOUNG" class="brand-logo" />
         <h2 class="title">기프트 카드 2만원권</h2>
-        <div class="rating">
+        <!-- <div class="rating">
           ⭐⭐⭐⭐⭐ <span class="review">(134개의 후기)</span>
-        </div>
+        </div> -->
 
         <div class="price-section">
           <div class="discount-line">
             <span class="discount">할인가</span>
-            <span class="percent">10%</span>
+            <span class="percent">
+              -{{ calculateDiscount(product.originalPrice, product.price) }}%
+            </span>
           </div>
-          <div class="original-price">20,000원</div>
+          <div class="original-price">{{ product.originalPrice.toLocaleString() }}Point</div>
         </div>
+
         <div class="final-price-section">
-          <div class="final-price">18000 Point</div>
+          <div class="final-price">{{ product.price.toLocaleString() }} Point</div>
           <div class="icon-buttons">
             <button class="cart-btn" @click="addToCart">🛒</button>
           </div>
         </div>
+
 
         <div class="info-block">
           <div>📦 모바일 금액권</div>
@@ -75,7 +79,7 @@
 </script>
 
 <script setup>
-import { ref , onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 const shopStore = useShopStore();
@@ -84,13 +88,17 @@ const shopStore = useShopStore();
 const router = useRouter()
 
 const liked = ref(false)
-const likeCount = ref(1423)
+const likeCount = ref(729)
+const calculateDiscount = (original, price) => {
+  return Math.round(((original - price) / original) * 100)
+}
 
 const product = {
   id: 1,
   brand: '올리브영',
   name: '기프트카드 2만원권',
   price: 18000,
+  originalPrice: 20000,
   image: '/images/올리브영.png'
 }
 
@@ -209,7 +217,8 @@ function purchase() {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  padding-bottom: 80px; /* footer 공간 확보 */
+  padding-bottom: 80px;
+  /* footer 공간 확보 */
 }
 
 
@@ -420,5 +429,28 @@ function purchase() {
 
 .icon {
   cursor: pointer;
+}
+
+.info-box {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.info-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.info-list {
+  list-style-type: disc;
+  padding-left: 1.2rem;
+}
+
+.info-list li {
+  margin-bottom: 0.4rem;
+  line-height: 1.5;
 }
 </style>

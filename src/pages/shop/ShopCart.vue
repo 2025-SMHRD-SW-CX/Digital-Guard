@@ -2,7 +2,7 @@
   <div class="cart-wrapper">
     <!-- 상단 헤더 -->
     <header class="cart-header">
-      <span class="back-icon" @click="goBack">←</span>
+      <!-- <span class="back-icon" @click="goBack">←</span> -->
       <h2 class="cart-title">🛒 장바구니</h2>
     </header>
 

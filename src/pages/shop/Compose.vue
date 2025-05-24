@@ -1,6 +1,6 @@
 <template>
   <div>
-  <!-- <div class="page-wrapper">
+    <!-- <div class="page-wrapper">
     <header class="top-bar">
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
@@ -15,25 +15,30 @@
         <img src="/images/컴포즈아메.webp" alt="컴포즈 커피 쿠폰" class="card-image" />
       </div>
       <section class="product-info">
-        <img src=/images/olive-logo.png alt="OLIVE YOUNG" class="brand-logo" />
+        <img src=/images/compose-logo.png alt="Compose coffee" class="brand-logo" />
+        <!-- <p>컴포즈커피</p> -->
         <h2 class="title">아메리카노</h2>
-        <div class="rating">
+        <!-- <div class="rating">
           ⭐⭐⭐⭐⭐ <span class="review">(134개의 후기)</span>
-        </div>
+        </div> -->
 
         <div class="price-section">
           <div class="discount-line">
             <span class="discount">할인가</span>
-            <span class="percent">10%</span>
+            <span class="percent">
+              -{{ calculateDiscount(product.originalPrice, product.price) }}%
+            </span>
           </div>
-          <div class="original-price">20,000원</div>
+          <div class="original-price">{{ product.originalPrice.toLocaleString() }}Point</div>
         </div>
+
         <div class="final-price-section">
-          <div class="final-price">1600 Point</div>
+          <div class="final-price">{{ product.price.toLocaleString() }} Point</div>
           <div class="icon-buttons">
             <button class="cart-btn" @click="addToCart">🛒</button>
           </div>
         </div>
+
 
         <div class="info-block">
           <div>📦 모바일 금액권</div>
@@ -42,10 +47,24 @@
       </section>
 
       <section class="store-info">
-        <img src="/images/olive-banner.png" alt="올리브영 로고" class="banner" />
-        <p class="store-text">전국 올리브영 매장과<br />온라인몰에서 포인트처럼 사용 가능</p>
-        <img src="/images/올리브영상세설명.jpg" alt="올리브영상세설명" class="banner" />
+        <img src="/images/compose-banner.png" alt="컴포즈커피 로고" class="banner" />
+        <br />
+        <!-- <img src="/images/compose-상세.PNG" alt="compose상세" class="banner" /> -->
+        <!-- 이용 안내 -->
+        <div class="info-box">
+          <h2 class="info-title">이용안내</h2>
+          <ul class="info-list">
+            <li>결제 시 모바일 쿠폰을 제시해 주시면 됩니다.</li>
+            <li>본 상품은 테이크아웃만 가능합니다.</li>
+            <li>테이크아웃 할인 미적용 매장은 이용가능매장 확인 부탁드립니다.</li>
+            <li>추가 요금 1,000원 결제 시 매장에서 이용 가능합니다.</li>
+            <li>본 교환권은 타 제조음료로 교환 가능하며, 차액 발생 시 추가금에 대해 지불해야 합니다. (단, 쿠폰가보다 낮은 상품으로 교환 시 잔액은 환불 드리지 않습니다.)</li>
+            <li>타 쿠폰 중복사용여부, 포인트 적립 및 제휴카드 할인은 브랜드사 정책에 따릅니다.</li>
+            <li>현금으로 교환이 불가합니다.</li>
+          </ul>
+        </div>
       </section>
+
     </main>
 
     <footer class="bottom-bar">
@@ -65,23 +84,27 @@
 
 
 <script setup>
-import { ref , onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 const shopStore = useShopStore();
 
+const calculateDiscount = (original, price) => {
+  return Math.round(((original - price) / original) * 100)
+}
 
 const router = useRouter()
 
 const liked = ref(false)
-const likeCount = ref(1423)
+const likeCount = ref(978)
 
 const product = {
-  id: 31,
-  brand: 'CU',
-  name: '모바일 상품권 3천원권',
-  price: 2700,
-  image: '/images/cu3000.webp'
+  id: 32,
+  brand: '컴포즈커피',
+  name: '아메리카노',
+  price: 1600,
+  originalPrice: 1800,
+  image: '/images/컴포즈아메.webp'
 }
 
 onMounted(() => {
@@ -197,7 +220,8 @@ function purchase() {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  padding-bottom: 80px; /* footer 공간 확보 */
+  padding-bottom: 80px;
+  /* footer 공간 확보 */
 }
 
 

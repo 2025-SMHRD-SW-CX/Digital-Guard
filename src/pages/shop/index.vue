@@ -52,8 +52,13 @@ searchQueryse<template>
                     <div class="name">{{ item.name }}</div>
                     <div class="price-row">
                         <div class="price-info">
-                            <span class="price">{{ item.price }}p</span>
-                            <span class="discount" v-if="item.discount">-{{ item.discount }}%</span>
+                            <span class="price">{{ item.price.toLocaleString() }}p</span>
+                            <span class="original-price" v-if="item.originalPrice">
+                                {{ item.originalPrice.toLocaleString() }}
+                            </span>
+                            <span class="discount" v-if="item.originalPrice">
+                                -{{ calculateDiscount(item.originalPrice, item.price) }}%
+                            </span>
                         </div>
                         <div class="icons">
                             <img :src="`/images/heart_icon${item.liked ? '_filled' : ''}.png`"
@@ -104,6 +109,9 @@ const router = useRouter()
 const searchQuery = ref('')
 const showSortMenu = ref(false)
 const sortType = ref('default')
+const calculateDiscount = (original, current) => {
+    return Math.round(((original - current) / original) * 100);
+}
 
 function setSort(type) {
     sortType.value = type
@@ -666,11 +674,12 @@ function addToCart(item) {
 }
 
 .discount {
-    font-size: 12px;
+    font-size: 13px;
     background: #ffe4e1;
     color: red;
     border-radius: 4px;
     padding: 2px 4px;
+    font-weight: bold;
 }
 
 .heart,
@@ -683,8 +692,14 @@ function addToCart(item) {
 
 .price-info {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 6px;
+}
+
+.original-price {
+    font-size: 14px;
+    text-decoration: line-through;
+    color: #999;
 }
 
 .icons {
