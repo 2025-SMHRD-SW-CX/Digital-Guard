@@ -1,6 +1,6 @@
 <template>
     <CardView padding="1rem" v-for="item in survey.data" :key="item.id">
-        <div class="survey-wrap" @click="clickSurvey">
+        <div class="survey-wrap" @click="() => clickSurvey(item.id - 1)">
 
             <p class="title">{{ item.title }}</p>
 
@@ -16,29 +16,50 @@
                     <p>{{ item.time }}</p>
                 </div>
                 <!-- 난이도 -->
-                <div class="icon-value-wrap" v-if="selectedId">
+                <!-- <div class="icon-value-wrap" v-if="selectedId">
                     <img :src="`/images/star_${item.feelLevel[0]}.png`">
                     <p>{{ item.feelLevel[1] }}</p>
-                </div>
+                </div> -->
             </div>
         </div>
 
     </CardView>
 
-    <ModalView v-model="showModal"
-        title="설문조사를 시작할까요?"
-        confirmText="시작!"
-        :backdrop="true"
-    >
-        <div>
+    <div v-if="selectedId !== null">
+        <ModalView v-model="showModal" :title="survey.data[selectedId].title" confirmText="시작!" :backdrop="true">
+            <div class="modal-content">
 
-        </div>
-    </ModalView>
+                <div :key="selectedId">
+                    <p>{{ survey.data[selectedId].desc }}</p>
+                </div>
+                <div class="indicator-inline">
+                    <div class="indicator-wrap">
+                        <div class="icon-value-wrap">
+                            <img src="/images/coin_icon.png">
+                            <p>+{{ survey.data[selectedId].reward }}</p>
+                        </div>
+                        <!-- 소요시간 -->
+                        <div class="icon-value-wrap">
+                            <img src="/images/sandclock_icon.png">
+                            <p>{{ survey.data[selectedId].time }}</p>
+                        </div>
+                        <!-- 난이도 -->
+                        <div class="icon-value-wrap">
+                            <img :src="`/images/star_${survey.data[selectedId].feelLevel[0]}.png`">
+                            <p>{{ survey.data[selectedId].feelLevel[1] }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </ModalView>
+    </div>
+
 </template>
 
 <script setup>
 
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import CardView from '@/components/CardView.vue';
 import ModalView from '@/components/ModalView.vue';
 import { useSurveyStore } from "@/stores/survey";
@@ -47,16 +68,10 @@ const survey = useSurveyStore();
 const selectedId = ref(null);
 const showModal = ref(false);
 
-// onMounted(() => {
-//     setTimeout(() => {
-//         showModal.value = true;
-//     }, 3000);
-// })
-
-const clickSurvey = () => {
+const clickSurvey = (id) => {
+    selectedId.value = id;
     showModal.value = true;
 }
-
 
 </script>
 
@@ -77,10 +92,11 @@ p {
     }
 
     .indicator-wrap {
-
         width: 8rem;
+    }
+}
 
-        .icon-value-wrap {
+  .icon-value-wrap {
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -96,6 +112,16 @@ p {
                 font-size: 0.9rem;
             }
         }
+
+.modal-content {
+
+    .indicator-inline {
+        margin-top: 1.5rem;
+    }
+
+    .indicator-wrap {
+        display: flex;
+        gap: 0.75rem;
     }
 }
 </style>
