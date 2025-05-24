@@ -3,7 +3,13 @@
     <!-- 상단 헤더 -->
     <header class="cart-header">
       <!-- <span class="back-icon" @click="goBack">←</span> -->
-      <h2 class="cart-title">🛒 장바구니</h2>
+      <div class="top-bar-icons">
+        <h2 class="cart-title">
+          <img src="/images/bags_icon.png" alt="장바구니" class="icon-img">
+          장바구니
+        </h2>
+
+      </div>
     </header>
 
     <!-- 비어있을 때 -->
@@ -13,11 +19,7 @@
 
     <!-- 장바구니 아이템 -->
     <div v-for="item in shopStore.cart" :key="item.id" class="cart-item">
-      <input
-        type="checkbox"
-        :value="item.id"
-        v-model="shopStore.selectedCartIds"
-      />
+      <input type="checkbox" :value="item.id" v-model="shopStore.selectedCartIds" />
       <img :src="item.image" class="item-image" />
       <div class="item-info">
         <div class="item-name">{{ item.name }}</div>
@@ -43,9 +45,9 @@ import { useShopStore } from '@/stores/shop';
 const shopStore = useShopStore();
 const router = useRouter()
 
-function goBack() {
-  router.back()
-}
+// function goBack() {
+//   router.back()
+// }
 
 function remove(id) {
   shopStore.cart = shopStore.cart.filter(i => i.id !== id)
@@ -90,8 +92,17 @@ function buy() {
 }
 
 .cart-title {
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
   font-weight: bold;
+}
+
+.icon-img {
+  width: 2rem;
+  height: 4rem;
+  object-fit:contain;
 }
 
 .back-icon {
