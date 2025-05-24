@@ -170,7 +170,7 @@ const goToFindPw = () => {
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 8px;
-  color: white;
+  color: #ffffff;
   background-color: $color-primary;
   border: none;
   border-radius: 8px;
@@ -183,7 +183,8 @@ const goToFindPw = () => {
 
 /* 비활성화 상태 */
 .disabled {
-  background-color: #ccc;
+  background-color: #D9D9D9;
+  color : $color-dark-gray;
   cursor: not-allowed;
 }
 
@@ -210,7 +211,7 @@ const goToFindPw = () => {
 
 .divider {
   margin: 0 12px;
-  color: #ccc;
+  color: $color-secondary;
 }
 
 /* 에러 메시지 */
@@ -231,7 +232,7 @@ const goToFindPw = () => {
 .divider-with-text .line {
   flex: 1;
   height: 1px;
-  background-color: #ccc;
+  background-color: $color-secondary;
 }
 
 .divider-text {
