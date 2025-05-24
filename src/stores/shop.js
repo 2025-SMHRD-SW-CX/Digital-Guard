@@ -10,7 +10,8 @@ export const ITEMS = [
         price: 2700,
         discount: 10,
         route: 'cu3000',
-        liked: false
+        liked: false,
+        // hasDesc: true
     },
     {
         id: 32,

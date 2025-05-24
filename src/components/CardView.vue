@@ -3,7 +3,7 @@
     class="card"
     @click="handleClick"
     :style="{
-        padding: props.padding
+        padding: props.padding,
     }"
   >
     <slot></slot>
@@ -38,6 +38,5 @@ function handleClick(event) {
   width: 100%;
   max-width: 400px;
   text-align: center;
-  
 }
 </style>
