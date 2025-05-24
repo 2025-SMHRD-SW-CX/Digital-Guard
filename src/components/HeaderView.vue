@@ -64,8 +64,8 @@ watch(firstToken, (token) => {
 
 <style lang="scss" scoped>
 .header-wrap {
-    border-bottom: 1px solid $color-lightgrey;
-    padding: 1rem 0;
+    border-bottom: 1px solid $color-dark-gray;
+    padding: 1rem;
     width: 100%;
     display: flex;
     justify-content: space-between;

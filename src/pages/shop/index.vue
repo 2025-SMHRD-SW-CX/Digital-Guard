@@ -1,22 +1,33 @@
 searchQueryse<template>
     <div class="shop-main">
         <!-- 헤더 -->
-        <header class="top-bar">
+        <div class="top-bar">
             <!-- <span class="logo">Digital Guard</span> -->
 
+
+
             <div class="search-container">
-                <input v-model="searchQuery" class="search-bar" placeholder="검색어를 입력하세요..." />
-                <span class="search-icon">🔍</span>
+                <input v-model="searchQuery" class="search-bar" placeholder="검색어를 입력하세요" />
+                <!-- <span class="search-icon">🔍</span> -->
+                <img class="search-icon" src="/images/search_icon.png">
             </div>
 
-            <span class="icon" @click="goToCart">🛍️</span>
-            <span class="menu" @click="goToWishlist">❤️</span>
-        </header>
+            <div class="top-bar-icons">
+                <img src="/images/bags_icon.png" @click.stop="goToCart">
+                <img src="/images/heart_icon_filled.png" @click.stop="goToWishlist">
+
+                <!-- <span class="icon" @click="goToCart">🛍️</span>
+                <span class="menu" @click="goToWishlist">❤️</span> -->
+            </div>
+
+            <!-- <span class="icon" @click="goToCart">🛍️</span>
+            <span class="menu" @click="goToWishlist">❤️</span> -->
+        </div>
 
 
         <!-- 정렬 버튼 및 드롭다운 -->
-        <div class="sort-section" @click="toggleSortMenu">
-            <span>{{ sortLabel }} ▼</span>
+        <div class="sort-section">
+            <span @click="toggleSortMenu">▼ {{ sortLabel }}</span>
 
             <transition name="fade-slide">
                 <ul v-if="showSortMenu" class="sort-menu">
@@ -25,30 +36,58 @@ searchQueryse<template>
                     <li @click.stop="setSort('high')">가격 높은순</li>
                 </ul>
             </transition>
+
+
         </div>
 
 
-        <!-- 상품 목록 -->
-        <section class="product-list">
-            <div v-for="item in filteredItems" :key="item.id" class="product-card" @click="goToDetail(item)">
-                <img :src="item.image" class="product-image" />
-                <div class="brand">{{ item.brand }}</div>
-                <div class="name">{{ item.name }}</div>
-                <div class="price-row">
-                    <div class="price-info">
-                        <span class="price">{{ item.price }}p</span>
-                        <span class="discount" v-if="item.discount">-{{ item.discount }}%</span>
-                    </div>
-                    <div class="icons">
-                        <button class="heart" @click.stop="toggleLike(item)">
-                            {{ item.liked ? '❤️' : '🤍' }}
-                        </button>
-                        <button class="cart" @click.stop="addToCart(item)">🛒</button>
-                    </div>
-                </div>
 
-            </div>
-        </section>
+
+        <!-- 상품 목록 -->
+        <div class="product-wrap">
+            <section class="product-list">
+                <CardView v-for="item in filteredItems" :key="item.id" class="product-card" @click="goToDetail(item)">
+                    <img :src="item.image" class="product-image" />
+                    <div class="brand">{{ item.brand }}</div>
+                    <div class="name">{{ item.name }}</div>
+                    <div class="price-row">
+                        <div class="price-info">
+                            <span class="price">{{ item.price }}p</span>
+                            <span class="discount" v-if="item.discount">-{{ item.discount }}%</span>
+                        </div>
+                        <div class="icons">
+                            <img :src="`/images/heart_icon${item.liked ? '_filled' : ''}.png`"
+                                @click.stop="toggleLike(item)">
+                            <!-- <button class="heart" @click.stop="toggleLike(item)">
+                                {{ item.liked ? '❤️' : '🤍' }}
+                            </button> -->
+                            <!-- <button class="cart" @click.stop="addToCart(item)">🛒</button> -->
+                            <img id="cart" src="/images/cart_icon.png" @click.stop="addToCart(item)">
+                        </div>
+                    </div>
+                </CardView>
+
+
+                <!-- <div v-for="item in filteredItems" :key="item.id" class="product-card" @click="goToDetail(item)">
+                    <img :src="item.image" class="product-image" />
+                    <div class="brand">{{ item.brand }}</div>
+                    <div class="name">{{ item.name }}</div>
+                    <div class="price-row">
+                        <div class="price-info">
+                            <span class="price">{{ item.price }}p</span>
+                            <span class="discount" v-if="item.discount">-{{ item.discount }}%</span>
+                        </div>
+                        <div class="icons">
+                            <button class="heart" @click.stop="toggleLike(item)">
+                                {{ item.liked ? '❤️' : '🤍' }}
+                            </button>
+                            <button class="cart" @click.stop="addToCart(item)">🛒</button>
+                        </div>
+                    </div>
+                </div> -->
+            </section>
+        </div>
+
     </div>
 
 </template>
@@ -58,6 +97,7 @@ searchQueryse<template>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ITEMS, useShopStore } from '@/stores/shop';
+import CardView from '@/components/CardView.vue';
 const shopStore = useShopStore();
 
 const router = useRouter()
@@ -111,6 +151,8 @@ function goToWishlist() {
         router.push('/shop/WishList')
     }
 }
+
+/* src/stores/shop.js 로 이동되었습니다 */
 
 // const items = ref([
 //     {
@@ -467,7 +509,7 @@ function addToCart(item) {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .shop-main {
     width: 100%;
     max-width: 403px;
@@ -477,22 +519,53 @@ function addToCart(item) {
 
 .top-bar {
     display: flex;
+    // flex-direction: column;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    // padding: 8px 12px;
     font-weight: bold;
-    border-bottom: 1px solid #ddd;
+    // border-bottom: 1px solid #ddd;
+
+    .top-bar-icons {
+        // border: 1px solid red;
+        width: 9rem;
+        // justify-content: center;
+        justify-content: end;
+        display: flex;
+        gap: 0.75rem;
+
+        img {
+            object-fit: scale-down;
+            width: 2.5rem;
+        }
+    }
 }
 
 .search-bar {
-    flex: 1;
-    height: 28px;
-    background: #eee;
-    border-radius: 8px;
+    // flex: 1;
+    flex-grow: 1;
+    // height: 1rem;
+    height: 100%;
+    // border: 1px solid red;
+    // max-width: 10rem;
+    width: 100%;
+    // background: white;
+    // border: 0.125rem solid $color-lightgrey;
+    // border-radius: 0.5rem;
+    padding: 0 0.5rem 0 2.75rem;
+
     border: none;
-    padding: 0 10px;
-    font-size: 14px;
+    font-size: 1rem;
+    height: 100%;
+    outline: none;
+
+
 }
+
+.search-bar:focus {
+    border-color: $color-primary;
+}
+
 
 .icon,
 .menu {
@@ -527,18 +600,39 @@ function addToCart(item) {
 }
 
 .sort-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    position: relative;
     text-align: right;
     padding: 8px 12px;
-    font-size: 13px;
     color: #444;
+    user-select: none;
+    cursor: pointer;
+
+    span {
+        font-size: 0.95rem;
+        line-height: 3rem;
+        width: 8rem;
+        text-align: left;
+    }
+
 }
 
 .product-list {
-    padding: 0 12px 40px;
+    padding: 0 0 1rem 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .product-card {
-    margin-bottom: 24px;
+    background-color: white;
+    padding: 1.3rem !important;
+    border-radius: 0.5rem;
+    text-align: start;
 }
 
 .product-image {
@@ -596,20 +690,32 @@ function addToCart(item) {
 .icons {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+
+    img {
+        width: 2rem;
+        object-fit: scale-down;
+        box-sizing: content-box;
+        padding: 0.25rem;
+    }
+
+    #cart {
+        height: 1.6rem;
+        padding: 0.5rem 0.25rem;
+    }
 }
 
 .sort-menu {
     position: absolute;
     top: 100%;
     /* 버튼 아래로 */
-    right: 0;
+    left: 0;
     /* 오른쪽에 붙이기 */
     background: white;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 4px 0;
-    font-size: 13px;
+    font-size: 0.9rem;
     list-style: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     z-index: 10;
@@ -617,31 +723,44 @@ function addToCart(item) {
 }
 
 .search-container {
-    flex: 1;
-    /* 이걸 추가 */
+    // border: 1px solid red;
+    background-color: white;
+
+    width: 100%;
     position: relative;
     display: flex;
-    /* inline-block 대신 flex */
+    height: 2.7rem;
+
+    // background: white;
+    border: 0.125rem solid $color-lightgrey;
+    // border-radius: 0.75rem;
+    // padding: 0 0.5rem;
+
+    // img {
+    //     opacity: 0.7;
+    // }
+
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        object-fit: scale-down;
+        width: 1.5em;
+        opacity: 0.5;
+    }
 }
 
-.search-bar {
-    padding-right: 30px;
-    /* 아이콘 공간 확보 */
-    height: 30px;
-    font-size: 14px;
-}
 
-.search-icon {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-}
 
 
 .sort-menu li {
     padding: 8px 12px;
+    text-align: start;
     cursor: pointer;
 }
 
@@ -649,15 +768,15 @@ function addToCart(item) {
     background-color: #f5f5f5;
 }
 
-.sort-section {
-    position: relative;
-    text-align: right;
-    padding: 8px 12px;
-    font-size: 13px;
-    color: #444;
-    user-select: none;
-    cursor: pointer;
-}
+// .sort-section {
+//     position: relative;
+//     text-align: right;
+//     padding: 8px 12px;
+//     // font-size: 1rem;
+//     color: #444;
+//     user-select: none;
+//     cursor: pointer;
+// }
 
 .fade-slide-enter-active,
 .fade-slide-leave-active {

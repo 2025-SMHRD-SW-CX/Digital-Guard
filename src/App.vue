@@ -14,7 +14,7 @@
         <div class="page-clipper" :key="route.fullPath">
           <!-- 실제 스크롤되는 영역 -->
           <HeaderView></HeaderView>
-          <router-view />
+          <div class="content"><router-view /></div>
         </div>
       </transition>
 
@@ -78,14 +78,16 @@ onMounted(async () => {
 }
 
 .page-clipper {
-
   flex-grow: 1;
   overflow: auto;
-  /* 실제 스크롤은 여기서 */
-  padding: 0 1rem 1rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+
+  .content {
+    background-color: #e8ecf3;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
 }
 
 /* -------------------------------------------------------------------------- */
