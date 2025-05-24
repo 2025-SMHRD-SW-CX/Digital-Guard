@@ -19,12 +19,11 @@
 
     <!-- 퀴즈 카드 -->
     <CardView class="challenge-card">
-      <!-- 오버레이 메시지 -->
       <div v-if="correctlyAnswered" class="overlay-message">
         오늘의 챌린지를 완료하였습니다. <span class="highlight">포인트 지급 완료!</span>
       </div>
 
-      <p class="card-title">마라톤 챌린지</p>
+      <p class="card-title">오늘의 챌린지</p>
       <p class="quiz-question">Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?</p>
       <div class="quiz-buttons">
         <button class="btn-ox blue" :disabled="correctlyAnswered" @click="checkAnswer(true)">O</button>
@@ -32,26 +31,24 @@
       </div>
     </CardView>
 
-    <!-- 포인트샵 카드 -->
+    <!-- 찜한 아이템 카드 -->
     <CardView>
-      <p class="card-title">인기 아이템</p>
-      <div class="shop-items">
-        <div v-for="(item, i) in shopItems" :key="i">
-          <div v-if="item.name === '더 보기'" class="item" @click="goToShop" style="cursor: pointer">
-            <img :src="item.img" :alt="item.alt" />
-            <div class="item-info">
-              <p class="item-name">{{ item.name }}</p>
-            </div>
-          </div>
-          <div v-else class="item">
-            <div v-if="i < 2" class="rank-badge" :class="{ first: i === 0, second: i === 1 }">{{ i + 1 }}위</div>
-            <img :src="item.img" :alt="item.alt" />
-            <div class="item-info">
-              <p class="item-name">{{ item.name }}</p>
-              <p class="item-price" v-if="item.price">{{ item.price }}P</p>
-            </div>
+      <p class="card-title">❤️ 찜한 아이템</p>
+      <div class="wishlist-scroll">
+        <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card">
+          <img :src="item.image" :alt="item.name" />
+          <div class="wishlist-info">
+            <p class="item-name">{{ item.name }}</p>
+            <p class="item-price">{{ item.price.toLocaleString() }}P</p>
+            <span
+              class="badge"
+              :class="point >= item.price ? 'badge-available' : 'badge-short'"
+            >
+              {{ point >= item.price ? '구매 가능' : `부족 ${ (item.price - point).toLocaleString() }P` }}
+            </span>
           </div>
         </div>
+        <div v-if="shopStore.wish.length === 0" class="empty-text">찜한 아이템이 없습니다.</div>
       </div>
     </CardView>
   </div>
@@ -63,25 +60,23 @@ import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import confetti from 'canvas-confetti';
 import CardView from '@/components/CardView.vue';
+import { useShopStore } from '@/stores/shop';
 
 const router = useRouter();
+const shopStore = useShopStore();
 
 const correctlyAnswered = ref(false);
 const point = ref(200);
 
 function myClickHandler() {
-  router.push('/marathon')
-}
-
-function goToShop() {
-  router.push('/shop');
+  router.push('/challenge');
 }
 
 function checkAnswer(userAnswer) {
   const isCorrect = userAnswer === true;
   const reasonText = isCorrect
-    ? '✅ 불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
-    : '❌ 불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.';
+    ? '불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
+    : '불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.';
 
   const earned = isCorrect ? 10 : 0;
 
@@ -92,32 +87,45 @@ function checkAnswer(userAnswer) {
   }
 
   Swal.fire({
-    icon: isCorrect ? 'success' : 'error',
+    iconHtml: isCorrect
+      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" fill="#3ba2ff"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" fill="#ff5f5f"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 1 0 5.7 7.1L10.6 12l-4.9 4.9a1 1 0 1 0 1.4 1.4L12 13.4l4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>`,
+    customClass: {
+      icon: 'no-default-icon',
+    },
     title: isCorrect ? '정답입니다! 🎉' : '오답입니다 😢',
-    html: `
-      <p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
-      <p style="font-weight: bold; font-size: 1rem;">현재 누적 포인트: <span style="color: #3ba2ff">${point.value}P</span></p>
-    `,
-    showCancelButton: true,
-    confirmButtonText: '포인트샵으로 이동',
-    cancelButtonText: '닫기',
+    html: isCorrect
+      ? `
+        <p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
+        <p style="font-weight: bold; font-size: 1rem;">
+          현재 누적 포인트: <span style="color: #3ba2ff">${point.value}P</span>
+        </p>
+      `
+      : `
+        <p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
+        <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
+      `,
+    showCancelButton: isCorrect,
+    confirmButtonText: isCorrect ? '포인트샵으로 이동' : '확인',
+    cancelButtonText: isCorrect ? '닫기' : null,
     confirmButtonColor: '#3ba2ff',
     cancelButtonColor: '#aaa',
   }).then((result) => {
-    if (result.isConfirmed) {
+    if (isCorrect && result.isConfirmed) {
       router.push('/shop');
     }
   });
 }
-
-const shopItems = [
-  { img: '/images/coffee.png', name: '컴포즈 아메리카노', price: 1600, alt: '컴포즈 아메리카노 상품 이미지' },
-  { img: '/images/cu.png', name: 'CU 3,000P 쿠폰', price: 2700, alt: 'CU 3,000포인트 쿠폰 이미지' },
-  { img: '/images/more.png', name: '더 보기', alt: '포인트샵 더보기 버튼 이미지' }
-];
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
+.swal2-icon.no-default-icon {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
 .main-container {
   padding: 0rem 1rem;
   display: flex;
@@ -233,7 +241,7 @@ const shopItems = [
 .quiz-question {
   font-size: 1rem;
   margin: 1rem 0;
-  word-break: keep-all;
+  word-break: keep-word;
   white-space: normal;
   line-height: 1.6;
   text-align: center;
@@ -278,62 +286,82 @@ const shopItems = [
   background-color: #ff5f5f;
 }
 
-.shop-items {
+.wishlist-scroll {
   display: flex;
-  justify-content: space-around;
-  margin-top: 1rem;
+  overflow-x: auto;
   gap: 1rem;
+  padding: 0.5rem 0;
+  scroll-snap-type: x mandatory;
 }
 
-.item {
+.wishlist-card {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 7.5rem;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  background: #fff;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  position: relative;
 }
 
-.rank-badge {
-  position: absolute;
-  top: -0.5rem;
-  left: -0.3rem;
-  background-color: #3ba2ff;
-  color: white;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-  font-weight: bold;
-  z-index: 1;
-}
-
-.item img {
+.wishlist-card img {
   width: 5rem;
   height: 5rem;
-  object-fit: contain;
-  margin-bottom: 0.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
-.item-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.wishlist-info {
+  font-size: 0.8rem;
+  text-align: center;
 }
 
 .item-name {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: bold;
   margin-bottom: 0.2rem;
+  font-size: 0.85rem;
+  white-space: normal !important;
+  word-break: break-word;
   text-align: center;
-  white-space: normal;
-  max-width: 6.5rem;
-  word-break: keep-all;
+  line-height: 1.3;
+  display: block;
+  width: 100%;
 }
 
 .item-price {
-  font-size: 0.75rem;
-  color: #555;
-  text-align: center;
-  white-space: nowrap;
+  color: #222;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.2rem;
+}
+
+.badge-available {
+  background-color: #e0f3ff;
+  color: #3ba2ff;
+}
+
+.badge-short {
+  background-color: #eee;
+  color: #999;
+}
+
+.empty-text {
+  font-size: 0.9rem;
+  color: #aaa;
+  padding: 1rem;
 }
 </style>

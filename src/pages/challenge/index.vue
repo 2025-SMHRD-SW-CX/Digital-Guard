@@ -1,8 +1,8 @@
 <template>
   <div class="main-container">
-    <!-- 마라톤 챌린지 현황 -->
+    <!-- 오늘의 챌린지 현황 -->
     <CardView>
-      <h2 class="section-title">마라톤 챌린지 현황</h2>
+      <h2 class="section-title">챌린지 현황</h2>
       <div class="section-divider"></div>
       <div class="info-row">
         <span>연속 완료 일수</span>
@@ -13,21 +13,21 @@
         <span class="value">{{ totalPoints }}P</span>
       </div>
       <div class="info-row">
-        <span>마라톤 챌린지 완료까지</span>
+        <span>연속 참여 챌린지 완료까지</span>
         <span class="value">{{ remainingDays }}일 남음</span>
       </div>
     </CardView>
 
-    <!-- 마라톤 챌린지 참여 내용 -->
+    <!-- 연속 참여 챌린지 참여 내용 -->
     <CardView>
-      <h2 class="section-title">마라톤 챌린지 참여 내용</h2>
+      <h2 class="section-title">완료 챌린지 기록</h2>
       <div class="section-divider"></div>
       <div
         class="record-item"
         v-for="(item, index) in logs"
         :key="index"
       >
-        <p class="day-label">마라톤 챌린지 {{ index + 1 }}일차</p>
+        <p class="day-label">연속 참여 챌린지 {{ index + 1 }}일차</p>
         <div class="record-sub">
           <span class="date">{{ item.date }}</span>
           <span class="point">
@@ -35,7 +35,9 @@
             +{{ item.point }}
           </span>
         </div>
-        <p class="question">Q. {{ item.question }}</p>
+        <p class="question">
+          <span class="q-label">Q.</span> {{ item.question }}
+        </p>
       </div>
     </CardView>
   </div>
@@ -131,5 +133,16 @@ const logs = ref([
 .question {
   font-size: 0.9rem;
   color: #333;
+  word-break: keep-all;
+  white-space: normal;
+  text-align: left;
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+
+.q-label {
+  font-weight: bold;
+  flex-shrink: 0;
 }
 </style>

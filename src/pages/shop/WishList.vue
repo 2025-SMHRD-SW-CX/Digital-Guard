@@ -3,7 +3,7 @@
     <!-- 상단 헤더 -->
     <header class="wishlist-header">
       <span class="back-icon" @click="goBack">←</span>
-      <h2 class="wishlist-title">❤️ 찜한 상품 ❤️</h2>
+      <h2 class="wishlist-title">❤️ 찜한 아이템</h2>
     </header>
 
     <!-- 찜 목록이 비어있을 때 -->
