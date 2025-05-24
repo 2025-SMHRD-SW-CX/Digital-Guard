@@ -35,34 +35,25 @@
         <div class="final-price-section">
           <div class="final-price">{{ product.price.toLocaleString() }} Point</div>
           <div class="icon-buttons">
-            <button class="cart-btn" @click="addToCart">🛒</button>
+            <img src="/images/bags_icon.png" @click.stop="addToCart" class="icon-img">
           </div>
         </div>
 
 
         <div class="info-block">
-          <div>📦 모바일 금액권</div>
-          <div>⏳ 유효 기간 90일</div>
+          <div>📦 배송지 정보 필요</div>
+          <div>⏳ 주문창에서 배송정보 입력하세요</div>
         </div>
       </section>
 
       <section class="store-info">
-        <img src="/images/데-.jpg" alt="배송정보" class="banner" />
+        <img src="/images/데배.jpg" alt="배송정보" class="banner" />
         <br />
-        <!-- <img src="/images/compose-상세.PNG" alt="compose상세" class="banner" /> -->
-        <!-- 이용 안내 -->
-        <div class="info-box">
-          <h2 class="info-title">이용안내</h2>
-          <ul class="info-list">
-            <li>결제 시 모바일 쿠폰을 제시해 주시면 됩니다.</li>
-            <li>본 상품은 테이크아웃만 가능합니다.</li>
-            <li>테이크아웃 할인 미적용 매장은 이용가능매장 확인 부탁드립니다.</li>
-            <li>추가 요금 1,000원 결제 시 매장에서 이용 가능합니다.</li>
-            <li>본 교환권은 타 제조음료로 교환 가능하며, 차액 발생 시 추가금에 대해 지불해야 합니다. (단, 쿠폰가보다 낮은 상품으로 교환 시 잔액은 환불 드리지 않습니다.)</li>
-            <li>타 쿠폰 중복사용여부, 포인트 적립 및 제휴카드 할인은 브랜드사 정책에 따릅니다.</li>
-            <li>현금으로 교환이 불가합니다.</li>
-          </ul>
-        </div>
+        <img src="/images/데2.jpg" alt="브랜드" class="banner" />
+        <br />
+        <img src="/images/데상세.jpg" alt="브랜드정보" class="banner" />
+        <img src="/images/데상세2.jpg" alt="브랜드정보" class="banner" />
+        <img src="/images/데상세3.jpg" alt="브랜드정보" class="banner" />
       </section>
 
     </main>
@@ -96,15 +87,15 @@ const calculateDiscount = (original, price) => {
 const router = useRouter()
 
 const liked = ref(false)
-const likeCount = ref(978)
+const likeCount = ref(574)
 
 const product = {
   id: 32,
   brand: '컴포즈커피',
   name: '아메리카노',
-  price: 1600,
-  originalPrice: 1800,
-  image: '/images/컴포즈아메.webp'
+  price: 5500,
+  originalPrice: 6500,
+  image: '/images/고양이키링.webp'
 }
 
 onMounted(() => {
@@ -148,6 +139,8 @@ function goToWishlist() {
 }
 function purchase() {
   if (confirm('결제 페이지로 이동합니다. 진행하시겠습니까?')) {
+    shopStore.orderItems = [product]
+    
     router.push('/shop/OrderPage')
   }
 }
@@ -168,6 +161,12 @@ function purchase() {
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
 } */
+.icon-img {
+  width: 2rem;
+  height: 4rem;
+  padding-right : 30px;
+  object-fit:contain;
+}
 
 .top-bar {
   height: 50px;

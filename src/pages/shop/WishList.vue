@@ -3,7 +3,11 @@
     <!-- 상단 헤더 -->
     <header class="wishlist-header">
       <span class="back-icon" @click="goBack">←</span>
-      <h2 class="wishlist-title">❤️ 찜한 아이템</h2>
+      <h2 class="wishlist-title">
+      <img src="/images/heart_icon_filled.png" alt="장바구니" class="icon-img">
+          찜한 아이템
+        <img src="/images/heart_icon_filled.png" alt="장바구니" class="icon-img">
+      </h2>
     </header>
 
     <!-- 찜 목록이 비어있을 때 -->
@@ -57,6 +61,12 @@ function addToCart(item) {
 </script>
 
 <style scoped>
+
+.icon-img {
+  width: 2rem;
+  height: 4rem;
+  object-fit:contain;
+}
 .wishlist-wrapper {
   padding: 16px;
   font-family: Arial, sans-serif;
@@ -71,9 +81,13 @@ function addToCart(item) {
 }
 
 .wishlist-title {
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
   font-weight: bold;
 }
+
 
 .back-icon {
   position: absolute;

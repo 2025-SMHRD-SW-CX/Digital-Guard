@@ -34,7 +34,7 @@
         <div class="final-price-section">
           <div class="final-price">{{ product.price.toLocaleString() }} Point</div>
           <div class="icon-buttons">
-            <button class="cart-btn" @click="addToCart">🛒</button>
+            <img src="/images/bags_icon.png" @click.stop="addToCart" class="icon-img">
           </div>
         </div>
 
@@ -144,6 +144,8 @@ function goToWishlist() {
 }
 function purchase() {
   if (confirm('결제 페이지로 이동합니다. 진행하시겠습니까?')) {
+
+    shopStore.orderItems = [product]
     router.push('/shop/OrderPage')
   }
 }
@@ -164,7 +166,12 @@ function purchase() {
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
 } */
-
+ .icon-img {
+  width: 2rem;
+  height: 4rem;
+  padding-right : 30px;
+  object-fit:contain;
+}
 .top-bar {
   height: 50px;
   display: flex;
