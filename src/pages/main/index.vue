@@ -22,7 +22,6 @@
       <div v-if="correctlyAnswered" class="overlay-message">
         오늘의 챌린지를 완료하였습니다. <span class="highlight">포인트 지급 완료!</span>
       </div>
-
       <p class="card-title">오늘의 챌린지</p>
       <p class="quiz-question">Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?</p>
       <div class="quiz-buttons">
@@ -32,20 +31,26 @@
     </CardView>
 
     <!-- 찜한 아이템 카드 -->
-    <CardView>
-      <p class="card-title">❤️ 찜한 아이템</p>
+    <CardView class="wishlist-card-container">
+      <div class="wishlist-header">
+        <p class="wishlist-title">❤️ 찜한 아이템</p>
+        <div v-if="hasInsufficientItems" class="go-survey-label" @click="goToSurvey">
+          <span class="go-survey-text">포인트 채우러 가기</span>
+          <img src="/svg/angle-right.svg" alt="포인트 채우기" class="go-survey-icon" />
+        </div>
+      </div>
       <div class="wishlist-scroll">
         <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card">
           <img :src="item.image" :alt="item.name" />
           <div class="wishlist-info">
             <p class="item-name">{{ item.name }}</p>
             <p class="item-price">{{ item.price.toLocaleString() }}P</p>
-            <span
-              class="badge"
-              :class="point >= item.price ? 'badge-available' : 'badge-short'"
-            >
-              {{ point >= item.price ? '구매 가능' : `부족 ${ (item.price - point).toLocaleString() }P` }}
-            </span>
+            <template v-if="point >= item.price">
+              <span class="badge badge-available">구매 가능</span>
+            </template>
+            <template v-else>
+              <span class="badge badge-short">부족 {{ (item.price - point).toLocaleString() }}P</span>
+            </template>
           </div>
         </div>
         <div v-if="shopStore.wish.length === 0" class="empty-text">찜한 아이템이 없습니다.</div>
@@ -54,8 +59,9 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import confetti from 'canvas-confetti';
@@ -68,8 +74,16 @@ const shopStore = useShopStore();
 const correctlyAnswered = ref(false);
 const point = ref(200);
 
+const hasInsufficientItems = computed(() =>
+  shopStore.wish.some(item => item.price > point.value)
+);
+
 function myClickHandler() {
   router.push('/challenge');
+}
+
+function goToSurvey() {
+  router.push('/survey');
 }
 
 function checkAnswer(userAnswer) {
@@ -95,16 +109,12 @@ function checkAnswer(userAnswer) {
     },
     title: isCorrect ? '정답입니다! 🎉' : '오답입니다 😢',
     html: isCorrect
-      ? `
-        <p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
-        <p style="font-weight: bold; font-size: 1rem;">
-          현재 누적 포인트: <span style="color: #3ba2ff">${point.value}P</span>
-        </p>
-      `
-      : `
-        <p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
-        <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
-      `,
+      ? `<p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
+         <p style="font-weight: bold; font-size: 1rem;">
+           현재 누적 포인트: <span style="color: #3ba2ff">${point.value}P</span>
+         </p>`
+      : `<p style="font-size: 1rem; margin-bottom: 1rem;">${reasonText}</p>
+         <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>`,
     showCancelButton: isCorrect,
     confirmButtonText: isCorrect ? '포인트샵으로 이동' : '확인',
     cancelButtonText: isCorrect ? '닫기' : null,
@@ -119,6 +129,44 @@ function checkAnswer(userAnswer) {
 </script>
 
 <style scoped lang="scss">
+.wishlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.go-survey-icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.go-survey-icon:hover {
+  transform: scale(1.1);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.2rem;
+  line-height: 1.3;
+}
+
+.badge-available {
+  background-color: #e0f3ff;
+  color: #3ba2ff;
+}
+
+.badge-short {
+  background-color: #eee;
+  color: #999;
+}
+
 .swal2-icon.no-default-icon {
   background: none !important;
   border: none !important;
@@ -340,28 +388,60 @@ function checkAnswer(userAnswer) {
   margin-bottom: 0.2rem;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  margin-top: 0.2rem;
-}
-
-.badge-available {
-  background-color: #e0f3ff;
-  color: #3ba2ff;
-}
-
-.badge-short {
-  background-color: #eee;
-  color: #999;
-}
-
 .empty-text {
   font-size: 0.9rem;
   color: #aaa;
   padding: 1rem;
 }
+.wishlist-header {
+  position: relative;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.wishlist-header {
+  padding: 1.2rem 1rem 0rem;
+  margin-bottom: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.wishlist-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+
+.go-survey-label {
+  align-self: flex-end;
+  margin-top: 0rem;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+
+.go-survey-text {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 500;
+}
+
+
+.go-survey-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  filter: grayscale(100%) brightness(1.5);
+  transition: transform 0.2s ease;
+}
+
+.go-survey-label:hover .go-survey-icon {
+  transform: translateX(2px);
+}
+
 </style>
