@@ -1,6 +1,6 @@
 <template>
   <div>
-  <!-- <div class="page-wrapper">
+    <!-- <div class="page-wrapper">
     <header class="top-bar">
       <span class="back">←</span>
       <img src="/images/brand.png" alt="Digital Guard" class="logo-image" />
@@ -12,28 +12,32 @@
 
     <main class="content">
       <div class="image-wrapper">
-        <img src="/images/cu3000.webp" alt="올리브영 기프트카드" class="card-image" />
+        <img src="/images/cu3000.webp" alt="cu 3000원권" class="card-image" />
       </div>
       <section class="product-info">
-        <img src=/images/olive-logo.png alt="OLIVE YOUNG" class="brand-logo" />
-        <h2 class="title">기프트 카드 2만원권</h2>
-        <div class="rating">
-          ⭐⭐⭐⭐⭐ <span class="review">(134개의 후기)</span>
-        </div>
+        <img src=/images/cu-logo.PNG alt="CU" class="brand-logo" />
+        <h2 class="title">모바일 상품권 3천원권</h2>
+        <!-- <div class="rating">
+          ⭐⭐⭐⭐⭐ <span class="review">(4개의 후기)</span>
+        </div> -->
 
         <div class="price-section">
           <div class="discount-line">
             <span class="discount">할인가</span>
-            <span class="percent">10%</span>
+            <span class="percent">
+              -{{ calculateDiscount(product.originalPrice, product.price) }}%
+            </span>
           </div>
-          <div class="original-price">20,000원</div>
+          <div class="original-price">{{ product.originalPrice.toLocaleString() }}Point</div>
         </div>
+
         <div class="final-price-section">
-          <div class="final-price">18000 Point</div>
+          <div class="final-price">{{ product.price.toLocaleString() }} Point</div>
           <div class="icon-buttons">
             <button class="cart-btn" @click="addToCart">🛒</button>
           </div>
         </div>
+
 
         <div class="info-block">
           <div>📦 모바일 금액권</div>
@@ -42,9 +46,9 @@
       </section>
 
       <section class="store-info">
-        <img src="/images/olive-banner.png" alt="올리브영 로고" class="banner" />
-        <p class="store-text">전국 올리브영 매장과<br />온라인몰에서 포인트처럼 사용 가능</p>
-        <img src="/images/올리브영상세설명.jpg" alt="올리브영상세설명" class="banner" />
+        <img src="/images/cu-banner.jpg" alt="CU 로고" class="banner" />
+        <p class="store-text">전국 CU 매장에서<br />사용이 가능합니다</p>
+        <img src="/images/CU상세페이지.png" alt="CU상품권영상세설명" class="banner" />
       </section>
     </main>
 
@@ -75,24 +79,29 @@
 </script>
 
 <script setup>
-import { ref , onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 const shopStore = useShopStore();
+const calculateDiscount = (original, price) => {
+  return Math.round(((original - price) / original) * 100)
+}
 
 
 const router = useRouter()
 
 const liked = ref(false)
-const likeCount = ref(1423)
+const likeCount = ref(972)
 
 const product = {
   id: 31,
   brand: 'CU',
   name: '모바일 상품권 3천원권',
   price: 2700,
+  originalPrice: 3000,
   image: '/images/cu3000.webp'
 }
+
 
 onMounted(() => {
   liked.value = shopStore.wish.some(i => i.id === product.id)
@@ -207,7 +216,8 @@ function purchase() {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  padding-bottom: 80px; /* footer 공간 확보 */
+  padding-bottom: 80px;
+  /* footer 공간 확보 */
 }
 
 
@@ -258,11 +268,11 @@ function purchase() {
   margin-top: 4px;
 }
 
-.rating {
+/* .rating {
   font-size: 13px;
   color: #666;
   margin-top: 6px;
-}
+} */
 
 .review {
   color: #999;
@@ -317,13 +327,14 @@ function purchase() {
 }
 
 .banner {
-  width: 80%;
+  width: 90%;
   margin-bottom: 8px;
 }
 
 .store-text {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.4;
+  font-weight: 700;
 }
 
 .bottom-bar {
@@ -369,7 +380,7 @@ function purchase() {
 }
 
 .brand-logo {
-  height: 20px;
+  height: 50px;
   object-fit: contain;
   margin-bottom: 4px;
 }
