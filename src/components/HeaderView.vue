@@ -1,7 +1,7 @@
 <template>
     <!-- 헤더 -->
     <div class="header-wrap">
-        <img src="/images/brand.png" v-if="!header.title">
+        <img src="/images/brand.png" v-if="!header.title" @click="goToMain" style="cursor: pointer;">
         <div class="title-indicator" v-else>
             <img @click="clickBackBtn" src="/images/prev_page.png">
             <p>{{ header.title }}</p>
@@ -48,7 +48,9 @@ const clickBackBtn = () => {
     const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
     depth === 1 ? router.push('/main') : router.back()
 }
-
+const goToMain = () => {
+    router.push('/main')
+}
 watch(firstToken, (token) => {
     if (!(token in TITLE_MAP)) {
         header.setShow(false)
