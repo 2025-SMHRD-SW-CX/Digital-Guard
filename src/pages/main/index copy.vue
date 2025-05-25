@@ -24,28 +24,35 @@
                 </div>
             </div>
             <p class="card-subtext">
-                <span v-if="userStore.isParticipatedToday">{{ userStore.progressDays }}일차 완료</span>
-                <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
-            </p>
+                {{ userStore.progressDays + 1 }}일차 {{ userStore.progressDays < userStore.totalNeedDays ? '미완료' : '완료' }}
+                    </p>
 
-            <div class="reward-info">
-                <p id="bonus" v-if="!userStore.isParticipatedToday">오늘 챌린지 완료하면 <span class="highlight">연속 {{
-                        userStore.continuousDays }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가
-                    지급!</p>
-                <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{
-                    userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>
-                <p id="cheer-up">조금만 더 화이팅✨</p>
-            </div>
+                    <!-- 
 
+                        TODO userStore.continuousDays 를 이용해서 연속참여일수 (총 참여일수의 의미가 X, 매일 연달아 참여한 일수)
+                        를 이용해 일정퍼센트 보너스 포인트를 덧붙여 주는 로직 구현해보자
+
+                        지금은 연속참여가 '총 참여일' 의 의미를 가지는데 총 참여일과, 연속으로매일 참여한 일수를 분리해야 한다.
+                        여기서 이 작업하게되면 /challenge 에서도 두 단어의 의미를 분리해서 추가해주는게 좋겠다.
+
+                    -->
+
+                    <p class="reward-info">
+                        {{ userStore.totalNeedDays }}일 연속 참여 시 <span class="highlight">30P</span> 추가 지급!<br>
+                        총 <span class="highlight">100P</span> 적립까지 {{ userStore.totalNeedDays - userStore.progressDays -
+                            1 }}일
+                        남았어요!<br>
+                        조금만 더 화이팅✨
+                    </p>
         </CardView>
 
         <!-- ───────────── 오늘의 챌린지(퀴즈) 카드 ───────────── -->
         <CardView class="quiz-card">
             <div v-if="userStore.isParticipatedToday || correctlyAnswered" class="overlay-message">
-                오늘의 챌린지를 완료했습니다
+                오늘의 챌린지를 완료하였습니다.
                 <div class="rewarded-message">
                     <img src="/images/coin_icon.png">
-                    <span class="highlight">{{ TOTAL_REWARD }}P 획득!</span>
+                    <span class="highlight">{{ CORRECT_REWARD }}P 지급 완료!</span>
                 </div>
 
             </div>
@@ -120,10 +127,7 @@
                 <p class="reason">{{ reasonText }}</p>
                 <div class="point-gain">
                     <img src="/images/coin_icon.png" alt="코인 아이콘" />
-                    <span>{{ TOTAL_REWARD }}P 획득!</span>
-                    <template v-if="bonusReward">
-                        <span class="highlight bonus">연속 보너스 +{{ bonusReward }}P</span>
-                    </template>
+                    <span>+{{ CORRECT_REWARD }}</span>
                 </div>
             </template>
         </ModalView>
@@ -158,8 +162,6 @@ const progressPercent = computed(() => {
 });
 
 const CORRECT_REWARD = 10;
-const bonusReward = userStore.calcContinuousBonus(CORRECT_REWARD);
-const TOTAL_REWARD = CORRECT_REWARD + bonusReward
 
 const correctlyAnswered = ref(false);
 const reasonText = ref('');
@@ -203,16 +205,14 @@ function checkAnswer(userAnswer) {
 
     if (isCorrect) {
         correctlyAnswered.value = true
-
-        userStore.addPoint(TOTAL_REWARD)
-        userStore.recordParticipation()
+        userStore.addPoint(CORRECT_REWARD)
+        userStore.recordParticipation()    // 참여 기록
         confetti({ spread: 10, origin: { y: 0.6 } })
         showCorrectModal.value = true
     } else {
         showWrongModal.value = true
     }
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -299,37 +299,18 @@ function checkAnswer(userAnswer) {
 .reward-info {
     font-size: 1rem;
     margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    p {
-        text-align: center;
-        word-break: keep-all;
-        text-wrap: balance;
-    }
-
-    #bonus {
-        font-size: 0.85rem;
-        opacity: 0.7;
-    }
-
-    #total {
-        font-size: 1.1rem;
-    }
-
-    #cheer-up {
-        margin-top: 1rem;
-    }
-
+    text-align: center;
 }
 
 .highlight {
     color: $color-highlight;
     font-weight: bold;
+
+    img {
+        width: 2rem;
+        object-fit: scale-down;
+    }
 }
-
-
 
 // ───────────────────────────────────────
 //  [5] 퀴즈 카드/버튼
@@ -373,12 +354,9 @@ function checkAnswer(userAnswer) {
 .quiz-question {
     font-size: 1rem;
     margin: 1rem 0;
-    word-break: keep-all;
-    text-wrap: balance;
-
+    word-break: keep-word;
     line-height: 1.6;
     text-align: center;
-
 }
 
 .quiz-buttons {
@@ -620,11 +598,6 @@ function checkAnswer(userAnswer) {
         font-weight: bold;
         font-size: 1rem;
         color: $color-highlight;
-    }
-
-    .bonus {
-        color: $color-dark-gray;
-        font-size: 0.8rem;
     }
 }
 

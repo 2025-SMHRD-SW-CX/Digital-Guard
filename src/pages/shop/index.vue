@@ -37,11 +37,7 @@ searchQueryse<template>
                 </ul>
             </transition>
 
-
         </div>
-
-
-
 
         <!-- 상품 목록 -->
         <div class="product-wrap">
@@ -52,7 +48,7 @@ searchQueryse<template>
                     <div class="name">{{ item.name }}</div>
                     <div class="price-row">
                         <div class="price-info">
-                            <span class="price">{{ item.price.toLocaleString() }}p</span>
+                            <span class="price">{{ item.price.toLocaleString() }}P</span>
                             <span class="original-price" v-if="item.originalPrice">
                                 {{ item.originalPrice.toLocaleString() }}
                             </span>
@@ -127,7 +123,7 @@ function goToDetail(item) {
     if (item.route) {
         router.push(`/shop/view/${item.route}`)
     } else {
-        alert('해당 상품 상세 페이지가 준비되지 않았습니다.')
+        alert("해당 상품은 상세페이지가 준비되어있지 않습니다!");
     }
 }
 onMounted(() => {

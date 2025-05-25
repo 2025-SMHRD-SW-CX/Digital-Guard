@@ -6,7 +6,7 @@
       <div v-if="current" :key="pageNum" class="slide-content">
         <h1 class="title">{{ current.title }}</h1>
         <p class="subtitle">{{ current.subtitle }}</p>
-        <img class="img" :src="`/images/workflow${pageNum}.png`" :alt="`워크플로우 ${pageNum} 이미지`" />
+        <img class="img" :src="`/images/workflow/workflow${pageNum}.png`" :alt="`워크플로우 ${pageNum} 이미지`" />
       </div>
     </transition>
 
@@ -24,7 +24,7 @@
       </div>
 
       <button class="nav-btn" :disabled="isAnimating || pageNum === pageData.length" @click="goNextPage">
-        <img src="/images/next_page.png" alt="다음" />
+        <img src="/images/workflow/next_page.png" alt="다음" />
       </button>
     </div>
 

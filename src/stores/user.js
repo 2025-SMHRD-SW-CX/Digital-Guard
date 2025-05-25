@@ -55,13 +55,28 @@ const DEFAULT_VALUES = {
     phone: '01012345678',
     birthday: '20000101',
     totalReward: 20000,
-    createdAt: 20250523
+    createdAt: 20250523,
+    totalNeedDays: 7,
+    progressDays: 5,
+    continuousDays: 4,
+    // 어제 날짜로 설정
+    lastParticipate: new Date(Date.now() - 24 * 60 * 60 * 1000)
 }
 
 export const useUserStore = defineStore('user', {
     state: () => ({ ...DEFAULT_VALUES }),
-        getters: {
-        isLogined: (state) => !!state.id
+    getters: {
+        isLogined: (state) => !!state.id,
+        // 오늘 참여했는지 여부
+        isParticipatedToday: (state) => {
+            const last = new Date(state.lastParticipate)
+            const today = new Date()
+            return (
+                last.getFullYear() === today.getFullYear() &&
+                last.getMonth() === today.getMonth() &&
+                last.getDate() === today.getDate()
+            )
+        }
     },
     actions: {
         login({ id, name, nickname, phone, birthday, totalReward, createdAt }) {
@@ -84,6 +99,33 @@ export const useUserStore = defineStore('user', {
         addPoint(amount) {
             // totalReward 값을 amount만큼 증가 (숫자 변환 및 null 체크)
             this.totalReward = (Number(this.totalReward) || 0) + Number(amount)
+        },
+        // 참여 기록 처리: 연속참여 계산, progressDays 증가, lastParticipate 갱신
+        recordParticipation() {
+            const today = new Date()
+            const yesterday = new Date(today)
+            yesterday.setDate(yesterday.getDate() - 1)
+
+            const last = new Date(this.lastParticipate)
+            const wasYesterday =
+                last.getFullYear() === yesterday.getFullYear() &&
+                last.getMonth() === yesterday.getMonth() &&
+                last.getDate() === yesterday.getDate()
+
+            // 연속참여: 어제가 참여일이면 +1, 아니면 1로 리셋
+            this.continuousDays = wasYesterday ? this.continuousDays + 1 : 1
+
+            // 전체 진행일수 증가
+            this.progressDays++
+
+            // 오늘 날짜로 갱신
+            this.lastParticipate = today
+        },
+        calcContinuousBonus(todayReward) {
+            const threshold = 1.0;
+            let progressDays = (this.isParticipatedToday) ? this.progressDays - 1 : this.progressDays;
+            const progressPct = progressDays / this.totalNeedDays;
+            return Math.round(todayReward * progressPct) * threshold;
         }
     }
 })
