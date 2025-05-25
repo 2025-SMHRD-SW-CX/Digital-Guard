@@ -98,8 +98,11 @@ searchQueryse<template>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ITEMS, useShopStore } from '@/stores/shop';
+import { useAlertStore } from '@/stores/alert';
 import CardView from '@/components/CardView.vue';
+
 const shopStore = useShopStore();
+const alertStore = useAlertStore();
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -123,7 +126,7 @@ function goToDetail(item) {
     if (item.route) {
         router.push(`/shop/view/${item.route}`)
     } else {
-        alert("해당 상품은 상세페이지가 준비되어있지 않습니다!");
+        alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
     }
 }
 onMounted(() => {
@@ -146,14 +149,10 @@ function toggleSortMenu() {
     showSortMenu.value = !showSortMenu.value
 }
 function goToCart() {
-    if (confirm("장바구니로 이동하시겠습니까?")) {
-        router.push('/shop/ShopCart')
-    }
+    router.push('/shop/ShopCart')
 }
 function goToWishlist() {
-    if (confirm("찜목록으로 이동하시겠습니까?")) {
-        router.push('/shop/WishList')
-    }
+    router.push('/shop/WishList')
 }
 
 
@@ -186,10 +185,10 @@ function toggleLike(item) {
         if (!exists) {
             shopStore.wish.push(item)
         }
-        alert(`${item.name} 찜 하셨습니다!`)
+        alertStore.success(`[${item.name}] 상품이 찜 되었습니다!`, 3000);
     } else {
         shopStore.wish = shopStore.wish.filter(i => i.id !== item.id)
-        alert(`${item.name} 찜 취소하셨습니다.`)
+        alertStore.warning(`[${item.name}] 상품이 찜 해제 되었습니다!`, 3000);
     }
 }
 
@@ -198,10 +197,10 @@ function addToCart(item) {
     const exists = shopStore.cart.find(i => i.id === item.id)
 
     if (exists) {
-        alert(`${item.name}은(는) 이미 장바구니에 담겨 있습니다!`)
+        alertStore.danger(`[${item.name}] 상품은 이미 장바구니에 담겨 있습니다!`, 3000);
     } else {
         shopStore.cart.push(item)
-        alert(`${item.name} 장바구니에 담겼습니다!`)
+        alertStore.success(`[${item.name}] 상품이 장바구니에 담겼습니다!`, 3000);
     }
 }
 

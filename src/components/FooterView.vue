@@ -58,8 +58,6 @@ const go = (path) => { router.push(path) }
 
 <style lang="scss" scoped>
 .footer-wrap {
-  // position: fixed;
-  // bottom: 2rem;
   background-color: $color-thin-sky;
   display: flex;
   justify-content: space-between;
@@ -67,7 +65,7 @@ const go = (path) => { router.push(path) }
   height: 3.5rem;
   position: relative;
   box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.199);
-  z-index: 9000;
+  z-index: $z-footer;
 }
 
 .footer-logo-wrap {

@@ -58,9 +58,10 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .top-btn {
     position: fixed;
-    right: 0.5rem;
-    bottom: 4rem;
-    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 4.5rem;
+    z-index: $z-top-btn;
     padding: 0.75rem 1rem;
     background: #747474;
     color: #fff;
@@ -71,16 +72,10 @@ onUnmounted(() => {
     line-height: 0;
     font-weight: bold;
     cursor: pointer;
-    opacity: 0.3;
+    opacity: 0.4;
     transition: opacity 0.2s, transform 0.2s;
-    //   width: 3rem;
     height: 2rem;
 }
-
-// .top-btn:hover {
-//   opacity: 1;
-//   transform: scale(1.05);
-// }
 
 /* 페이드 트랜지션 */
 .fade-top-btn-enter-active,
@@ -95,6 +90,6 @@ onUnmounted(() => {
 
 .fade-top-btn-enter-to,
 .fade-top-btn-leave-from {
-    opacity: 0.3;
+    opacity: 0.4;
 }
 </style>

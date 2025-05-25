@@ -15,11 +15,6 @@
                     <img src="/images/survey/sandclock_icon.png">
                     <p>{{ item.time }}</p>
                 </div>
-                <!-- 난이도 -->
-                <!-- <div class="icon-value-wrap" v-if="selectedId">
-                    <img :src="`/images/star_${item.feelLevel[0]}.png`">
-                    <p>{{ item.feelLevel[1] }}</p>
-                </div> -->
             </div>
         </div>
 

@@ -22,7 +22,11 @@
       <TopButton :scroll-target="scrollContainer" />
       <!-- 여기까지 공통레이아웃 -->
     </div>
+
+    <AlertView />
+
   </div>
+
 
 </template>
 
@@ -33,6 +37,7 @@ import HeaderView from '@/components/HeaderView.vue';
 import FooterView from '@/components/FooterView.vue'
 import TopButton from '@/components/TopButton.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
+import AlertView from '@/components/AlertView.vue';
 
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -147,5 +152,4 @@ if (userStore.totalReward === DEFAULT_POINT) {
 
 
 <style lang="scss">
-// 이 스타일태그 지우기 x
-</style>
+// 이 스타일태그 지우기 x</style>
