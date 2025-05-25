@@ -24,7 +24,6 @@ export default defineConfig({
           @use "@/assets/scss/variables.scss" as *;
           @use "@/assets/scss/global.scss" as *;
           @use "@/assets/scss/class.scss" as *;
-          
         `
       }
     }

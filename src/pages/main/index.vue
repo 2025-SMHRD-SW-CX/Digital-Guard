@@ -1,79 +1,97 @@
 <template>
   <div class="main-container">
-    <!-- 오늘의 미션 카드 -->
-    <CardView @click="myClickHandler">
+    <!-- ───────────── 오늘의 미션 카드 ───────────── -->
+    <CardView class="mission-card" @click="myClickHandler">
       <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
           <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          <path
-            :stroke-dasharray="`${progressPercent}, 100`"
-            class="circle"
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-          />
+          <path :stroke-dasharray="`${progressPercent}, 100`" class="circle"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
         </svg>
-        <div class="progress-text">{{ missionProgress }}<small class="fraction">/7</small></div>
+        <div class="progress-text">
+          {{ missionProgress }}<small class="fraction">/7</small>
+        </div>
       </div>
-      <p class="card-subtext">{{ currentDay }}일차 {{ missionProgress < 7 ? '미완료' : '완료' }}</p>
-      <p class="reward-info">
-        7일 연속 참여 시 <span class="highlight">30P</span><span class="reward-info">추가 지급!</span><br>
-        총<span class="highlight"> 100P</span> 적립까지 {{ remainingDays }}일 남았어요!<br>조금만 더 화이팅✨
-      </p>
+      <p class="card-subtext">
+        {{ currentDay }}일차 {{ missionProgress < 7 ? '미완료' : '완료' }} </p>
+          <p class="reward-info">
+            7일 연속 참여 시 <span class="highlight">30P</span> 추가 지급!<br>
+            총 <span class="highlight">100P</span> 적립까지 {{ remainingDays }}일 남았어요!<br>
+            조금만 더 화이팅✨
+          </p>
     </CardView>
 
-    <!-- 퀴즈 카드 -->
-    <CardView class="challenge-card">
+    <!-- ───────────── 오늘의 챌린지(퀴즈) 카드 ───────────── -->
+    <CardView class="quiz-card">
       <div v-if="correctlyAnswered" class="overlay-message">
-        오늘의 챌린지를 완료하였습니다. <span class="highlight">포인트 지급 완료!</span>
+        오늘의 챌린지를 완료하였습니다.
+        <span class="highlight">포인트 지급 완료!</span>
       </div>
       <p class="card-title">오늘의 챌린지</p>
-      <p class="quiz-question">Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?</p>
+      <p class="quiz-question">
+        Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?
+      </p>
       <div class="quiz-buttons">
         <button class="btn-ox blue" :disabled="correctlyAnswered" @click="checkAnswer(true)">O</button>
         <button class="btn-ox red" :disabled="correctlyAnswered" @click="checkAnswer(false)">X</button>
       </div>
     </CardView>
 
-    <!-- 찜한 아이템 카드 -->
+    <!-- ───────────── 찜한 아이템 카드 ───────────── -->
     <CardView class="wishlist-card-container">
-      <div class="wishlist-header">
-        <p class="wishlist-title">❤️ 찜한 아이템</p>
-        <div v-if="hasInsufficientItems" class="go-survey-label" @click="goToSurvey">
-          <span class="go-survey-text">포인트 채우러 가기</span>
-          <!-- svg파일이 사라져서 이미지로 대체해놓음 - 주현 -->
-          <!-- <img src="/svg/angle-right.svg" alt="포인트 채우기" class="go-survey-icon" /> -->
-           <img src="/images/next_page.png" alt="포인트 채우기" class="go-survey-icon" />
+      <div>
+        <!-- 헤더 (찜 아이콘 + 타이틀) -->
+        <div class="wishlist-header">
+          <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
+          <p class="title">찜한 아이템</p>
+          <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
         </div>
-      </div>
-      <div class="wishlist-scroll">
-        <div v-if="shopStore.wish.length === 0" class="empty-text">
-          찜한 아이템이 없습니다.<br>포인트샵에서 원하는 아이템을 찾아보세요!
-        </div>
-        <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card">
-          <img :src="item.image" :alt="item.name" />
-          <div class="wishlist-info">
-            <p class="item-name">{{ item.name }}</p>
-            <p class="item-price">{{ item.price.toLocaleString() }}P</p>
-            <template v-if="point >= item.price">
-              <span class="badge badge-available">구매 가능</span>
-            </template>
-            <template v-else>
-              <span class="badge badge-short">부족 {{ (item.price - point).toLocaleString() }}P</span>
-            </template>
+        <!-- 스크롤 영역 -->
+        <div class="wishlist-scroll">
+          <div v-if="shopStore.wish.length === 0" class="empty-text">
+            <p>찜한 아이템이 없습니다.</p>
+            <p>포인트샵에서 원하는 아이템을 찾아보세요!</p>
           </div>
+          <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card">
+            <img :src="item.image" :alt="item.name" />
+            <div class="wishlist-info">
+              <p class="item-name">{{ item.name }}</p>
+              <p class="item-price">{{ item.price.toLocaleString() }}P</p>
+              <template v-if="userStore.totalReward >= item.price">
+                <span class="badge badge-available">구매 가능</span>
+              </template>
+              <template v-else>
+                <div class="badge badge-short">
+                  <p class="short-price">{{ (item.price - userStore.totalReward).toLocaleString() }}P</p>
+                  <p class="its-short">부족해요!</p>
+                </div>
+              </template>
+            </div>
+
+          </div>
+
+
         </div>
+
+        <div v-if="!shopStore.wish.length">
+          <button class="to-btn shop" @click="goToShop">
+            포인트샵으로 이동
+          </button>
+        </div>
+        <div v-else-if="hasInsufficientItems">
+          <p class="need-more">포인트가 더 필요하세요?</p>
+          <button class="to-btn survey" @click="goToSurvey">
+            설문조사로 이동
+          </button>
+        </div>
+
       </div>
     </CardView>
 
-    <!-- 정답 모달 -->
-    <ModalView
-      v-model="showCorrectModal"
-      title="정답입니다! 🎉"
-      type="confirm"
-      confirmText="포인트샵으로 이동"
-      cancelText="닫기"
-      @confirm="goToShop"
-    >
+    <!-- ───────────── 정답 모달 ───────────── -->
+    <ModalView v-model="showCorrectModal" title="정답입니다! 🎉" type="confirm" confirmText="포인트샵으로 이동" cancelText="닫기"
+      @confirm="goToShop">
       <template #default>
         <p class="reason">{{ reasonText }}</p>
         <div class="point-gain">
@@ -83,13 +101,8 @@
       </template>
     </ModalView>
 
-    <!-- 오답 모달 -->
-    <ModalView
-      v-model="showWrongModal"
-      title="오답입니다 😥"
-      type="alert"
-      confirmText="확인"
-    >
+    <!-- ───────────── 오답 모달 ───────────── -->
+    <ModalView v-model="showWrongModal" title="오답입니다 😥" type="alert" confirmText="확인">
       <template #default>
         <p class="reason">{{ reasonText }}</p>
         <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
@@ -98,6 +111,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -105,9 +119,11 @@ import confetti from 'canvas-confetti';
 import CardView from '@/components/CardView.vue';
 import ModalView from '@/components/ModalView.vue';
 import { useShopStore } from '@/stores/shop';
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
 const shopStore = useShopStore();
+const userStore = useUserStore();
 
 const missionProgress = ref(5); // 예: 현재까지 완료한 날짜 수
 const totalDays = 7;
@@ -116,7 +132,6 @@ const progressPercent = computed(() => ((missionProgress.value / totalDays) * 10
 const remainingDays = computed(() => totalDays - missionProgress.value);
 
 const CORRECT_REWARD = 10;
-const point = ref(200);
 
 const correctlyAnswered = ref(false);
 const reasonText = ref('');
@@ -124,7 +139,7 @@ const showCorrectModal = ref(false);
 const showWrongModal = ref(false);
 
 const hasInsufficientItems = computed(() =>
-  shopStore.wish.some(item => item.price > point.value)
+  shopStore.wish.some(item => item.price > userStore.totalReward)
 );
 
 function myClickHandler() {
@@ -148,7 +163,7 @@ function checkAnswer(userAnswer) {
 
   if (isCorrect) {
     correctlyAnswered.value = true;
-    point.value += CORRECT_REWARD;
+    userStore.addPoint(CORRECT_REWARD);
     confetti({ spread: 10, origin: { y: 0.6 } });
     showCorrectModal.value = true;
   } else {
@@ -158,94 +173,24 @@ function checkAnswer(userAnswer) {
 </script>
 
 <style scoped lang="scss">
-.wishlist-card {
-  transition: transform 0.2s ease;
-}
-.wishlist-card:hover {
-  transform: scale(1.03);
-}
-.wishlist-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 0.5rem;
-}
-
-.go-survey-icon {
-  width: 1.8rem;
-  height: 1.8rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.go-survey-icon:hover {
-  transform: scale(1.1);
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  margin-top: 0.2rem;
-  line-height: 1.3;
-}
-
-.badge-available {
-  background-color: #e0f3ff;
-  color: #3ba2ff;
-}
-
-.badge-short {
-  background-color: #eee;
-  color: #999;
-}
-
-.swal2-icon.no-default-icon {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
+// ───────────────────────────────────────
+//  [1] 메인 컨테이너
+// ───────────────────────────────────────
 
 .main-container {
-  padding: 0rem 1rem;
+  padding: 0 0rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
-}
-
-.challenge-card {
-  position: relative;
-}
-
-.overlay-message {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
   width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.3rem;
-  font-weight: 600;
-  text-align: center;
-  padding: 1.5rem;
-  border-radius: 1rem;
 }
 
-.overlay-message .highlight {
-  color: #3ba2ff;
-  font-weight: bold;
-  margin-left: 0.3rem;
-}
+// ───────────────────────────────────────
+//  [2] 공통 카드 스타일(CardView 내장)
+// ───────────────────────────────────────
 
+// (CardView의 스타일은 컴포넌트 내부에 있으면 별도 관리. 필요하면 추출)
 .card-title {
   font-size: 1.2rem;
   font-weight: bold;
@@ -254,61 +199,70 @@ function checkAnswer(userAnswer) {
   white-space: nowrap;
 }
 
-.progress-circle {
-  position: relative;
-  width: 10rem;
-  height: 10rem;
-  margin: 0 auto;
-}
-
-.circular-chart {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.circle-bg {
-  fill: none;
-  stroke: #eee;
-  stroke-width: 3.8;
-}
-
-.circle {
-  fill: none;
-  stroke: #3ba2ff;
-  stroke-width: 3.8;
-  stroke-linecap: round;
-  transition: stroke-dasharray 0.3s;
-  animation: progress 1s ease-out forwards;
-}
-
-@keyframes progress {
-  0% {
-    stroke-dasharray: 0, 100;
-  }
-  100% {
-    stroke-dasharray: 71.4, 100;
-  }
-}
-
-.progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2.8rem;
-  font-weight: bold;
-}
-
-.fraction {
-  font-size: 1rem;
-}
-
 .card-subtext {
   margin-top: 1rem;
   font-weight: bold;
   text-align: center;
 }
+
+// ───────────────────────────────────────
+//  [3] 오늘의 미션(진행도 원형차트)
+// ───────────────────────────────────────
+
+.progress-circle {
+  position: relative;
+  width: 10rem;
+  height: 10rem;
+  margin: 0 auto;
+
+  .circular-chart {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .circle-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+  }
+
+  .circle {
+    fill: none;
+    stroke: $color-highlight;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s;
+    animation: progress 1s ease-out forwards;
+  }
+
+  @keyframes progress {
+    from {
+      stroke-dasharray: 0, 100;
+    }
+
+    to {
+      stroke-dasharray: 71.4, 100;
+    }
+  }
+
+  .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.8rem;
+    font-weight: bold;
+
+    .fraction {
+      font-size: 1rem;
+    }
+  }
+}
+
+// ───────────────────────────────────────
+//  [4] 리워드 안내문
+// ───────────────────────────────────────
 
 .reward-info {
   font-size: 1rem;
@@ -316,16 +270,43 @@ function checkAnswer(userAnswer) {
   text-align: center;
 }
 
-.reward-info .highlight {
-  color: #3ba2ff;
+.highlight {
+  color: $color-highlight;
   font-weight: bold;
+}
+
+// ───────────────────────────────────────
+//  [5] 퀴즈 카드/버튼
+// ───────────────────────────────────────
+
+.challenge-card {
+  position: relative;
+}
+
+.quiz-card {
+  position: relative;
+}
+
+.overlay-message {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 1rem;
 }
 
 .quiz-question {
   font-size: 1rem;
   margin: 1rem 0;
   word-break: keep-word;
-  white-space: normal;
   line-height: 1.6;
   text-align: center;
 }
@@ -335,6 +316,10 @@ function checkAnswer(userAnswer) {
   justify-content: center;
   gap: 2rem;
 }
+
+// ───────────────────────────────────────
+//  [6] OX 버튼
+// ───────────────────────────────────────
 
 .btn-ox {
   min-width: 4.5rem;
@@ -349,146 +334,204 @@ function checkAnswer(userAnswer) {
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease-in-out;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+
+  &.blue {
+    background-color: #3ba2ff;
+  }
+
+  &.red {
+    background-color: #ff5f5f;
+  }
 }
 
-.btn-ox:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+// ───────────────────────────────────────
+//  [7] 찜한 아이템(찜리스트)
+// ───────────────────────────────────────
+
+.wishlist-card-container {
+  width: 100%;
+
+  .to-btn {
+    transition: 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    @extend .btn, .btn-small, .btn-highlight, .w-100;
+    margin: 0 auto;
+    margin-top: 0.5rem;
+
+    &.shop {
+      @extend .btn-highlight;
+    }
+
+    &.survey {
+      @extend .btn-primary;
+    }
+  }
+
+  .need-more {
+    text-align: center;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    color: $color-dark-gray;
+  }
 }
 
-.btn-ox:hover {
-  opacity: 0.85;
-  transform: scale(1.05);
+// 헤더(찜 아이콘 + 제목)
+.wishlist-header {
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  .icon-img {
+    width: 1.5rem;
+    object-fit: scale-down;
+  }
+
+  .title {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
 }
 
-.btn-ox.blue {
-  background-color: #3ba2ff;
-}
-
-.btn-ox.red {
-  background-color: #ff5f5f;
-}
-
+// 스크롤 카드영역
 .wishlist-scroll {
   display: flex;
   overflow-x: auto;
   gap: 1rem;
-  padding: 0.5rem 0;
-  scroll-snap-type: x mandatory;
+  padding: 0.5rem;
+  flex-direction: row;
+  width: 100%;
+
+  .empty-text {
+    width: 100%;
+
+    p {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+
+  }
 }
 
+// 카드 아이템
 .wishlist-card {
   flex: 0 0 auto;
   scroll-snap-align: start;
-  width: 7.5rem;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
+  width: 8rem;
+  border: 1px solid #e6e5e5;
+  border-radius: 0.25rem;
   padding: 0.5rem;
   background: #fff;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.wishlist-card img {
-  width: 5rem;
-  height: 5rem;
-  object-fit: cover;
-  border-radius: 0.5rem;
-  margin-bottom: 0.3rem;
-}
-
-.wishlist-info {
-  font-size: 0.8rem;
-  text-align: center;
-}
-
-.item-name {
-  font-weight: bold;
-  margin-bottom: 0.2rem;
-  font-size: 0.85rem;
-  white-space: normal !important;
-  word-break: break-word;
-  text-align: center;
-  line-height: 1.3;
-  display: block;
-  width: 100%;
-}
-
-.item-price {
-  color: #222;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
-}
-
-.empty-text {
-  font-size: 0.9rem;
-  color: #aaa;
-  padding: 1rem;
-}
-
-.wishlist-header {
-  position: relative;
-  margin-bottom: 1rem;
-  padding: 0 1rem;
-}
-
-.wishlist-header {
-  padding: 1.2rem 1rem 0rem;
-  margin-bottom: 0.3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-
-.wishlist-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 0.3rem;
-}
-
-.go-survey-label {
-  align-self: flex-end;
-  margin-top: 0rem;
-  margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: pointer;
-}
-
-
-.go-survey-text {
-  font-size: 0.75rem;
-  color: #888;
-  font-weight: 500;
-}
-
-
-.go-survey-icon {
-  width: 1.3rem;
-  height: 1.3rem;
-  filter: grayscale(100%) brightness(1.5);
   transition: transform 0.2s ease;
-}
 
-.go-survey-label:hover .go-survey-icon {
-  transform: translateX(2px);
-}
+  &:hover {
+    transform: scale(1.03);
+  }
 
-.point-info {
-  font-weight: bold;
-  font-size: 1rem;
-  margin-top: 0.5rem;
+  img {
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
 
-  .highlight {
-    color: #3ba2ff;
+  .wishlist-info {
+    width: 100%;
+    font-size: 0.8rem;
+    text-align: center;
+
+    .item-name {
+      padding: 0 0.25rem;
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+      font-size: 0.75rem;
+
+      line-height: 1.3;
+      width: 100%;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .item-price {
+      padding: 0 0.5rem;
+      color: #222;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
   }
 }
+
+// ───────────────────────────────────────
+//  [8] 배지(구매가능/부족)
+// ───────────────────────────────────────
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.2rem;
+  line-height: 1.3;
+  width: 100%;
+  height: 2.5rem;
+  background-color: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  p {
+    text-align: center;
+  }
+
+  &.badge-available {
+    color: $color-highlight;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  &.badge-short {
+    color: #999;
+
+    .short-price {
+      color: #f14438;
+      font-size: 0.8rem;
+    }
+
+    .its-short {
+      font-size: 0.6rem;
+    }
+  }
+}
+
+// ───────────────────────────────────────
+//  [9] 기타(포인트/정답 모달)
+// ───────────────────────────────────────
 
 .point-gain {
   display: flex;
@@ -506,7 +549,7 @@ function checkAnswer(userAnswer) {
   span {
     font-weight: bold;
     font-size: 1rem;
-    color: #3ba2ff;
+    color: $color-highlight;
   }
 }
 
@@ -516,25 +559,6 @@ function checkAnswer(userAnswer) {
   line-height: 1.6;
   text-align: center;
   word-break: keep-all;
-}
-
-.point-gain {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.3rem;
-  gap: 0.4rem;
-
-  img {
-    width: 1.2rem;
-    height: 1.2rem;
-    object-fit: contain;
-  }
-
-  span {
-    font-weight: bold;
-    font-size: 1rem;
-    color: #3ba2ff;
-  }
+  text-wrap: balance;
 }
 </style>

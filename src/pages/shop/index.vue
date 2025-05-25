@@ -9,12 +9,12 @@ searchQueryse<template>
             <div class="search-container">
                 <input v-model="searchQuery" class="search-bar" placeholder="검색어를 입력하세요" />
                 <!-- <span class="search-icon">🔍</span> -->
-                <img class="search-icon" src="/images/search_icon.png">
+                <img class="search-icon" src="/images/shop/icons/search_icon.png">
             </div>
 
             <div class="top-bar-icons">
-                <img src="/images/bags_icon.png" @click.stop="goToCart">
-                <img src="/images/heart_icon_filled.png" @click.stop="goToWishlist">
+                <img src="/images/shop/icons/bags_icon.png" @click.stop="goToCart">
+                <img src="/images/shop/icons/heart_icon_filled.png" @click.stop="goToWishlist">
 
                 <!-- <span class="icon" @click="goToCart">🛍️</span>
                 <span class="menu" @click="goToWishlist">❤️</span> -->
@@ -61,13 +61,13 @@ searchQueryse<template>
                             </span>
                         </div>
                         <div class="icons">
-                            <img :src="`/images/heart_icon${item.liked ? '_filled' : ''}.png`"
+                            <img :src="`/images/shop/icons/heart_icon${item.liked ? '_filled' : ''}.png`"
                                 @click.stop="toggleLike(item)">
                             <!-- <button class="heart" @click.stop="toggleLike(item)">
                                 {{ item.liked ? '❤️' : '🤍' }}
                             </button> -->
                             <!-- <button class="cart" @click.stop="addToCart(item)">🛒</button> -->
-                            <img id="cart" src="/images/cart_icon.png" @click.stop="addToCart(item)">
+                            <img id="cart" src="/images/shop/icons/cart_icon.png" @click.stop="addToCart(item)">
                         </div>
                     </div>
                 </CardView>
@@ -125,7 +125,7 @@ function handleClickOutside(e) {
 }
 function goToDetail(item) {
     if (item.route) {
-        router.push(`/shop/${item.route}`)
+        router.push(`/shop/view/${item.route}`)
     } else {
         alert('해당 상품 상세 페이지가 준비되지 않았습니다.')
     }

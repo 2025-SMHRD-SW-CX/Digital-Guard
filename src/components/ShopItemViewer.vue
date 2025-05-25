@@ -37,7 +37,7 @@
                     <div class="container">
                         <div class="heart-wrapper">
                             <div class="like-btn" @click="toggleLike">
-                                <img :src="`/images/heart_icon${liked ? '_filled' : ''}.png`">
+                                <img :src="`/images/shop/icons/heart_icon${liked ? '_filled' : ''}.png`">
                                 <p>+{{ likedCount }}</p>
                             </div>
                         </div>

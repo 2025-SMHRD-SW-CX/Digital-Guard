@@ -19,7 +19,7 @@ const props = defineProps({
   },
   padding: {
     type: String,
-    default: "2rem"
+    default: "1rem"
   },
   style: {
     type: Object
@@ -40,7 +40,6 @@ function handleClick(event) {
   border-radius: 1.2rem;
   box-shadow: 0 4px 5px rgba(0, 0, 0, 0.205);
   width: 100%;
-  // max-width: 400px;
   text-align: center;
 }
 </style>
