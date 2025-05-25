@@ -44,13 +44,18 @@
                         <button id="buy-btn" @click="purchase">구매하기</button>
                     </div>
                 </div>
-                
+
                 <slot></slot>
 
             </CardView>
         </div>
 
+        <ModalView v-model="showPurchaseModal" type="confirm" title="상품 구매" @confirm="moveToPurchase">
+            [{{ item.name }}] 상품을 구매하시겠습니까?
+        </ModalView>
     </div>
+
+
 
 </template>
 
@@ -61,13 +66,18 @@ const props = defineProps({
 })
 
 import CardView from '@/components/CardView.vue';
+import ModalView from '@/components/ModalView.vue';
+
 import { ref, onMounted } from 'vue';
 import { useShopStore, ITEMS } from '@/stores/shop';
+import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const shopStore = useShopStore();
+const alertStore = useAlertStore();
 const item = ITEMS.find(item => item.id === props.id)
+const showPurchaseModal = ref(false);
 
 const thumbnailPath = ref(item.image);
 const name = ref(item.name);
@@ -97,22 +107,25 @@ function toggleLike() {
         shopStore.wish = shopStore.wish.filter(i => i.id !== props.id)
         liked.value = false
         likedCount.value -= 1
-        alert('찜이 해제되었습니다!')
+        alertStore.warning(`[${item.name}] 상품이 찜 해제 되었습니다!`, 3000);
     } else {
         shopStore.wish.push({ ...item, liked: liked.value })
         liked.value = true
         likedCount.value += 1
-        alert('찜하셨습니다!')
+        alertStore.success(`[${item.name}] 상품이 찜 되었습니다!`, 3000);
     }
 }
 
 function purchase() {
-    if (confirm('결제 페이지로 이동합니다. 진행하시겠습니까?')) {
-
-        shopStore.orderItems = [item]
-        router.push('/shop/OrderPage')
-    }
+    showPurchaseModal.value = true;
 }
+
+function moveToPurchase() {
+    shopStore.orderItems = [item]
+    router.push('/shop/OrderPage')
+}
+
+
 
 </script>
 
@@ -130,7 +143,7 @@ function purchase() {
 
         .thumbnail {
             width: 100%;
-            
+
             img {
                 object-fit: cover;
                 width: 100%;
