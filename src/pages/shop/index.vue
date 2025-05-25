@@ -2,26 +2,16 @@ searchQueryse<template>
     <div class="shop-main">
         <!-- 헤더 -->
         <div class="top-bar">
-            <!-- <span class="logo">Digital Guard</span> -->
-
-
 
             <div class="search-container">
                 <input v-model="searchQuery" class="search-bar" placeholder="검색어를 입력하세요" />
-                <!-- <span class="search-icon">🔍</span> -->
                 <img class="search-icon" src="/images/shop/icons/search_icon.png">
             </div>
 
             <div class="top-bar-icons">
                 <img src="/images/shop/icons/bags_icon.png" @click.stop="goToCart">
                 <img src="/images/shop/icons/heart_icon_filled.png" @click.stop="goToWishlist">
-
-                <!-- <span class="icon" @click="goToCart">🛍️</span>
-                <span class="menu" @click="goToWishlist">❤️</span> -->
             </div>
-
-            <!-- <span class="icon" @click="goToCart">🛍️</span>
-            <span class="menu" @click="goToWishlist">❤️</span> -->
         </div>
 
 
@@ -59,33 +49,11 @@ searchQueryse<template>
                         <div class="icons">
                             <img :src="`/images/shop/icons/heart_icon${item.liked ? '_filled' : ''}.png`"
                                 @click.stop="toggleLike(item)">
-                            <!-- <button class="heart" @click.stop="toggleLike(item)">
-                                {{ item.liked ? '❤️' : '🤍' }}
-                            </button> -->
-                            <!-- <button class="cart" @click.stop="addToCart(item)">🛒</button> -->
                             <img id="cart" src="/images/shop/icons/cart_icon.png" @click.stop="addToCart(item)">
                         </div>
                     </div>
                 </CardView>
 
-
-                <!-- <div v-for="item in filteredItems" :key="item.id" class="product-card" @click="goToDetail(item)">
-                    <img :src="item.image" class="product-image" />
-                    <div class="brand">{{ item.brand }}</div>
-                    <div class="name">{{ item.name }}</div>
-                    <div class="price-row">
-                        <div class="price-info">
-                            <span class="price">{{ item.price }}p</span>
-                            <span class="discount" v-if="item.discount">-{{ item.discount }}%</span>
-                        </div>
-                        <div class="icons">
-                            <button class="heart" @click.stop="toggleLike(item)">
-                                {{ item.liked ? '❤️' : '🤍' }}
-                            </button>
-                            <button class="cart" @click.stop="addToCart(item)">🛒</button>
-                        </div>
-                    </div>
-                </div> -->
             </section>
         </div>
 
