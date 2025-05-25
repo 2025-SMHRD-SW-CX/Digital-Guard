@@ -2,7 +2,7 @@
 <template>
     <!-- 헤더 -->
     <div class="header-wrap">
-        <img src="/images/brand.png" v-if="!header.title" @click="goToMain" style="cursor: pointer;">
+        <img src="/images/header/brand.png" v-if="!header.title" @click="goToMain" style="cursor: pointer;">
         <div class="title-indicator" v-else>
             <img @click="clickBackBtn" src="/images/prev_page.png">
             <p>{{ header.title }}</p>
@@ -13,7 +13,7 @@
         <div class="indicator-wrap" v-if="header.show">
             <div id="user" class="key-icon-wrap">
                 <div class="icon">
-                    <img src="/images/user_icon.png">
+                    <img src="/images/header/user_icon.png">
                 </div>
                 <div class="value">
                     <p>{{ user.nickname }}</p>
@@ -25,7 +25,7 @@
                     <img src="/images/coin_icon.png">
                 </div>
                 <div class="value">
-                    <p>{{ user.totalReward }}</p>
+                    <p>{{ Number(user.totalReward).toLocaleString('ko-KR') }}P</p>
                 </div>
             </div>
 
@@ -118,7 +118,7 @@ watch(firstToken, (token) => {
         align-items: center;
         height: 100%;
         width: 100%;
-        gap: 5%;
+        gap: 1rem;
 
         .icon {
             width: 2em;

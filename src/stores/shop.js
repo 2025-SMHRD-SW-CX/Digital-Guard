@@ -53,7 +53,7 @@ export const ITEMS = [
     },
     {
         id: 2,
-        image: '/images/메가커피.webp',
+        image: '/images/shop/메가커피.webp',
         brand: '메가커피',
         name: '기프티콘 5천원권',
         price: 4500,
@@ -62,7 +62,7 @@ export const ITEMS = [
     },
     {
         id: 3,
-        image: '/images/컴포즈 커피.webp',
+        image: '/images/shop/컴포즈 커피.webp',
         brand: '컴포즈커피',
         name: '기프티콘 5천원권',
         price: 4500,
@@ -71,7 +71,7 @@ export const ITEMS = [
     },
     {
         id: 4,
-        image: '/images/맘스터치.webp',
+        image: '/images/shop/맘스터치.webp',
         brand: '맘스터치',
         name: '싸이버거 세트',
         price: 6500,
@@ -80,7 +80,7 @@ export const ITEMS = [
     },
     {
         id: 5,
-        image: '/images/배달의 민족.webp',
+        image: '/images/shop/배달의 민족.webp',
         brand: '배달의민족',
         name: '기프티콘 2만원권',
         price: 18000,
@@ -89,7 +89,7 @@ export const ITEMS = [
     },
     {
         id: 6,
-        image: '/images/베라.png',
+        image: '/images/shop/베라.png',
         brand: '베스킨라빈스',
         name: '파인트아이스크림',
         price: 8800,
@@ -98,7 +98,7 @@ export const ITEMS = [
     },
     {
         id: 7,
-        image: '/images/설빙.webp',
+        image: '/images/shop/설빙.webp',
         brand: '설빙',
         name: '인절미설빙',
         price: 8800,
@@ -107,7 +107,7 @@ export const ITEMS = [
     },
     {
         id: 8,
-        image: '/images/신박한패션템.webp',
+        image: '/images/shop/신박한패션템.webp',
         brand: '신박한패션템',
         name: '미니카세트키링',
         price: 7100,
@@ -116,7 +116,7 @@ export const ITEMS = [
     },
     {
         id: 9,
-        image: '/images/스벅아2카스테라.webp',
+        image: '/images/shop/스벅아2카스테라.webp',
         brand: '스타벅스',
         name: '아메리카노2잔+생크림카스텔라',
         price: 12500,
@@ -125,7 +125,7 @@ export const ITEMS = [
     },
     {
         id: 10,
-        image: '/images/메가리카노.webp',
+        image: '/images/shop/메가리카노.webp',
         brand: '메가커피',
         name: '아이스아메리카노',
         price: 1800,
@@ -134,7 +134,7 @@ export const ITEMS = [
     },
     {
         id: 11,
-        image: '/images/초코에몽.webp',
+        image: '/images/shop/초코에몽.webp',
         brand: 'GS25',
         name: '초코에몽',
         price: 1400,
@@ -143,7 +143,7 @@ export const ITEMS = [
     },
     {
         id: 12,
-        image: '/images/바나나우유.webp',
+        image: '/images/shop/바나나우유.webp',
         brand: 'CU',
         name: '빙그레)바나나우유',
         price: 1600,
@@ -152,7 +152,7 @@ export const ITEMS = [
     },
     {
         id: 13,
-        image: '/images/소프트콘.webp',
+        image: '/images/shop/소프트콘.webp',
         brand: '롯데리아',
         name: '소프트콘',
         price: 1200,
@@ -161,7 +161,7 @@ export const ITEMS = [
     },
     {
         id: 14,
-        image: '/images/파베초콜릿케이크.webp',
+        image: '/images/shop/파베초콜릿케이크.webp',
         brand: '투썸플레이스',
         name: '파베초콜릿케이크(쁘띠)',
         price: 7900,
@@ -170,7 +170,7 @@ export const ITEMS = [
     },
     {
         id: 15,
-        image: '/images/춘식이우유.webp',
+        image: '/images/shop/춘식이우유.webp',
         brand: 'GS25',
         name: '춘식이초코우유',
         price: 1650,
@@ -179,7 +179,7 @@ export const ITEMS = [
     },
       {
         id: 17,
-        image: '/images/GS255천원.webp',
+        image: '/images/shop/GS255천원.webp',
         brand: 'GS25',
         name: '기프티콘 5천원권',
         price: 4500,
@@ -188,7 +188,7 @@ export const ITEMS = [
     },
     {
         id: 18,
-        image: '/images/초코송이.webp',
+        image: '/images/shop/초코송이.webp',
         brand: '세븐일레븐',
         name: '초코송이',
         price: 900,
@@ -197,7 +197,7 @@ export const ITEMS = [
     },
     {
         id: 19,
-        image: '/images/아이스모찌.webp',
+        image: '/images/shop/아이스모찌.webp',
         brand: '베스킨라빈스',
         name: '아이스모찌(스트로베리)',
         price: 2950,
@@ -206,7 +206,7 @@ export const ITEMS = [
     },
     {
         id: 20,
-        image: '/images/꿀수박주스.webp',
+        image: '/images/shop/꿀수박주스.webp',
         brand: '메가커피',
         name: '꿀수박주스',
         price: 3600,
@@ -215,7 +215,7 @@ export const ITEMS = [
     },
     {
         id: 21,
-        image: '/images/말랑카피바라.webp',
+        image: '/images/shop/말랑카피바라.webp',
         brand: '아이데이지',
         name: '말랑몰랑 카피바라',
         price: 4400,
@@ -224,7 +224,7 @@ export const ITEMS = [
     },
     {
         id: 22,
-        image: '/images/떠먹는아박.webp',
+        image: '/images/shop/떠먹는아박.webp',
         brand: '투썸플레이스',
         name: '떠먹는아박',
         price: 6100,
@@ -233,7 +233,7 @@ export const ITEMS = [
     },
     {
         id: 23,
-        image: '/images/돌인형.webp',
+        image: '/images/shop/돌인형.webp',
         brand: '데데리트',
         name: '진지한돌멩이인형',
         price: 8000,
@@ -242,7 +242,7 @@ export const ITEMS = [
     },
     {
         id: 24,
-        image: '/images/세계문학전집.webp',
+        image: '/images/shop/세계문학전집.webp',
         brand: '예스24',
         name: '세계문학전집32',
         price: 12800,
@@ -251,7 +251,7 @@ export const ITEMS = [
     },
     {
         id: 25,
-        image: '/images/애플망고치즈설빙.webp',
+        image: '/images/shop/애플망고치즈설빙.webp',
         brand: '설빙',
         name: '애플망고치즈설빙',
         price: 13000,
@@ -260,7 +260,7 @@ export const ITEMS = [
     },
     {
         id: 26,
-        image: '/images/물범바디플로우.webp',
+        image: '/images/shop/물범바디플로우.webp',
         brand: '루시아이',
         name: '뱃살물범 바디플로우',
         price: 14100,
@@ -269,7 +269,7 @@ export const ITEMS = [
     },
     {
         id: 27,
-        image: '/images/딸기크림떡.webp',
+        image: '/images/shop/딸기크림떡.webp',
         brand: '청년떡집',
         name: '딸기크림떡',
         price: 15200,
@@ -278,7 +278,7 @@ export const ITEMS = [
     },
     {
         id: 28,
-        image: '/images/고추바사삭.webp',
+        image: '/images/shop/고추바사삭.webp',
         brand: '굽네치킨',
         name: '고추바사삭+콜라1.25L',
         price: 20000,
@@ -287,7 +287,7 @@ export const ITEMS = [
     },
     {
         id: 29,
-        image: '/images/교촌허니콤보.webp',
+        image: '/images/shop/교촌허니콤보.webp',
         brand: '교촌치킨',
         name: '허니콤보+콜라1.25L',
         price: 23000,
@@ -296,7 +296,7 @@ export const ITEMS = [
     },
     {
         id: 30,
-        image: '/images/이미스캡.webp',
+        image: '/images/shop/이미스캡.webp',
         brand: '이미스',
         name: 'EMIS TONE ON TONE WAPPEN BALL CAP 11종',
         price: 44100,
@@ -305,7 +305,7 @@ export const ITEMS = [
     },
     {
         id: 33,
-        image: '/images/스타벅스.webp',
+        image: '/images/shop/스타벅스.webp',
         brand: '스타벅스',
         name: '기프티콘 2만원권',
         price: 18000,
