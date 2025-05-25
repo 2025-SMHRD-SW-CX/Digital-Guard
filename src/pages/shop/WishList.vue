@@ -2,11 +2,11 @@
   <div class="wishlist-wrapper">
     <!-- 상단 헤더 -->
     <header class="wishlist-header">
-      <span class="back-icon" @click="goBack">←</span>
+      <!-- <span class="back-icon" @click="goBack">←</span> -->
       <h2 class="wishlist-title">
-      <img src="/images/heart_icon_filled.png" alt="장바구니" class="icon-img">
+      <img src="/images/shop/icons/heart_icon_filled.png" alt="장바구니" class="icon-img">
           찜한 아이템
-        <img src="/images/heart_icon_filled.png" alt="장바구니" class="icon-img">
+        <img src="/images/shop/icons/heart_icon_filled.png" alt="장바구니" class="icon-img">
       </h2>
     </header>
 
@@ -35,15 +35,15 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 
-const router = useRouter()
+// const router = useRouter()
 const shopStore = useShopStore();
 
-function goBack() {
-  router.back()
-}
+// function goBack() {
+//   router.back()
+// }
 
 function remove(id) {
   shopStore.wish = shopStore.wish.filter(i => i.id !== id)

@@ -1,9 +1,9 @@
 <template>
   <ShopItemViewer :id="1" :likedCount="729">
     <section class="store-info">
-        <img src="/images/olive-banner.png" alt="올리브영 로고" class="banner" />
+        <img src="/images/shop/olive/olive-banner.png" alt="올리브영 로고" class="banner" />
         <p class="store-text">전국 올리브영 매장과<br />온라인몰에서 포인트처럼 사용 가능</p>
-        <img src="/images/올리브영상세설명.jpg" alt="올리브영상세설명" class="banner" />
+        <img src="/images/shop/olive/올리브영상세설명.jpg" alt="올리브영상세설명" class="banner" />
       </section>
   </ShopItemViewer>
 

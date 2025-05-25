@@ -15,15 +15,18 @@
   display: block;
   cursor: pointer;
   font-weight: bold;
-  font-size: 15pt;
-  max-width: 350px;
-  min-height: 40px;
+  font-size: 1rem;
+  padding: 0.5rem 1.5rem;
 
-  &:hover {
-    background-color: transparent !important;
-  }
-  &:active {
-    background-color: transparent !important;
+  // &:hover {
+  //   background-color: transparent !important;
+  // }
+  // &:active {
+  //   background-color: transparent !important;
+  // }
+
+  &-small {
+   font-size: 0.9rem;
   }
 }
 
@@ -44,5 +47,10 @@
 .btn-secondary {
   background-color: $color-secondary;
   color: $color-dark-gray;
+}
+
+.btn-highlight {
+  background-color: $color-highlight;
+  color: white;
 }
 

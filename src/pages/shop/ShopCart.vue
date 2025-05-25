@@ -5,7 +5,7 @@
       <!-- <span class="back-icon" @click="goBack">←</span> -->
       <div class="top-bar-icons">
         <h2 class="cart-title">
-          <img src="/images/bags_icon.png" alt="장바구니" class="icon-img">
+          <img src="/images/shop/icons/bags_icon.png" alt="장바구니" class="icon-img">
           장바구니
         </h2>
 

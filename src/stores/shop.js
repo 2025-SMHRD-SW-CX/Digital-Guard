@@ -4,52 +4,52 @@ import { defineStore } from 'pinia'
 export const ITEMS = [
     {
         id: 31,
-        image: '/images/cu3000.webp',
+        image: '/images/shop/cu3000/cu3000.webp',
         brand: 'CU',
         name: '기프티콘 3천원권',
         price: 2700,
         originalPrice: 3000, //변환
-        route: 'cu3000',
+        route: 'Cu3000',
         liked: false,
         // 아래는 ShopItemViewer.vue를 사용하기 위해 각 상품에 추가되는 속성들임
-        brandImage: '/images/cu-logo.PNG',
-        isCoupon: true
+        brandImage: '/images/shop/cu3000/cu-logo.png',
+        isCoupon: true,
     },
     {
         id: 32,
-        image: '/images/컴포즈아메.webp',
+        image: '/images/shop/compose_americano/컴포즈아메.webp',
         brand: '컴포즈커피',
         name: '아메리카노',
         price: 1600,
         originalPrice: 1800,
-        route: 'compose',
+        route: 'Compose',
         liked: false,
-        brandImage: '/images/compose-logo.png',
-        isCoupon: true
+        brandImage: '/images/shop/compose_americano/compose-logo.png',
+        isCoupon: true,
     },
     {
         id: 1,
-        image: '/images/올리브영.png',
+        image: '/images/shop/olive/올리브영.png',
         brand: '올리브영',
         name: '기프티콘 2만원권',
         price: 18000,
         originalPrice: 20000,
         route: 'Olive',
         liked: false,
-        brandImage: '/images/olive-logo.png',
-        isCoupon: true
-
+        brandImage: '/images/shop/olive/olive-logo.png',
+        isCoupon: true,
     },
     {
         id: 16,
-        image: '/images/고양이키링.webp',
+        image: '/images/shop/catkey/고양이키링.webp',
         brand: '데데리트',
         name: '고양이인형 키링',
         price: 5500,
         originalPrice: 6500,
         route: 'CatKey',
         liked: false,
-        brandImage: '/images/데데리트-logo.PNG'
+        brandImage: '/images/shop/catkey/데데리트-logo.png',
+        isCoupon: false
     },
     {
         id: 2,
