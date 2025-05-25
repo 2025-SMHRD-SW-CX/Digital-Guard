@@ -1,8 +1,8 @@
 <template>
-  <transition name="backdrop">
+  <transition name="backdrop" appear>
     <div v-if="modelValue" class="terms-modal-backdrop"></div>
   </transition>
-  <transition name="modal-body">
+  <transition name="modal-body" appear>
     <div v-if="modelValue" class="modal-body-wrap" @click.self="onBackdropClick" >
       <div class="modal">
         <div class="title" v-if="title">
@@ -90,7 +90,7 @@ function onBackdropClick() {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 9100;
+  z-index: $z-modal-backdrop;
 }
 
 /* modal-body */
@@ -155,7 +155,7 @@ function onBackdropClick() {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9100; /* 적당히 설정 */
+  z-index: $z-modal-wrap; /* 적당히 설정 */
 }
 
 /* modal 본체 스타일 */
@@ -168,7 +168,7 @@ function onBackdropClick() {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  z-index: 9110;
+  z-index: $z-modal;
 }
 
 .modal .title {

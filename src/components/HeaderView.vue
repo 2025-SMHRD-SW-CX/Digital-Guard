@@ -73,7 +73,7 @@ watch(firstToken, (token) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 9000;
+    z-index: $z-header;
     min-height: 5rem;
 
     img {

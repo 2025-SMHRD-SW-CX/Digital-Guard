@@ -129,7 +129,7 @@ function skipTutorial() {
   word-wrap: break-word;
   word-break: keep-all;
   text-wrap: balance;
-  z-index: 9000;
+  z-index: $z-workflow;
   background-color: white;
 }
 

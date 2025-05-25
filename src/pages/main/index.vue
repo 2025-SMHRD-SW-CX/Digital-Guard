@@ -93,9 +93,7 @@
                                 </div>
                             </template>
                         </div>
-
                     </div>
-
                 </div>
 
                 <div v-if="!shopStore.wish.length">
@@ -147,10 +145,12 @@ import CardView from '@/components/CardView.vue';
 import ModalView from '@/components/ModalView.vue';
 import { useShopStore, ITEMS } from '@/stores/shop';
 import { useUserStore } from '@/stores/user';
+import { useAlertStore } from '@/stores/alert';
 
 const router = useRouter();
 const shopStore = useShopStore();
 const userStore = useUserStore();
+const alertStore = useAlertStore();
 
 const progressPercent = computed(() => {
     if (!userStore.totalNeedDays) return 0
@@ -188,7 +188,8 @@ function goToShopItem(id) {
     if (item.route) {
         router.push(`/shop/view/${item.route}`);
     } else {
-        alert("해당 상품은 상세페이지가 준비되어있지 않습니다!");
+        alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
+        // alert("해당 상품은 상세페이지가 준비되어있지 않습니다!");
     }
 }
 
@@ -495,7 +496,6 @@ function checkAnswer(userAnswer) {
             font-size: 0.9rem;
             color: #aaa;
         }
-
 
     }
 }
