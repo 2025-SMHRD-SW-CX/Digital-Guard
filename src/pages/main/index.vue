@@ -1,45 +1,46 @@
 <template>
-    <div class="main-container">
-        <!-- ───────────── 오늘의 미션 카드 ───────────── -->
-        <CardView class="mission-card" @click="myClickHandler">
-            <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
-            <div class="progress-circle">
-                <svg viewBox="0 0 36 36" class="circular-chart">
-                    <!-- 배경 원 -->
-                    <path class="circle-bg" d="M18 2.0845
-       a 15.9155 15.9155 0 0 1 0 31.831
-       a 15.9155 15.9155 0 0 1 0 -31.831" />
+  <div class="main-container">
+    <!-- ─────────── 오늘의 미션 카드 ─────────── -->
+    <CardView class="mission-card" @click="myClickHandler">
+      <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
+      <div class="progress-circle">
+        <svg viewBox="0 0 36 36" class="circular-chart">
+          <path
+            class="circle-bg"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+          <path
+            class="circle"
+            :style="{
+              strokeDasharray: 100,
+              strokeDashoffset: 100 - progressPercent
+            }"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        </svg>
+        <div class="progress-text">
+          {{ userStore.progressDays }}<small class="fraction">/{{ userStore.totalNeedDays }}</small>
+        </div>
+      </div>
+      <p class="card-subtext">
+        <span v-if="userStore.isParticipatedToday">{{ userStore.progressDays }}일차 완료</span>
+        <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
+      </p>
 
-                    <!-- 게이지 원 -->
-                    <path class="circle" :style="{
-                        strokeDasharray: 100,
-                        strokeDashoffset: 100 - progressPercent
-                    }" d="M18 2.0845
-     a 15.9155 15.9155 0 0 1 0 31.831
-     a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
+      <div class="reward-info">
+        <p id="bonus" v-if="!userStore.isParticipatedToday">
+          오늘의 챌린지 완료하면 <span class="highlight">연속 {{ userStore.continuousDays }}일</span>
+          보너스 <span class="highlight">{{ bonusReward }}P</span> 추가 지급!
+        </p>
+        <p id="total">
+          총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지
+          {{ userStore.totalNeedDays - userStore.progressDays }}일 남았어요!
+        </p>
+        <p id="cheer-up">조금만 더 화이팅✨</p>
+      </div>
+    </CardView>
 
-                <div class="progress-text">
-                    {{ userStore.progressDays }}<small class="fraction">/{{ userStore.totalNeedDays }}</small>
-                </div>
-            </div>
-            <p class="card-subtext">
-                <span v-if="userStore.isParticipatedToday">{{ userStore.progressDays }}일차 완료</span>
-                <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
-            </p>
-
-            <div class="reward-info">
-                <p id="bonus" v-if="!userStore.isParticipatedToday">오늘 챌린지 완료하면 <span class="highlight">연속 {{
-                        userStore.continuousDays }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가
-                    지급!</p>
-                <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{
-                    userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>
-                <p id="cheer-up">조금만 더 화이팅✨</p>
-            </div>
-
-        </CardView>
-
-        <!-- ───────────── 오늘의 챌린지(퀴즈) 카드 ───────────── -->
+        <!-- ─────────── 오늘의 챌린지(퀴즈) 카드 ─────────── -->
         <CardView class="quiz-card">
             <div v-if="userStore.isParticipatedToday || correctlyAnswered" class="overlay-message">
                 오늘의 챌린지를 완료했습니다
@@ -134,8 +135,30 @@
             </template>
         </ModalView>
     </div>
-</template>
 
+        <!-- ─────────── 정답 모니 ─────────── -->
+        <ModalView v-model="showCorrectModal" title="정답입니다! 🎉" type="confirm" confirmText="포인트샷으로 이동" cancelText="닫기"
+            @confirm="goToShop">
+            <template #default>
+                <p class="reason">{{ reasonText }}</p>
+                <div class="point-gain">
+                    <img src="/images/coin_icon.png" alt="코인 아이콘" />
+                    <span>{{ TOTAL_REWARD }}P 획득!</span>
+                    <template v-if="bonusReward">
+                        <span class="highlight bonus">연속 보너스 +{{ bonusReward }}P</span>
+                    </template>
+                </div>
+            </template>
+        </ModalView>
+
+        <!-- ─────────── 오단 모니 ─────────── -->
+        <ModalView v-model="showWrongModal" title="오단입니다 😥" type="alert" confirmText="확인">
+            <template #default>
+                <p class="reason">{{ reasonText }}</p>
+                <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
+            </template>
+        </ModalView>
+</template>
 
 <script setup>
 import { ref, computed } from 'vue';
@@ -152,68 +175,66 @@ const shopStore = useShopStore();
 const userStore = useUserStore();
 const alertStore = useAlertStore();
 
-const progressPercent = computed(() => {
-    if (!userStore.totalNeedDays) return 0
-    return Math.round((userStore.progressDays / userStore.totalNeedDays) * 100 * 10) / 10
-});
-
-const CORRECT_REWARD = 10;
-const bonusReward = userStore.calcContinuousBonus(CORRECT_REWARD);
-const TOTAL_REWARD = CORRECT_REWARD + bonusReward
-
 const correctlyAnswered = ref(false);
 const reasonText = ref('');
 const showCorrectModal = ref(false);
 const showWrongModal = ref(false);
 
+// 진행 퍼센트 계산
+const progressPercent = computed(() => {
+  if (!userStore.totalNeedDays) return 0;
+  return Math.round((userStore.progressDays / userStore.totalNeedDays) * 100 * 10) / 10;
+});
+
+// 보너스 계산
+const CORRECT_REWARD = 10;
+const bonusReward = computed(() => userStore.calcContinuousBonus(CORRECT_REWARD));
+const TOTAL_REWARD = computed(() => CORRECT_REWARD + bonusReward.value);
+
 const hasInsufficientItems = computed(() =>
-    shopStore.wish.some(item => item.price > userStore.totalReward)
+  shopStore.wish.some(item => item.price > userStore.totalReward)
 );
 
 function myClickHandler() {
-    router.push('/challenge');
+  router.push('/challenge');
 }
 
 function goToSurvey() {
-    router.push('/survey');
+  router.push('/survey');
 }
 
 function goToShop() {
-    showCorrectModal.value = false;
-    router.push('/shop');
+  showCorrectModal.value = false;
+  router.push('/shop');
 }
 
 function goToShopItem(id) {
-    const item = ITEMS.find(item => item.id == id)
-    if (item.route) {
-        router.push(`/shop/view/${item.route}`);
-    } else {
-        alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
-        // alert("해당 상품은 상세페이지가 준비되어있지 않습니다!");
-    }
+  const item = ITEMS.find(item => item.id == id);
+  if (item?.route) {
+    router.push(`/shop/view/${item.route}`);
+  } else {
+    alertStore.danger(`[${item?.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
+  }
 }
 
 function checkAnswer(userAnswer) {
-    // 이미 오늘 참여했으면 아무 동작도 하지 않음
-    if (userStore.isParticipatedToday) return
+  if (userStore.isParticipatedToday) return;
 
-    const isCorrect = userAnswer === true
-    reasonText.value = isCorrect
-        ? '불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
-        : '불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.'
+  const isCorrect = userAnswer === true;
+  reasonText.value = isCorrect
+    ? '불만웹툰을 공유하는 행위는 저작권법 위반으로 처리 대상이 됩니다.'
+    : '불만웹툰 공유는 명백한 저작권 침해로 법적 책임이 따르며, 처리 대상이 됩니다.';
 
-    if (isCorrect) {
-        correctlyAnswered.value = true
-
-        userStore.addPoint(TOTAL_REWARD)
-        userStore.recordParticipation()
-        confetti({ spread: 10, origin: { y: 0.6 } })
-        showCorrectModal.value = true
-    } else {
-        showWrongModal.value = true
-    }
+  if (isCorrect) {
+    correctlyAnswered.value = true;
+    userStore.addPoint(TOTAL_REWARD.value);
+    userStore.recordParticipation();
+    confetti({ spread: 10, origin: { y: 0.6 } });
+    showCorrectModal.value = true;
+  } else {
+    showWrongModal.value = true;
+  }
 }
-
 </script>
 
 <style scoped lang="scss">
