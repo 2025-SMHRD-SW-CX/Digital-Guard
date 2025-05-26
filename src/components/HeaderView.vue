@@ -1,4 +1,3 @@
-<!-- HeaderView.vue -->
 <template>
     <!-- 헤더 -->
     <div class="header-wrap">
@@ -25,7 +24,7 @@
                     <img src="/images/coin_icon.png">
                 </div>
                 <div class="value">
-                    <p>{{ Number(user.totalReward).toLocaleString('ko-KR') }}P</p>
+                    <p>{{ formattedReward }}</p>
                 </div>
             </div>
 
@@ -34,7 +33,7 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHeaderStore, TITLE_MAP } from '@/stores/header'
 import { useUserStore } from '@/stores/user'
@@ -44,6 +43,11 @@ const router = useRouter()
 const header = useHeaderStore()
 const user = useUserStore();
 const { firstToken } = usePathToken()
+
+const formattedReward = computed(() => {
+  const value = Number(user.totalReward) || 0
+  return value.toLocaleString('ko-KR') + 'P'
+})
 
 const clickBackBtn = () => {
     const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
@@ -62,8 +66,6 @@ watch(firstToken, (token) => {
     }
 }, { immediate: true })
 </script>
-
-
 
 <style lang="scss" scoped>
 .header-wrap {

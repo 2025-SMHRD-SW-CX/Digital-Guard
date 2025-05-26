@@ -29,8 +29,8 @@
             </p>
 
             <div class="reward-info">
-                <p id="bonus" v-if="!userStore.isParticipatedToday">오늘 챌린지 완료하면 <span class="highlight">연속 {{
-                        userStore.continuousDays }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가
+                <p id="bonus" v-if="!userStore.isParticipatedToday">오늘의 챌린지 완료하면 <span class="highlight">연속 {{
+                        userStore.continuousDays + 1 }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가
                     지급!</p>
                 <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{
                     userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>

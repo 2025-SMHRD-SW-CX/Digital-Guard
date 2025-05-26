@@ -58,7 +58,7 @@ const DEFAULT_VALUES = {
     createdAt: 20250523,
     totalNeedDays: 7,
     progressDays: 5,
-    continuousDays: 4,
+    continuousDays: 5,
     // 어제 날짜로 설정
     lastParticipate: new Date(Date.now() - 24 * 60 * 60 * 1000)
 }
