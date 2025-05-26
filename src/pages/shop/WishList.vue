@@ -37,25 +37,32 @@
 <script setup>
 // import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
+import { useAlertStore } from '@/stores/alert';
 
 // const router = useRouter()
 const shopStore = useShopStore();
+const alertStore = useAlertStore(); 
 
 // function goBack() {
 //   router.back()
 // }
 
 function remove(id) {
-  shopStore.wish = shopStore.wish.filter(i => i.id !== id)
+  const item = shopStore.wish.find(i => i.id === id);
+  shopStore.wish = shopStore.wish.filter(i => i.id !== id);
+
+  if (item) {
+    alertStore.warning(`[${item.name}] 찜 목록에서 제거되었습니다.`, 2000);
+  }
 }
 
 function addToCart(item) {
-  const exists = shopStore.cart.find(i => i.id === item.id)
+  const exists = shopStore.cart.find(i => i.id === item.id);
   if (exists) {
-    alert(`${item.name}은(는) 이미 장바구니에 담겨 있습니다!`)
+    alertStore.danger(`[${item.name}]은(는) 이미 장바구니에 담겨 있습니다!`, 2500);
   } else {
-    shopStore.cart.push(item)
-    alert(`${item.name} 장바구니에 담겼습니다!`)
+    shopStore.cart.push(item);
+    alertStore.success(`[${item.name}] 장바구니에 담겼습니다!`, 2500);
   }
 }
 </script>
@@ -101,8 +108,11 @@ function addToCart(item) {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 12px;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
 }
 
 .item-image {

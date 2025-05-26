@@ -1,68 +1,90 @@
 <template>
-    <div class="order-page" v-if="shopStore.orderItems.length">
-        <header class="header">
-            <h1>주문/결제</h1>
-        </header>
+  <div class="order-page" v-if="shopStore.orderItems.length">
+    <header class="header">
+      <h1>주문/결제</h1>
+    </header>
 
-        <!-- 배송지 입력 -->
-        <section class="address-box">
-            <div class="address-title">
-                <strong>배송지 | {{ name }}</strong>
-                <button class="change-btn" @click="openAddressSearch">배송지 변경</button>
-            </div>
-            <div class="address-info">
-                <div class="default-label">기본 배송지</div>
-                <p v-html="address.replaceAll('\n', '<br />')"></p>
-                <input v-model="name" type="text" class="info-input" placeholder="이름" />
-                <input v-model="phone" class="info-input" type="tel" placeholder="전화번호" />
-                <p v-if="!isValidPhone(phone) && phone" class="error-msg">형식: 010-1234-5678</p>
-            </div>
+    <!-- 배송지 입력 -->
+    <section class="address-box">
+      <div class="address-title">
+        <strong>배송지 | {{ name }}</strong>
+        <button class="change-btn" @click="openAddressSearch">배송지 변경</button>
+      </div>
+      <div class="address-info">
+        <div class="default-label">기본 배송지</div>
+        <p v-html="address.replaceAll('\n', '<br />')"></p>
+        <input v-model="name" type="text" class="info-input" placeholder="이름" />
+        <input v-model="phone" class="info-input" type="tel" placeholder="전화번호" />
+        <p v-if="!isValidPhone(phone) && phone" class="error-msg">형식: 010-1234-5678</p>
+      </div>
 
-            <label class="request-label">배송 요청사항</label>
-            <select class="request-select" v-model="selectedRequest">
-                <option disabled value="">요청사항을 선택하세요</option>
-                <option>문 앞에 놔주세요</option>
-                <option>경비실에 맡겨주세요</option>
-                <option>배송전에 연락주세요</option>
-                <option>그외 장소(계단,밑,옥상 등)</option>
-            </select>
-        </section>
+      <label class="request-label">배송 요청사항</label>
+      <select class="request-select" v-model="selectedRequest">
+        <option disabled value="">요청사항을 선택하세요</option>
+        <option>문 앞에 놔주세요</option>
+        <option>경비실에 맡겨주세요</option>
+        <option>배송전에 연락주세요</option>
+        <option>그외 장소(계단,밑,옥상 등)</option>
+      </select>
+    </section>
 
-        <!-- 주문 상품 선택 -->
-        <section class="product-section">
-            <h2>주문 상품</h2>
-            <div v-for="item in shopStore.orderItems" :key="item.id" class="product-box">
-                <input type="checkbox" :value="item.id" v-model="selectedIds" />
-                <img :src="item.image" class="product-img" />
-                <div class="product-info">
-                    <p class="product-name">{{ item.brand }}</p>
-                    <p class="product-desc">{{ item.name }}</p>
-                    <p class="product-qty">1개</p>
-                    <p class="product-price">{{ item.price.toLocaleString() }} Point</p>
-                </div>
-            </div>
-        </section>
+    <!-- 주문 상품 선택 -->
+    <section class="product-section">
+      <h2>주문 상품</h2>
+      <div v-for="item in shopStore.orderItems" :key="item.id" class="product-box">
+        <input type="checkbox" :value="item.id" v-model="selectedIds" />
+        <img :src="item.image" class="product-img" />
+        <div class="product-info">
+          <p class="product-name">{{ item.brand }}</p>
+          <p class="product-desc">{{ item.name }}</p>
+          <p class="product-qty">1개</p>
+          <p class="product-price">{{ item.price.toLocaleString() }} Point</p>
+        </div>
+      </div>
+    </section>
 
-        <!-- 결제 요약 -->
-        <section class="summary-section">
-            <h2>구매</h2>
-            <div class="summary-row">
-                <!-- <span>보유 포인트</span><span>{{ userPoint.toLocaleString() }} Point</span> -->
-                <span>보유 포인트</span><span>{{ userStore.totalReward }} Point</span>
-            </div>
-            <div class="summary-row">
-                <span>결제 포인트</span><span>- {{ totalPrice.toLocaleString() }} Point</span>
-            </div>
-            <div class="summary-row total">
-                <span>남은 포인트</span><span>{{ remainingPoint.toLocaleString() }} Point</span>
-            </div>
-        </section>
+    <!-- 결제 요약 -->
+    <section class="summary-section">
+      <h2>구매</h2>
+      <div class="summary-row">
+        <span>보유 포인트</span><span>{{ userStore.totalReward }} Point</span>
+      </div>
+      <div class="summary-row">
+        <span>결제 포인트</span><span>- {{ totalPrice.toLocaleString() }} Point</span>
+      </div>
+      <div class="summary-row total">
+        <span>남은 포인트</span><span>{{ remainingPoint.toLocaleString() }} Point</span>
+      </div>
+    </section>
 
-        <!-- 결제 버튼 -->
-        <footer class="bottom-bar">
-            <button class="pay-button" @click="submitOrder">결제하기</button>
-        </footer>
-    </div>
+    <!-- 결제 버튼 -->
+    <footer class="bottom-bar">
+      <button class="pay-button" @click="submitOrder">결제하기</button>
+    </footer>
+  </div>
+
+  <!-- 모달 영역 -->
+  <ModalView
+    v-model:modelValue="showConfirmModal"
+    title="결제 정보를 확인해주세요"
+    type="confirm"
+    @confirm="handleConfirmPayment"
+  >
+    <template #default>
+      <p style="white-space: pre-line">{{ confirmMessage }}</p>
+    </template>
+  </ModalView>
+
+  <ModalView
+    v-model:modelValue="showSuccessModal"
+    title="완료"
+    type="alert"
+    @confirm="router.push('/shop/OrderFinish')"
+  >
+    <template #default>
+      <p>✅ 결제가 완료되었습니다!</p>
+    </template>
+  </ModalView>
 </template>
 
 <script setup>
@@ -71,142 +93,114 @@ import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 import { useUserStore } from '@/stores/user.js'
 import { useHead } from '@vueuse/head'
+import ModalView from '@/components/ModalView.vue'
+
+const showConfirmModal = ref(false)
+const showSuccessModal = ref(false)
+const confirmMessage = ref('')
 
 const router = useRouter()
-const userStore = useUserStore();
-const shopStore = useShopStore();
+const userStore = useUserStore()
+const shopStore = useShopStore()
 
-// 배송정보
 const selectedRequest = ref('')
 const address = ref('(04567) 광주광역시 중구 상산로 123,\n상상타워 10층 1001호')
 const name = ref('홍길동')
 const phone = ref('010-1234-5678')
-const userPoint = ref(20000)
-
-// 주소 API 삽입
-useHead({
-    script: [
-        {
-            src: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js',
-            async: true,
-            defer: true
-        }
-    ]
-})
-
-if (!shopStore.orderItems.length) {
-    alert("잘못된 접근입니다! 주문하신 상품 목록이 없습니다.");
-    router.back();
-}
-
-// 선택된 상품 ID
 const selectedIds = ref(shopStore.orderItems.map(item => item.id))
 
+useHead({
+  script: [
+    {
+      src: '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js',
+      async: true,
+      defer: true
+    }
+  ]
+})
+
+onMounted(() => {
+  const saved = JSON.parse(localStorage.getItem('orderInfo'))
+  if (saved) {
+    name.value = saved.name
+    phone.value = saved.phone
+    address.value = saved.address
+    selectedRequest.value = saved.request
+  }
+})
+
 const totalPrice = computed(() =>
-    shopStore.orderItems
-        .filter(i => selectedIds.value.includes(i.id))
-        .reduce((sum, item) => sum + item.price, 0)
+  shopStore.orderItems.filter(i => selectedIds.value.includes(i.id)).reduce((sum, item) => sum + item.price, 0)
 )
 
 const remainingPoint = computed(() => userStore.totalReward - totalPrice.value)
 
 function isValidPhone(phone) {
-    const regex = /^01[016789]-\d{3,4}-\d{4}$/;
-    return regex.test(phone)
+  return /^01[016789]-\d{3,4}-\d{4}$/.test(phone)
 }
 
 function openAddressSearch() {
-    new window.daum.Postcode({
-        oncomplete(data) {
-            address.value = `(${data.zonecode}) ${data.address}`
-        }
-    }).open()
-}
-onMounted(() => {
-    const saved = JSON.parse(localStorage.getItem('orderInfo'))
-    if (saved) {
-        name.value = saved.name
-        phone.value = saved.phone
-        address.value = saved.address
-        selectedRequest.value = saved.request
+  new window.daum.Postcode({
+    oncomplete(data) {
+      address.value = `(${data.zonecode}) ${data.address}`
     }
-
-
-
-    // setTimeout(() => {
-    //     console.log('차감됨');
-    //     userStore.addPoint(-5000);
-    // }, 5000);
-})
-function submitOrder() {
-    if (!selectedRequest.value) return alert("배송 요청사항을 선택해 주세요.")
-    if (!name.value.trim()) return alert("이름을 입력해 주세요.")
-    if (!isValidPhone(phone.value)) return alert("올바른 전화번호 형식이 아닙니다. 예: 010-1234-5678")
-    if (remainingPoint.value < 0) return alert("포인트가 부족합니다.")
-
-
-
-    const orderedItems = shopStore.orderItems.filter(i => selectedIds.value.includes(i.id))
-
-    userStore.addPoint(-totalPrice.value)
-
-    // ✅ 주문 정보를 전역 상태에 저장
-    localStorage.setItem('orderInfo', JSON.stringify({
-        name: name.value,
-        phone: phone.value,
-        address: address.value,
-        request: selectedRequest.value,
-        orderedItems: orderedItems, // ✅ 주문 상품 저장
-        totalPrice: totalPrice.value, // ✅ 결제 포인트 저장
-        // remainingPoint: remainingPoint.value // ✅ 남은 포인트 저장
-        remainingPoint: userStore.totalReward
-    }))
-
-    // ✅ 주문 내역 리스트에 추가 (마이페이지용)-----------------------------------
-    const prevOrders = JSON.parse(localStorage.getItem('orderList')) || []
-    prevOrders.push({
-        id: Date.now(),
-        date: new Date().toISOString(),
-        name: name.value,
-        phone: phone.value,
-        address: address.value,
-        request: selectedRequest.value,
-        orderedItems,
-        totalPrice: totalPrice.value,
-        remainingPoint: remainingPoint.value
-    })
-    localStorage.setItem('orderList', JSON.stringify(prevOrders))
-    // ---------------------------------------------------------------------
-
-    const productList = orderedItems.map(i => `• ${i.brand} - ${i.name} (${i.price.toLocaleString()}P)`).join('\n')
-
-    const confirmMsg = `✅ 결제 정보를 확인해주세요:
-
-🧾 주문 내역:
-${productList}
-
-📍 배송지: ${address.value}
-👤 수령인: ${name.value}
-📞 연락처: ${phone.value}
-📦 요청사항: ${selectedRequest.value}
-
-💰 결제 금액: -${totalPrice.value.toLocaleString()}P
-💳 남은 포인트: ${remainingPoint.value.toLocaleString()}P`
-
-    const userConfirmed = confirm(confirmMsg)
-    if (!userConfirmed) return
-
-    // 장바구니 정리
-    shopStore.cart = shopStore.cart.filter(i => !selectedIds.value.includes(i.id))
-    shopStore.selectedCartIds = shopStore.selectedCartIds.filter(id => !selectedIds.value.includes(id))
-
-    alert("✅ 결제가 완료되었습니다!")
-    router.push('/shop/OrderFinish')
-
+  }).open()
 }
 
+function submitOrder() {
+  if (!selectedRequest.value) return alert("배송 요청사항을 선택해 주세요.")
+  if (!name.value.trim()) return alert("이름을 입력해 주세요.")
+  if (!isValidPhone(phone.value)) return alert("올바른 전화번호 형식이 아닙니다. 예: 010-1234-5678")
+  if (remainingPoint.value < 0) return alert("포인트가 부족합니다.")
 
+  const productList = shopStore.orderItems
+    .filter(i => selectedIds.value.includes(i.id))
+    .map(i => `• ${i.brand} - ${i.name} (${i.price.toLocaleString()}P)`)
+    .join('\n')
 
+  confirmMessage.value = `✅ 결제 정보를 확인해주세요:\n\n🧾 주문 내역:\n${productList}\n\n📍 배송지: ${address.value}\n👤 수령인: ${name.value}\n📞 연락처: ${phone.value}\n📦 요청사항: ${selectedRequest.value}\n\n💰 결제 금액: -${totalPrice.value.toLocaleString()}P\n💳 남은 포인트: ${remainingPoint.value.toLocaleString()}P`
+
+  showConfirmModal.value = true
+}
+
+function handleConfirmPayment() {
+  showConfirmModal.value = false
+
+  const orderedItems = shopStore.orderItems.filter(i => selectedIds.value.includes(i.id))
+  const total = totalPrice.value
+  const futureRemaining = userStore.totalReward - total
+
+  userStore.addPoint(-total)
+
+  localStorage.setItem('orderInfo', JSON.stringify({
+    name: name.value,
+    phone: phone.value,
+    address: address.value,
+    request: selectedRequest.value,
+    orderedItems,
+    totalPrice: total,
+    remainingPoint: userStore.totalReward
+  }))
+
+  const prevOrders = JSON.parse(localStorage.getItem('orderList')) || []
+  prevOrders.push({
+    id: Date.now(),
+    date: new Date().toISOString(),
+    name: name.value,
+    phone: phone.value,
+    address: address.value,
+    request: selectedRequest.value,
+    orderedItems,
+    totalPrice: total,
+    remainingPoint: futureRemaining
+  })
+  localStorage.setItem('orderList', JSON.stringify(prevOrders))
+
+  shopStore.cart = shopStore.cart.filter(i => !selectedIds.value.includes(i.id))
+  shopStore.selectedCartIds = shopStore.selectedCartIds.filter(id => !selectedIds.value.includes(id))
+
+  showSuccessModal.value = true
+}
 </script>
 
 <style scoped>
