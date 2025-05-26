@@ -81,6 +81,7 @@ function buy() {
 .cart-wrapper {
   padding: 16px;
   font-family: 'Arial', sans-serif;
+  width:100%;
 }
 
 .cart-header {

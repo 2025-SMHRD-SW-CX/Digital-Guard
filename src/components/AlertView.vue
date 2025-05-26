@@ -7,7 +7,7 @@
                 :key="alert.id"
                 :class="['alert', alert.type]"
             >
-                <span class="message">{{ alert.message }}</span>
+                <span class="message" v-html="alert.message"></span>
                 <button class="close" @click="alertStore.remove(alert.id)">×</button>
                 <div
                     v-if="typeof alert.duration === 'number' && alert.duration > 0"
