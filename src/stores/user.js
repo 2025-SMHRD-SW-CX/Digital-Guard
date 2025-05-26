@@ -1,5 +1,4 @@
 // src/stores/user.js
-// 원래 주현 코드
 
 /*
 
