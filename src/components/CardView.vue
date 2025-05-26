@@ -19,7 +19,7 @@ const props = defineProps({
   },
   padding: {
     type: String,
-    default: "1rem"
+    default: "1.35rem"
   },
   style: {
     type: Object
