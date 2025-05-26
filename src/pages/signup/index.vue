@@ -3,77 +3,67 @@
     <p class="signup__intro">회원 가입을 위해 정보를 입력해주세요.</p>
     <form class="signup__form" @submit.prevent="openConfirmation">
       <!-- 아이디 -->
-      <div class="signup__input-group">
-        <input v-model="username" type="text" placeholder="아이디" class="signup__input" @input="validateUsername" />
-        <p v-if="username.trim() === ''" class="signup__message signup__message--warn">아이디를 입력해주세요.</p>
-        <p v-else-if="!isUsernameValid" class="signup__message signup__message--warn">아이디는 영문과 숫자만 입력할 수 있습니다.</p>
-        <p v-else class="signup__message signup__message--info">사용할 수 있는 아이디입니다.</p>
-      </div>
+      <InputField v-model="username" placeholder="아이디" :validator="validator.username"
+        errorMessage="아이디는 영문과 숫자만 입력할 수 있습니다." autocomplete="username" :readOnly="idCheckStatus === true"
+        :externalError="idCheckStatus === false ? '이미 사용 중인 아이디입니다.' : ''"
+        :externalValid="idCheckStatus === true ? '사용 가능한 아이디입니다.' : ''">
+        <template #right>
+          <button class="id-check-btn" type="button" @click="idCheckStatus === true ? handleResetId() : handleIdCheck()"
+            :disabled="!validator.username(username) || !username">
+            {{ idCheckStatus === true ? '다시입력' : '중복검사' }}
+          </button>
+        </template>
+      </InputField>
+      <!-- 안내 메시지도 아래에서 조건부로 -->
+      <!-- <p v-if="idCheckStatus === false" class="signup__message signup__message--warn">
+        이미 사용 중인 아이디입니다.
+      </p>
+      <p v-if="idCheckStatus === true" class="signup__message signup__message--info">
+        사용 가능한 아이디입니다.
+      </p> -->
 
       <!-- 비밀번호 -->
-      <div class="signup__input-group">
-        <div class="signup__input-password-wrap">
-          <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="비밀번호"
-            class="signup__input signup__input--with-toggle" @input="validatePassword" />
-          <button type="button" class="signup__toggle" @click="showPassword = !showPassword" tabindex="-1" aria-label="비밀번호 표시/숨기기">
-            <svg v-if="showPassword" class="signup__eye-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="#666" stroke-width="2" d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle fill="none" stroke="#666" stroke-width="2" cx="12" cy="12" r="3"/></svg>
-            <svg v-else class="signup__eye-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="#666" stroke-width="2" d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle fill="none" stroke="#666" stroke-width="2" cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="20" y2="20" stroke="#aaa" stroke-width="2"/></svg>
-          </button>
-        </div>
-        <p v-if="password && !isPasswordValid" class="signup__message signup__message--warn">
-          비밀번호는 영문+숫자+특수기호 포함 8자 이상이어야 합니다.
-        </p>
-      </div>
+      <InputField v-model="password" type="password" placeholder="비밀번호" :validator="validator.password"
+        errorMessage="영문+숫자 포함, 8자 이상 (사용가능 특수문자는 !@#$%^&*()-_=+[]{};:,.<>?~) 입력해야 합니다." validMessage="안전한 비밀번호입니다."
+        autocomplete="new-password" :show-password-toggle="true" />
 
       <!-- 비밀번호 확인 -->
-      <div class="signup__input-group">
-        <div class="signup__input-password-wrap">
-          <input :type="showPasswordConfirm ? 'text' : 'password'" v-model="passwordConfirm" placeholder="비밀번호 확인"
-            class="signup__input signup__input--with-toggle" />
-          <button type="button" class="signup__toggle" @click="showPasswordConfirm = !showPasswordConfirm" tabindex="-1" aria-label="비밀번호 확인 표시/숨기기">
-            <svg v-if="showPasswordConfirm" class="signup__eye-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="#666" stroke-width="2" d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle fill="none" stroke="#666" stroke-width="2" cx="12" cy="12" r="3"/></svg>
-            <svg v-else class="signup__eye-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="#666" stroke-width="2" d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle fill="none" stroke="#666" stroke-width="2" cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="20" y2="20" stroke="#aaa" stroke-width="2"/></svg>
-          </button>
-        </div>
-        <p v-if="passwordConfirm !== ''" class="signup__message"
-          :class="password === passwordConfirm ? 'signup__message--info' : 'signup__message--warn'">
-          {{ password === passwordConfirm ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.' }}
-        </p>
-      </div>
+      <InputField v-model="passwordConfirm" type="password" placeholder="비밀번호 확인" :validator="validator.passwordCheck"
+        errorMessage="비밀번호가 일치하지 않습니다." validMessage="비밀번호가 일치합니다." autocomplete="new-password"
+        :show-password-toggle="true" />
 
       <!-- 이름 -->
-      <div class="signup__input-group">
-        <input v-model="name" type="text" placeholder="이름" class="signup__input" @input="filterKoreanName" />
-      </div>
+      <InputField v-model="name" placeholder="이름" :validator="validator.name" errorMessage="이름은 한글만 입력할 수 있습니다."
+        autocomplete="name" />
 
       <!-- 생년월일 -->
-      <div class="signup__input-group">
-        <input v-model="birth" type="text" placeholder="생년월일 (예: 16081103)" class="signup__input"
-          @input="() => filterOnlyNumber('birth')" maxlength="8" />
-      </div>
+      <InputField v-model="birth" placeholder="생년월일 (예: 16081103)" :validator="validator.birth"
+        errorMessage="8자리 숫자만 입력하세요." maxlength="8" autocomplete="bday" />
 
       <!-- 전화번호 -->
-      <div class="signup__input-group">
-        <input v-model="phone" type="text" placeholder="전화번호 (- 없이)" class="signup__input"
-          @input="() => filterOnlyNumber('phone')" maxlength="11" />
-      </div>
+      <InputField v-model="phone" placeholder="전화번호 (- 없이)" :validator="validator.phone"
+        errorMessage="휴대폰 번호를 10~11자리 숫자로 입력하세요." maxlength="11" autocomplete="tel" />
 
       <!-- 이메일 -->
-      <div class="signup__input-group">
-        <div class="signup__email-row">
-          <input v-model="emailId" type="text" placeholder="이메일 아이디" class="signup__email-id" />
-          <span class="signup__at">@</span>
-          <select v-model="selectedDomain" class="signup__email-domain">
-            <option disabled value="">도메인 선택</option>
-            <option value="gmail.com">gmail.com</option>
-            <option value="naver.com">naver.com</option>
-            <option value="daum.net">daum.net</option>
-            <option value="self">직접 입력</option>
-          </select>
-          <input v-if="selectedDomain === 'self'" v-model="customDomain" type="text" placeholder="직접 입력"
-            class="signup__email-custom" />
-        </div>
-        <p v-if="!isEmailValid" class="signup__message signup__message--warn">올바른 이메일 형식을 입력해주세요.</p>
+      <div class="signup__row signup__email-row">
+        <InputField v-model="emailId" placeholder="이메일 아이디" />
+        <span class="signup__at">@</span>
+        <select v-model="selectedDomain" class="signup__email-domain">
+          <option disabled value="">도메인 선택</option>
+          <option value="gmail.com">gmail.com</option>
+          <option value="naver.com">naver.com</option>
+          <option value="daum.net">daum.net</option>
+          <option value="self">직접 입력</option>
+        </select>
+      </div>
+      <!-- 직접입력은 아랫줄에서 보여주기 -->
+      <div v-if="selectedDomain === 'self'" class="signup__row signup__custom-domain-row">
+        <InputField v-model="customDomain" placeholder="직접 입력" />
+      </div>
+
+      <!-- 이메일 전체가 입력됐을 때만 메시지 띄우기 -->
+      <div v-if="shouldShowEmailError" class="signup__message signup__message--warn">
+        올바른 이메일 형식을 입력해주세요.
       </div>
 
       <!-- 성별 -->
@@ -118,77 +108,113 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, toRefs } from 'vue'
-import { useRouter } from 'vue-router'
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'
-import { db } from '@/services/supabase'
+import InputField from '@/components/InputField.vue'
+import { reactive, ref, computed, toRefs } from 'vue'
+import { useRouter } from 'vue-router'
+import { registerUser, checkUserIdDuplicate } from '@/services/userService.js'
+import { useAlertStore } from '@/stores/alert'
 
 const router = useRouter()
+const alertStore = useAlertStore();
 
 const form = reactive({
-  username: '',
-  password: '',
-  passwordConfirm: '',
-  name: '',
-  birth: '',
-  phone: '',
-  gender: '',
-  agree: false,
+  username: '', password: '', passwordConfirm: '', name: '', birth: '', phone: '', gender: '', agree: false,
 })
-
-const {
-  username, password, passwordConfirm, name,
-  birth, phone, gender, agree,
-} = toRefs(form)
-
-// 이메일
-const emailId = ref('')
-const selectedDomain = ref('')
-const customDomain = ref('')
+const { username, password, passwordConfirm, name, birth, phone, gender, agree } = toRefs(form)
+const emailId = ref(''); const selectedDomain = ref(''); const customDomain = ref('')
 const email = computed(() => {
   if (!emailId.value) return ''
   const domain = selectedDomain.value === 'self' ? customDomain.value : selectedDomain.value
   return `${emailId.value}@${domain}`
 })
 
-// 상태/유효성
-const showPassword = ref(false)
-const showPasswordConfirm = ref(false)
-const isUsernameValid = ref(true)
-const isPasswordValid = ref(true)
+const idCheckStatus = ref(null) // null: 미확인, true: 사용 가능, false: 중복, 'reset': 다시입력 상태
+
+const handleIdCheck = async () => {
+  // 빈값은 체크 X
+  if (!username.value) return
+  const ok = await checkUserIdDuplicate(username.value)
+  idCheckStatus.value = ok ? true : false
+}
+
+const handleResetId = () => {
+  username.value = ''
+  idCheckStatus.value = null
+}
+
 const isEmailValid = computed(() =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)
 )
 
-const canSubmit = computed(() =>
-  username.value.trim() !== '' &&
-  isUsernameValid.value &&
-  password.value !== '' &&
-  isPasswordValid.value &&
-  passwordConfirm.value !== '' &&
-  password.value === passwordConfirm.value &&
-  isEmailValid.value &&
-  agree.value
-)
+const shouldShowEmailError = computed(() => {
+  // 기본 도메인 선택: emailId와 selectedDomain이 모두 입력됐고, 이메일이 invalid
+  if (selectedDomain.value && selectedDomain.value !== 'self') {
+    return emailId.value && !isEmailValid.value
+  }
+  // 직접입력: emailId, customDomain 모두 입력됐고, 이메일이 invalid
+  if (selectedDomain.value === 'self') {
+    return emailId.value && customDomain.value && !isEmailValid.value
+  }
+  return false
+})
+
 
 // 메서드
 const selectGender = g => { gender.value = g }
 const genderClass = g =>
   ['signup__gender-btn', gender.value === g ? 'selected' : '']
 
-const validateUsername = () => {
-  isUsernameValid.value = /^[A-Za-z0-9]+$/.test(username.value)
+const validator = {
+  username(val) {
+    if (!val) return undefined; // 입력 전
+    if (/^[A-Za-z0-9]+$/.test(val)) return true;
+    return false;
+  },
+  password(val) {
+    if (!val) return undefined
+    // 허용 특수문자!
+    const allowedSpecials = '!@#$%^&*()\\-_=+\\[\\]{};:,.<>?~'
+    const regex = new RegExp(
+      `^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d${allowedSpecials}]{8,}$`
+    )
+    return regex.test(val)
+  },
+  passwordCheck(val) {
+    if (!val) return undefined;
+    if (val === password.value) return true;
+    return false;
+  },
+  name(val) {
+    if (!val) return undefined;
+    if (/^[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7A3]+$/.test(val)) return true;
+    return false;
+  },
+  birth(val) {
+    if (!val) return undefined;
+    if (/^\d{8}$/.test(val)) return true;
+    return false;
+  },
+  phone(val) {
+    if (!val) return undefined;
+    if (/^\d{10,11}$/.test(val)) return true;
+    return false;
+  }
 }
-const validatePassword = () => {
-  isPasswordValid.value = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}\-_+=~`|:;"'<>,.?/]).{8,}$/.test(password.value)
-}
-const filterKoreanName = () => {
-  name.value = name.value.replace(/[^\uAC00-\uD7A3]/g, '')
-}
-const filterOnlyNumber = field => {
-  form[field] = form[field].replace(/[^0-9]/g, '').slice(0, field === 'birth' ? 8 : 11)
-}
+
+const canSubmit = computed(() =>
+  idCheckStatus.value &&
+  validator.username(username.value) === true &&
+  validator.password(password.value) === true &&
+  validator.passwordCheck(passwordConfirm.value) === true &&
+  validator.name(name.value) === true &&
+  validator.birth(birth.value) === true &&
+  validator.phone(phone.value) === true &&
+  isEmailValid.value && // 이메일은 기존대로
+  agree.value
+);
+
 
 // 모달
 const showTermModal = ref(false)
@@ -198,49 +224,45 @@ const agreeTerm = () => { agree.value = true }
 const denyTerm = () => { agree.value = false }
 const openConfirmation = () => { showConfirmModal.value = true }
 
- // <-- 이 위치가 맞습니다!
-
 const confirmRegister = async () => {
   if (!canSubmit.value) return
 
-  const id = username.value.trim()  // 사용자가 입력한 아이디를 id로 사용
-
-  const { data, error } = await db.from('user').insert({
-    id,
+  const userObj = {
+    id: username.value.trim(),
     name: name.value,
-    nickname : name.value,
+    nickname: name.value, // 필요에 따라 수정
     phone: phone.value,
     birthday: birth.value,
     email: email.value,
-    password: password.value // 운영 시 해싱 꼭!
-  })
+    gender: gender.value,
+    password: password.value, // 평문 전달(해싱은 userService에서)
+  }
 
+  const { data, error } = await registerUser(userObj)
   if (error) {
-    console.error('에러 내용:', error)
-    alert('회원가입 실패: ' + error.message)
+    alertStore.danger('회원가입 실패: ' + error.message)
     return
   }
 
-  alert('회원가입 성공!')
   router.push('/welcome')
 }
-
 </script>
 
 <style lang="scss" scoped>
 .signup {
-  font-family: 'Roboto', sans-serif;
+  // 공통 컨테이너
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 1rem;
+  font-family: 'Roboto', sans-serif;
 
   &__intro {
-    font-weight: 500;
     font-size: 1.1rem;
+    font-weight: 500;
     margin-bottom: 1em;
-    text-align: center;
     width: 100%;
+    text-align: center;
   }
 
   &__form {
@@ -250,156 +272,185 @@ const confirmRegister = async () => {
     gap: 0.75rem;
   }
 
-  &__input-group {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 0.25rem;
-  }
-
-  // input + toggle button 고정
-  &__input-password-wrap {
-    position: relative;
-    width: 100%;
-
-    .signup__input {
-      width: 100%;
-      padding-right: 3rem;
-    }
-    .signup__toggle {
-      position: absolute;
-      right: 0.8rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      display: flex;
-      align-items: center;
-    }
-    .signup__eye-icon {
-      display: block;
-      width: 22px;
-      height: 22px;
-      pointer-events: none;
-    }
-  }
-
-  &__input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #1e3a8a;
-    border-radius: 0.25rem;
-    font-size: 16px;
-
-    &::placeholder {
-      font-size: 15px;
-      color: #9ca3af;
-    }
-    &--with-toggle {
-      padding-right: 3rem;
-    }
-  }
-
-  &__message {
-    margin-top: 0.25rem;
-    font-size: 14px;
-    line-height: 1.4;
-
-    &--warn {
-      color: #ef4444;
-    }
-    &--info {
-      color: #1e3a8a;
-    }
-  }
-
-  &__email-row {
-    width: 100%;
+  // 일관된 row 스타일
+  &__row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  &__email-id,
-  &__email-custom {
-    flex: 1;
-    min-width: 70px;
-    padding: 0.65rem 0.8rem;
-    border: 1px solid #1e3a8a;
-    border-radius: 0.25rem;
-    font-size: 15px;
-  }
-  &__at {
-    font-weight: bold;
-  }
-  &__email-domain {
-    padding: 0.6rem;
-    font-size: 14px;
-    border: 1px solid #1e3a8a;
-    border-radius: 0.25rem;
+    width: 100%;
+    gap: 8px; // InputField와 align
+    min-height: 48px; // 높이 통일
   }
 
-  &__gender-row {
+  // 이메일 입력 row
+  &__email-row {
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 8px;
     width: 100%;
+    min-height: 48px;
+
+    .signup__at {
+      font-weight: bold;
+      font-size: 18px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .signup__email-domain {
+      height: 44px;
+      min-width: 110px;
+      max-width: 150px;
+      padding: 0 1rem;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      background: #fff;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      outline: none;
+      flex-shrink: 0;
+
+      &:focus {
+        border-color: #1e3a8a;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
+      }
+    }
+  }
+
+  &__custom-domain-row {
+    margin-top: 4px; // 살짝 띄움
+    width: 100%;
+    // InputField와 똑같이!
+  }
+
+  // 성별 버튼 row
+  &__gender-row {
+    @extend .signup__row;
+
     .signup__gender-btn {
       flex: 1;
-      padding: 0.75rem 1rem;
-      border-radius: 0.25rem;
-      font-weight: bold;
-      font-size: 16px;
-      border: 1px solid #1e3a8a;
-      background: #eee;
+      height: 44px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      background: #fff;
       color: #444;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.18s;
+
+      &:focus,
       &.selected {
+        border-color: #1e3a8a;
         background: #1e3a8a;
         color: #fff;
       }
     }
   }
 
+  // 약관동의 row
   &__checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    border: 1px solid #1e3a8a;
-    border-radius: 0.25rem;
-    padding: 0.75rem 1rem;
-    font-size: 14px;
+    @extend .signup__row;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    padding: 0 1rem;
+    font-size: 15px;
     cursor: pointer;
-  }
-  &__checkbox {
-    accent-color: #1e3a8a;
-  }
-  &__checkbox-label {
-    cursor: pointer;
-    user-select: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+
+    &:focus-within,
+    &.active {
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
+    }
+
+    .signup__checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: #1e3a8a;
+      margin: 0;
+    }
+
+    .signup__checkbox-label {
+      flex: 1;
+      cursor: pointer;
+      user-select: none;
+      color: #444;
+    }
   }
 
   &__submit {
     width: 100%;
+    height: 48px;
+    border-radius: 8px;
     background: #e5e7eb;
     color: #4b5563;
     font-weight: 600;
-    padding: 0.75rem 1rem;
-    border-radius: 0.25rem;
+    font-size: 16px;
     margin-top: 1rem;
     cursor: not-allowed;
+    border: none;
+
     &:enabled {
       background: #1e3a8a;
       color: #fff;
       cursor: pointer;
     }
   }
+
+  &__message {
+    text-align: left;
+    margin-top: 0.25rem;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    bottom: 0.9rem;
+
+    &--warn {
+      color: #ef4444;
+    }
+
+    &--info {
+      color: #1e3a8a;
+    }
+  }
+
   &__modal-content {
     text-align: left;
     max-height: 300px;
     overflow-y: auto;
     font-size: 14px;
     padding-right: 1rem;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .id-check-btn {
+    text-wrap: nowrap;
+    margin-left: 0.5rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.9em;
+    border-radius: 0.5em;
+    border: 1.5px solid #1e3a8a;
+    background: #fff;
+    color: #1e3a8a;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover:not(:disabled) {
+      background: #1e3a8a;
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 }
 </style>

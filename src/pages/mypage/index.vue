@@ -5,36 +5,26 @@
       <div class="avatar">
         <img src="/images/mypage/knight-and-horse.png" alt="아바타 이미지" />
       </div>
-      <p class="badge">5일 동안 열심히 활동해주신 성실맨</p>
+      <p class="badge">{{ userStore.continuousDays }}일 동안 열심히 활동해주신 성실맨</p>
       <p class="username">
-        <span>{{ username }}</span>
+        <span>{{ userStore.nickname || userStore.name }}</span>
         <span class="honorific"> 님</span>
       </p>
       <div class="points">
         <img src="/images/mypage/coins.png" alt="포인트 아이콘" class="coin-icon" />
         <span>나의 포인트</span>
-        <strong>{{ points.toLocaleString() }}P</strong>
+        <strong>{{ (+userStore.totalPoint).toLocaleString() }}P</strong>
       </div>
     </section>
 
     <!-- 아이콘 메뉴 -->
     <nav class="menu-icons">
-      <div
-        v-for="(item, index) in menuButtons"
-        :key="index"
-        class="icon-btn"
-        :class="{ active: activeButtonIndex === index }"
-        @click="activeButtonIndex = index"
-        @mouseover="hoveredButtonIndex = index"
-        @mouseleave="hoveredButtonIndex = null"
-      >
-        <img
-          :src="activeButtonIndex === index || hoveredButtonIndex === index
-            ? `/images/mypage/${item.name}-active.png`
-            : `/images/mypage/${item.name}.png`"
-          :alt="item.label + ' 아이콘'"
-          class="icon-image"
-        />
+      <div v-for="(item, index) in menuButtons" :key="index" class="icon-btn"
+        :class="{ active: activeButtonIndex === index }" @click="activeButtonIndex = index"
+        @mouseover="hoveredButtonIndex = index" @mouseleave="hoveredButtonIndex = null">
+        <img :src="activeButtonIndex === index || hoveredButtonIndex === index
+          ? `/images/mypage/${item.name}-active.png`
+          : `/images/mypage/${item.name}.png`" :alt="item.label + ' 아이콘'" class="icon-image" />
         <span>{{ item.label }}</span>
         <div v-if="index < menuButtons.length - 1" class="divider"></div>
       </div>
@@ -42,53 +32,60 @@
 
     <!-- 메뉴 리스트 -->
     <ul class="menu-list">
-      <li
-        v-for="(item, index) in menuItems"
-        :key="index"
-        class="menu-item"
-        @mouseover="hoveredIndex = index"
-        @mouseleave="hoveredIndex = null"
-        :class="{ hovered: hoveredIndex === index }"
-      >
+      <li v-for="(item, index) in menuItems" :key="index" class="menu-item" @mouseover="hoveredIndex = index"
+        @mouseleave="hoveredIndex = null" @click="handleMenuClick(index)" :class="{ hovered: hoveredIndex === index }">
         {{ item }}
-        <img
-          class="arrow-icon"
-          :src="hoveredIndex === index
-            ? '/images/mypage/angle-right-active.png'
-            : '/images/mypage/angle-right.png'"
-          alt="화살표 아이콘"
-        />
+        <img class="arrow-icon" :src="hoveredIndex === index
+          ? '/images/mypage/angle-right-active.png'
+          : '/images/mypage/angle-right.png'" alt="화살표 아이콘" />
       </li>
     </ul>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'MyPage',
-  data() {
-    return {
-      username: '홍길동',
-      points: 5430,
-      activeButtonIndex: null,
-      hoveredButtonIndex: null,
-      hoveredIndex: null,
-      menuButtons: [
-        { label: '내 정보', name: 'person' },
-        { label: '나의 활동', name: 'trophy' },
-        { label: '사용내역', name: 'calculator' },
-        { label: '문의하기', name: 'headphone' },
-      ],
-      menuItems: [
-        '나의 찜 내역',
-        '나의 주문 조회',
-        '나의 반품 / 교환 내역',
-        '공지사항',
-        '자주 묻는 질문',
-      ],
-    };
-  },
-};
+<script setup>
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/user';
+import { useAlertStore } from '@/stores/alert';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore();
+const alertStore = useAlertStore();
+const router = useRouter();
+
+const activeButtonIndex = ref(null)
+const hoveredButtonIndex = ref(null)
+const hoveredIndex = ref(null)
+
+const menuButtons = [
+  { label: '내 정보', name: 'person' },
+  { label: '나의 활동', name: 'trophy' },
+  { label: '사용내역', name: 'calculator' },
+  { label: '문의하기', name: 'headphone' },
+]
+const menuItems = [
+  '나의 찜 내역',
+  '나의 주문 조회',
+  '나의 반품 / 교환 내역',
+  '공지사항',
+  '자주 묻는 질문',
+  '로그아웃'
+]
+
+// 로그아웃 메서드
+function logout() {
+  userStore.logout();
+  alertStore.warning('로그아웃 되었습니다!', 2000);
+  router.replace('/login');
+}
+
+function handleMenuClick(index) {
+  if (menuItems[index] === '로그아웃') {
+    logout();
+  } else {
+    // TODO: 다른 메뉴 클릭 시 원하는 동작
+  }
+}
 </script>
 
 <style lang="scss" scoped>

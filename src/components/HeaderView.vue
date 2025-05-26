@@ -1,19 +1,19 @@
 <template>
     <!-- 헤더 -->
     <div class="header-wrap">
-        <img src="/images/header/brand.png" v-if="!header.title" @click="goToMain" style="cursor: pointer;">
+        <img src="/images/header/brand.png" v-if="!headerStore.title" @click="goToMain" style="cursor: pointer;">
         <div class="title-indicator" v-else>
             <img @click="clickBackBtn" src="/images/prev_page.png">
-            <p>{{ header.title }}</p>
+            <p>{{ headerStore.title }}</p>
         </div>
 
-        <div class="indicator-wrap" v-if="header.show">
+        <div class="indicator-wrap" v-if="headerStore.show && userStore.isLogined">
             <div id="user" class="key-icon-wrap">
                 <div class="icon">
                     <img src="/images/header/user_icon.png">
                 </div>
                 <div class="value">
-                    <p>{{ user.nickname }}</p>
+                    <p>{{ userStore.nickname }}</p>
                 </div>
             </div>
 
@@ -30,20 +30,19 @@
 </template>
 
 <script setup>
-import { watch, computed, onMounted } from 'vue'
+import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHeaderStore, TITLE_MAP } from '@/stores/header'
 import { useUserStore } from '@/stores/user'
 import { usePathToken } from '@/composables/usePathToken'
-import { db } from '@/services/supabase' // supabase 연동 추가
 
 const router = useRouter()
-const header = useHeaderStore()
-const user = useUserStore()
+const headerStore = useHeaderStore()
+const userStore = useUserStore()
 const { firstToken } = usePathToken()
 
 const formattedReward = computed(() => {
-  const value = Number(user.totalReward) || 0
+  const value = Number(userStore.totalPoint) || 0
   return value.toLocaleString('ko-KR') + 'P'
 })
 
@@ -55,22 +54,13 @@ const goToMain = () => {
   router.push('/main')
 }
 
-// Supabase에서 포인트 실시간 반영
-onMounted(async () => {
-  if (!user.id) return
-  const { data, error } = await db.from('user').select('total_reward').eq('id', user.id).single()
-  if (!error && data) {
-    user.totalReward = data.total_reward
-  }
-})
-
 watch(firstToken, (token) => {
   if (!(token in TITLE_MAP)) {
-    header.setShow(false)
-    header.setTitle(null)
+    headerStore.setShow(false)
+    headerStore.setTitle(null)
   } else {
-    header.setShow(true)
-    header.setTitle(TITLE_MAP[token] || null)
+    headerStore.setShow(true)
+    headerStore.setTitle(TITLE_MAP[token] || null)
   }
 }, { immediate: true })
 </script>

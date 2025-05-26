@@ -3,20 +3,10 @@
     <h1 class="login-title"></h1>
 
     <div class="input-wrap">
-      <!-- 아이디 입력 -->
-      <input type="text" placeholder="아이디를 입력하세요" v-model="userId"
-        :class="['input', { 'error-border': showError, 'normal-border': !userId }]" />
-
-      <!-- 비밀번호 입력 -->
-      <input type="password" placeholder="비밀번호를 입력하세요" v-model="userPw"
-        :class="['input', { 'error-border': showError, 'normal-border': !userPw }]" />
-    </div>
-
-    <!-- 오류 메시지 -->
-    <div v-if="showError" class="error-message">
-      아이디 또는 비밀번호를 잘못 입력하셨습니다.
-      <br />
-      <span class="error-line-2">다시 한번 확인해주세요.</span>
+      <InputField v-model="userId" placeholder="아이디를 입력하세요" autocomplete="username" :error="showError"
+        @enter="handleLogin" />
+      <InputField v-model="userPw" type="password" placeholder="비밀번호를 입력하세요" autocomplete="current-password"
+        :error="showError" @enter="handleLogin" />
     </div>
 
     <!-- 로그인 버튼 -->
@@ -27,6 +17,8 @@
 
     <!-- 아이디/비밀번호 찾기 -->
     <div class="find-section">
+      <span class="find-link" @click="goToRegister">회원가입</span>
+      <span class="divider">|</span>
       <span class="find-link" @click="goToFindId">아이디 찾기</span>
       <span class="divider">|</span>
       <span class="find-link" @click="goToFindPw">비밀번호 찾기</span>
@@ -52,65 +44,34 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import Swal from 'sweetalert2'
-import { db } from '@/services/supabase'
 import { useUserStore } from '@/stores/user'
+import { useAlertStore } from '@/stores/alert'
+import InputField from '@/components/InputField.vue'
 
 const userStore = useUserStore()
-
+const alertStore = useAlertStore()
 const router = useRouter()
 
 const userId = ref('')
 const userPw = ref('')
 const showError = ref(false)
-
-//중복된 조건을 computed로 정의
 const isLoginDisabled = computed(() => !userId.value || !userPw.value)
 
 const handleLogin = async () => {
-  const { data, error } = await db
-    .from('user')
-    .select('*')
-    .eq('id', userId.value)
-    .eq('password', userPw.value)
-    .single();
-
-  console.log('data:', data)
-
-  userStore.login({  //supabase에서 가져온값을 넣어줌으로써 로그인처리가된다.
-    id: data['id'],
-    name: data['name'],
-    nickname: data['nickname'],
-    phone: data['phone'],
-    birthday: data['birthday'],
-    totalReward: data['total_reward'],
-    createdAt: data['createdAt']
-  })
-
-  console.log(userStore);
-  
-
-  if (error || !data) {
-    showError.value = true;
-    await Swal.fire({
-      icon: 'error',
-      title: '로그인 실패',
-      text: '아이디 또는 비밀번호를 확인해주세요.',
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: '다시 시도'
-    });
-  } else {
-    showError.value = false;
-    await Swal.fire({
-      icon: 'success',
-      title: '로그인 성공!',
-      text: `환영합니다, ${data.nickname}님!`,
-      confirmButtonColor: '#1e3a8a',
-      confirmButtonText: '확인'
-    });
-    router.push('/main');
+  try {
+    const data = await userStore.loginWithSupabase(userId.value, userPw.value)
+    alertStore.success(`${data.nickname || data.name} 님 어서오세요!`, 2000)
+    router.push('/main')
+  } catch (error) {
+    showError.value = true // <--- 이 부분 추가해야 에러 메시지 뜸
+    alertStore.danger(error.message, 2000)
+    return
   }
-};
+}
+
+const goToRegister = () => {
+  router.push('/signup')
+}
 
 const goToFindId = () => {
   router.push('/findUserId')
@@ -123,7 +84,6 @@ const goToFindPw = () => {
 </script>
 
 <style lang="scss" scoped>
-/* 전체 모바일 컨테이너 */
 .container {
   width: 100%;
   margin: 0 auto;
@@ -131,39 +91,14 @@ const goToFindPw = () => {
   font-family: 'Noto Sans KR', sans-serif;
 }
 
+.input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .login-title {
   color: $color-primary;
-}
-
-.input-wrap {
-  /* border: 1px solid red; */
-  /* width: 100%; */
-}
-
-/* 입력칸 공통 스타일 */
-.input {
-  width: 100%;
-  /* padding: 12px; */
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  box-sizing: border-box;
-  padding: 0.7rem;
-}
-
-.input:focus {
-  border: 2px solid $color-primary;
-  outline: none;
-}
-
-/* 에러 테두리 */
-.error-border {
-  border-color: red;
-}
-
-.normal-border {
-  border-color: #ccc;
 }
 
 /* 로그인 버튼 래퍼 */
@@ -175,6 +110,7 @@ const goToFindPw = () => {
 
 /* 로그인 버튼 */
 .login-button {
+  margin-top: 0.5rem;
   width: 100%;
   height: 48px;
   font-size: 15px;
@@ -191,7 +127,6 @@ const goToFindPw = () => {
   text-align: center;
 }
 
-/* 비활성화 상태 */
 .disabled {
   background-color: #D9D9D9;
   color: $color-dark-gray;
@@ -201,10 +136,9 @@ const goToFindPw = () => {
 /* 아이디/비밀번호 찾기 */
 .find-section {
   display: flex;
-  padding: 5px;
+  margin-top: 0.5rem;
   justify-content: center;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .find-link {
@@ -222,14 +156,6 @@ const goToFindPw = () => {
 .divider {
   margin: 0 12px;
   color: $color-secondary;
-}
-
-/* 에러 메시지 */
-.error-message {
-  color: red;
-  text-align: center;
-  font-size: 14px;
-  margin-bottom: 12px;
 }
 
 /* 구분선 + 가운데 텍스트 */
@@ -259,7 +185,6 @@ const goToFindPw = () => {
   gap: 20px;
 }
 
-/* 공통된 원형 버튼 스타일 */
 .circle {
   width: 56px;
   height: 56px;
