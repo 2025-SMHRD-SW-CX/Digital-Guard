@@ -1,51 +1,50 @@
 <template>
-
   <div class="app-wrapper">
-    <!-- 1) 로더 페이드 애니메이션 -->
-    <transition name="loader-fade" mode="out-in">
-      <LoadingScreen v-if="isLoading" key="loader" />
-    </transition>
-
-    <!-- 2) 메인 페이지 애니메이션 + 스크롤 영역 -->
-    <div v-if="!isLoading" class="page-container">
-
-      <transition name="page-fade-float" mode="out-in">
-        <!-- 애니메이션 래퍼 -->
-        <div class="page-clipper" :key="route.fullPath" ref="scrollContainer">
-          <!-- 실제 스크롤되는 영역 -->
-          <HeaderView></HeaderView>
-          <div class="content"><router-view /></div>
-        </div>
+    <!-- admin이 아닌 경우만 로더/공통레이아웃 노출 -->
+    <template v-if="firstToken !== 'admin'">
+      <transition name="loader-fade" mode="out-in">
+        <LoadingScreen v-if="isLoading" key="loader" />
       </transition>
 
-      <FooterView></FooterView>
-      <TopButton :scroll-target="scrollContainer" />
-      <!-- 여기까지 공통레이아웃 -->
-    </div>
+      <div v-if="!isLoading" class="page-container">
+        <transition name="page-fade-float" mode="out-in">
+          <div class="page-clipper" :key="route.fullPath" ref="scrollContainer">
+            <HeaderView />
+            <div class="content"><router-view /></div>
+          </div>
+        </transition>
+        <FooterView />
+        <TopButton :scroll-target="scrollContainer" />
+      </div>
+    </template>
+
+    <!-- admin 경로일 때는 오직 컨텐츠만 -->
+    <template v-else>
+      <div class="admin-content-only">
+        <router-view />
+      </div>
+    </template>
 
     <AlertView />
-
   </div>
-
-
 </template>
-
 
 <script setup>
 
-import HeaderView from '@/components/HeaderView.vue';
+import HeaderView from '@/components/HeaderView.vue'
 import FooterView from '@/components/FooterView.vue'
 import TopButton from '@/components/TopButton.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
-import AlertView from '@/components/AlertView.vue';
-
-import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import AlertView from '@/components/AlertView.vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { usePathToken } from '@/composables/usePathToken'
 
 const scrollContainer = ref(null)
 const isLoading = ref(true)
 const router = useRouter()
 const route = useRoute()
+const { firstToken } = usePathToken()
 
 onMounted(async () => {
   setAppVh()
