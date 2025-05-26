@@ -7,8 +7,6 @@
             <p>{{ header.title }}</p>
         </div>
 
-        <!-- TODO 나중에 로그인로직 구현하고나면 아래 주석 해제 -->
-        <!-- <div class="indicator-wrap" v-if="header.show && user.isLogined()"> -->
         <div class="indicator-wrap" v-if="header.show">
             <div id="user" class="key-icon-wrap">
                 <div class="icon">
@@ -27,21 +25,21 @@
                     <p>{{ formattedReward }}</p>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
 
 <script setup>
-import { watch, computed } from 'vue'
+import { watch, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHeaderStore, TITLE_MAP } from '@/stores/header'
 import { useUserStore } from '@/stores/user'
 import { usePathToken } from '@/composables/usePathToken'
+import { db } from '@/services/supabase' // supabase 연동 추가
 
 const router = useRouter()
 const header = useHeaderStore()
-const user = useUserStore();
+const user = useUserStore()
 const { firstToken } = usePathToken()
 
 const formattedReward = computed(() => {
@@ -50,20 +48,30 @@ const formattedReward = computed(() => {
 })
 
 const clickBackBtn = () => {
-    const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
-    depth === 1 ? router.push('/main') : router.back()
+  const depth = router.currentRoute.value.path.split('/').filter(Boolean).length
+  depth === 1 ? router.push('/main') : router.back()
 }
 const goToMain = () => {
-    router.push('/main')
+  router.push('/main')
 }
+
+// Supabase에서 포인트 실시간 반영
+onMounted(async () => {
+  if (!user.id) return
+  const { data, error } = await db.from('user').select('total_reward').eq('id', user.id).single()
+  if (!error && data) {
+    user.totalReward = data.total_reward
+  }
+})
+
 watch(firstToken, (token) => {
-    if (!(token in TITLE_MAP)) {
-        header.setShow(false)
-        header.setTitle(null)
-    } else {
-        header.setShow(true)
-        header.setTitle(TITLE_MAP[token] || null)
-    }
+  if (!(token in TITLE_MAP)) {
+    header.setShow(false)
+    header.setTitle(null)
+  } else {
+    header.setShow(true)
+    header.setTitle(TITLE_MAP[token] || null)
+  }
 }, { immediate: true })
 </script>
 
@@ -143,7 +151,6 @@ watch(firstToken, (token) => {
                 text-align: end;
             }
         }
-
     }
 }
 </style>
