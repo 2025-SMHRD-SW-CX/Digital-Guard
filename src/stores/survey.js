@@ -1,7 +1,7 @@
 // src/stores/header.js
 import { defineStore } from 'pinia'
 
-const DATA = [
+export const DATA = [
   {
     id: 1,
     title: "요즘 청소년이 자주 접하는 온라인 위험 콘텐츠는?",
