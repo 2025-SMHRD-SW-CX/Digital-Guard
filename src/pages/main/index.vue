@@ -1,219 +1,209 @@
 <template>
-    <div class="main-container">
-        <!-- ───────────── 오늘의 미션 카드 ───────────── -->
-        <CardView class="mission-card" @click="myClickHandler">
-            <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
-            <div class="progress-circle">
-                <svg viewBox="0 0 36 36" class="circular-chart">
-                    <!-- 배경 원 -->
-                    <path class="circle-bg" d="M18 2.0845
-       a 15.9155 15.9155 0 0 1 0 31.831
-       a 15.9155 15.9155 0 0 1 0 -31.831" />
+  <div class="main-container">
+    <!-- ⸺⸺⸺⸺⸺⸺⸺ 오늘의 미션 카드 ⸺⸺⸺⸺⸺⸺⸺ -->
+    <CardView class="mission-card" @click="myClickHandler">
+      <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
+      <div class="progress-circle">
+        <svg viewBox="0 0 36 36" class="circular-chart">
+          <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="circle" :style="{
+            strokeDasharray: 100,
+            strokeDashoffset: 100 - progressPercent
+          }" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        </svg>
+        <div class="progress-text">
+          {{ userStore.progressDays }}<small class="fraction">/{{ userStore.totalNeedDays }}</small>
+        </div>
+      </div>
+      <p class="card-subtext">
+        <span v-if="userStore.isParticipatedToday">{{ userStore.progressDays }}일차 완료</span>
+        <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
+      </p>
+      <div class="reward-info">
+        <p id="bonus" v-if="!userStore.isParticipatedToday">오늘의 챌린지 완료하면 <span class="highlight">연속 {{ userStore.continuousDays + 1 }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가 지금!</p>
+        <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{ userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>
+        <p id="cheer-up">조금만 더 화이팅✨</p>
+      </div>
+    </CardView>
 
-                    <!-- 게이지 원 -->
-                    <path class="circle" :style="{
-                        strokeDasharray: 100,
-                        strokeDashoffset: 100 - progressPercent
-                    }" d="M18 2.0845
-     a 15.9155 15.9155 0 0 1 0 31.831
-     a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
+    <!-- ⸺⸺⸺⸺⸺⸺⸺ 오늘의 챌린지(퀴즈) 카드 ⸺⸺⸺⸺⸺⸺⸺ -->
+    <CardView class="quiz-card">
+      <div v-if="userStore.isParticipatedToday || isCorrectAnswer" class="overlay-message">
+        오늘의 챌린지를 완료했습니다
+        <div class="rewarded-message">
+          <img src="/images/coin_icon.png">
+          <span class="highlight">{{ TOTAL_REWARD }}P 획득!</span>
+        </div>
+      </div>
+      <p class="card-title">오늘의 챌린지</p>
+      <p class="quiz-question">
+        Q. {{ currentQuestion.text }}
+      </p>
+      <div class="quiz-buttons">
+        <button class="btn-ox blue"
+          :disabled="userStore.isParticipatedToday || isCorrectAnswer"
+          @click="checkAnswer(true)">O</button>
+        <button class="btn-ox red"
+          :disabled="userStore.isParticipatedToday || isCorrectAnswer"
+          @click="checkAnswer(false)">X</button>
+      </div>
+    </CardView>
 
-                <div class="progress-text">
-                    {{ userStore.progressDays }}<small class="fraction">/{{ userStore.totalNeedDays }}</small>
+    <!-- 찜한 아이템 카드 유지 -->
+    <CardView class="wishlist-card-container">
+      <div>
+        <div class="wishlist-header">
+          <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
+          <p class="title">찜한 아이템</p>
+          <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
+        </div>
+        <div class="wishlist-scroll">
+          <div v-if="shopStore.wish.length === 0" class="empty-text">
+            <p>찜한 아이템이 없습니다.</p>
+            <p>포인트샵에서 원하는 아이템을 찾아보세요!</p>
+          </div>
+          <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card" @click="goToShopItem(item.id)">
+            <img :src="item.image" :alt="item.name" />
+            <div class="wishlist-info">
+              <p class="item-name">{{ item.name }}</p>
+              <p class="item-price">{{ item.price.toLocaleString() }}P</p>
+              <template v-if="userStore.totalReward >= item.price">
+                <span class="badge badge-available">구매 가능</span>
+              </template>
+              <template v-else>
+                <div class="badge badge-short">
+                  <p class="short-price">{{ (item.price - userStore.totalReward).toLocaleString() }}P</p>
+                  <p class="its-short">부족해요!</p>
                 </div>
+              </template>
             </div>
-            <p class="card-subtext">
-                <span v-if="userStore.isParticipatedToday">{{ userStore.progressDays }}일차 완료</span>
-                <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
-            </p>
+          </div>
+        </div>
+        <div v-if="!shopStore.wish.length">
+          <button class="to-btn shop" @click="goToShop">포인트샵으로 이동</button>
+        </div>
+        <div v-else-if="hasInsufficientItems">
+          <p class="need-more">포인트가 더 필요하세요?</p>
+          <button class="to-btn survey" @click="goToSurvey">설문조사로 이동</button>
+        </div>
+      </div>
+    </CardView>
 
-            <div class="reward-info">
-                <p id="bonus" v-if="!userStore.isParticipatedToday">오늘의 챌린지 완료하면 <span class="highlight">연속 {{
-                        userStore.continuousDays + 1 }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가
-                    지급!</p>
-                <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{
-                    userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>
-                <p id="cheer-up">조금만 더 화이팅✨</p>
-            </div>
+    <!-- 정답 모달 -->
+    <ModalView v-model="showCorrectModal" title="정답입니다! 🎉" type="confirm" confirmText="포인트샵으로 이동" cancelText="닫기" @confirm="goToShop">
+      <template #default>
+        <p class="reason">{{ reasonText }}</p>
+        <div class="point-gain">
+          <img src="/images/coin_icon.png" alt="코인 아이콘" />
+          <span>{{ TOTAL_REWARD }}P 획득!</span>
+          <template v-if="bonusReward">
+            <span class="highlight bonus">연속 보너스 +{{ bonusReward }}P</span>
+          </template>
+        </div>
+      </template>
+    </ModalView>
 
-        </CardView>
-
-        <!-- ───────────── 오늘의 챌린지(퀴즈) 카드 ───────────── -->
-        <CardView class="quiz-card">
-            <div v-if="userStore.isParticipatedToday || correctlyAnswered" class="overlay-message">
-                오늘의 챌린지를 완료했습니다
-                <div class="rewarded-message">
-                    <img src="/images/coin_icon.png">
-                    <span class="highlight">{{ TOTAL_REWARD }}P 획득!</span>
-                </div>
-
-            </div>
-            <p class="card-title">오늘의 챌린지</p>
-            <p class="quiz-question">
-                Q. 불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다?
-            </p>
-            <div class="quiz-buttons">
-                <button class="btn-ox blue" :disabled="userStore.isParticipatedToday || correctlyAnswered"
-                    @click="checkAnswer(true)">O</button>
-                <button class="btn-ox red" :disabled="userStore.isParticipatedToday || correctlyAnswered"
-                    @click="checkAnswer(false)">X</button>
-            </div>
-        </CardView>
-
-        <!-- ───────────── 찜한 아이템 카드 ───────────── -->
-        <CardView class="wishlist-card-container">
-            <div>
-                <!-- 헤더 (찜 아이콘 + 타이틀) -->
-                <div class="wishlist-header">
-                    <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
-                    <p class="title">찜한 아이템</p>
-                    <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
-                </div>
-                <!-- 스크롤 영역 -->
-                <div class="wishlist-scroll">
-                    <div v-if="shopStore.wish.length === 0" class="empty-text">
-                        <p>찜한 아이템이 없습니다.</p>
-                        <p>포인트샵에서 원하는 아이템을 찾아보세요!</p>
-                    </div>
-                    <div v-for="item in shopStore.wish" :key="item.id" class="wishlist-card"
-                        @click="goToShopItem(item.id)">
-                        <img :src="item.image" :alt="item.name" />
-                        <div class="wishlist-info">
-                            <p class="item-name">{{ item.name }}</p>
-                            <p class="item-price">{{ item.price.toLocaleString() }}P</p>
-                            <template v-if="userStore.totalReward >= item.price">
-                                <span class="badge badge-available">구매 가능</span>
-                            </template>
-                            <template v-else>
-                                <div class="badge badge-short">
-                                    <p class="short-price">{{ (item.price - userStore.totalReward).toLocaleString() }}P
-                                    </p>
-                                    <p class="its-short">부족해요!</p>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="!shopStore.wish.length">
-                    <button class="to-btn shop" @click="goToShop">
-                        포인트샵으로 이동
-                    </button>
-                </div>
-                <div v-else-if="hasInsufficientItems">
-                    <p class="need-more">포인트가 더 필요하세요?</p>
-                    <button class="to-btn survey" @click="goToSurvey">
-                        설문조사로 이동
-                    </button>
-                </div>
-
-            </div>
-        </CardView>
-
-        <!-- ───────────── 정답 모달 ───────────── -->
-        <ModalView v-model="showCorrectModal" title="정답입니다! 🎉" type="confirm" confirmText="포인트샵으로 이동" cancelText="닫기"
-            @confirm="goToShop">
-            <template #default>
-                <p class="reason">{{ reasonText }}</p>
-                <div class="point-gain">
-                    <img src="/images/coin_icon.png" alt="코인 아이콘" />
-                    <span>{{ TOTAL_REWARD }}P 획득!</span>
-                    <template v-if="bonusReward">
-                        <span class="highlight bonus">연속 보너스 +{{ bonusReward }}P</span>
-                    </template>
-                </div>
-            </template>
-        </ModalView>
-
-        <!-- ───────────── 오답 모달 ───────────── -->
-        <ModalView v-model="showWrongModal" title="오답입니다 😥" type="alert" confirmText="확인">
-            <template #default>
-                <p class="reason">{{ reasonText }}</p>
-                <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
-            </template>
-        </ModalView>
-    </div>
+    <!-- 오답 모달 -->
+    <ModalView v-model="showWrongModal" title="오답입니다 😥" type="alert" confirmText="확인">
+      <template #default>
+        <p class="reason">{{ reasonText }}</p>
+        <p style="font-weight: bold; font-size: 1rem; color: #ff5f5f;">다시 한 번 도전해보세요!</p>
+      </template>
+    </ModalView>
+  </div>
 </template>
 
-
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import confetti from 'canvas-confetti';
-import CardView from '@/components/CardView.vue';
-import ModalView from '@/components/ModalView.vue';
-import { useShopStore, ITEMS } from '@/stores/shop';
-import { useUserStore } from '@/stores/user';
-import { useAlertStore } from '@/stores/alert';
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import confetti from 'canvas-confetti'
+import CardView from '@/components/CardView.vue'
+import ModalView from '@/components/ModalView.vue'
+import { useShopStore, ITEMS } from '@/stores/shop'
+import { useUserStore } from '@/stores/user'
+import { useAlertStore } from '@/stores/alert'
+import { submitQuizAnswer } from '@/services/quizService'
 
-const router = useRouter();
-const shopStore = useShopStore();
-const userStore = useUserStore();
-const alertStore = useAlertStore();
+const router = useRouter()
+const shopStore = useShopStore()
+const userStore = useUserStore()
+const alertStore = useAlertStore()
 
 const progressPercent = computed(() => {
-    if (!userStore.totalNeedDays) return 0
-    return Math.round((userStore.progressDays / userStore.totalNeedDays) * 100 * 10) / 10
-});
+  if (!userStore.totalNeedDays) return 0
+  return Math.round((userStore.progressDays / userStore.totalNeedDays) * 100 * 10) / 10
+})
 
-const CORRECT_REWARD = 10;
-const bonusReward = userStore.calcContinuousBonus(CORRECT_REWARD);
+const CORRECT_REWARD = 10
+const bonusReward = userStore.calcContinuousBonus(CORRECT_REWARD)
 const TOTAL_REWARD = CORRECT_REWARD + bonusReward
 
-const correctlyAnswered = ref(false);
-const reasonText = ref('');
-const showCorrectModal = ref(false);
-const showWrongModal = ref(false);
+const isCorrectAnswer = ref(false)
+const reasonText = ref('')
+const showCorrectModal = ref(false)
+const showWrongModal = ref(false)
 
 const hasInsufficientItems = computed(() =>
-    shopStore.wish.some(item => item.price > userStore.totalReward)
-);
+  shopStore.wish.some(item => item.price > userStore.totalReward)
+)
+
+const currentQuestion = ref({
+  id: 106,
+  type: 'knowledge',
+  answer: true,
+  explanation: '불법웹툰 공유는 저작권 침해로 처벌 받을 수 있습니다.',
+  text: '불법웹툰 사이트를 친구에게 공유하면 처벌 대상이 된다.'
+})
 
 function myClickHandler() {
-    router.push('/challenge');
+  router.push('/challenge')
 }
 
 function goToSurvey() {
-    router.push('/survey');
+  router.push('/survey')
 }
 
 function goToShop() {
-    showCorrectModal.value = false;
-    router.push('/shop');
+  showCorrectModal.value = false
+  router.push('/shop')
 }
 
 function goToShopItem(id) {
-    const item = ITEMS.find(item => item.id == id)
-    if (item.route) {
-        router.push(`/shop/view/${item.route}`);
-    } else {
-        alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
-        // alert("해당 상품은 상세페이지가 준비되어있지 않습니다!");
-    }
+  const item = ITEMS.find(item => item.id == id)
+  if (item.route) {
+    router.push(`/shop/view/${item.route}`)
+  } else {
+    alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000)
+  }
 }
 
-function checkAnswer(userAnswer) {
-    // 이미 오늘 참여했으면 아무 동작도 하지 않음
-    if (userStore.isParticipatedToday) return
+async function checkAnswer(userAnswer) {
+  if (userStore.isParticipatedToday) return
 
-    const isCorrect = userAnswer === true
-    reasonText.value = isCorrect
-        ? '불법웹툰을 공유하는 행위는 저작권법 위반으로 처벌 대상이 됩니다.'
-        : '불법웹툰 공유는 명백한 저작권 침해로 법적 책임이 따릅니다.'
+  const question = currentQuestion.value
+  const isKnowledge = question.type === 'knowledge'
+  const isCorrect = isKnowledge ? userAnswer === question.answer : true
 
+  reasonText.value = question.explanation
+  isCorrectAnswer.value = isCorrect
+
+  await submitQuizAnswer(userStore.id, question.id, isCorrect)
+
+  if (isKnowledge) {
     if (isCorrect) {
-        correctlyAnswered.value = true
-
-        userStore.addPoint(TOTAL_REWARD)
-        userStore.recordParticipation()
-        confetti({ spread: 10, origin: { y: 0.6 } })
-        showCorrectModal.value = true
+      confetti({ spread: 10, origin: { y: 0.6 } })
+      showCorrectModal.value = true
     } else {
-        showWrongModal.value = true
+      showWrongModal.value = true
+      return
     }
-}
+  } else {
+    confetti({ spread: 10, origin: { y: 0.6 } })
+    showCorrectModal.value = true
+  }
 
+  userStore.recordParticipation()
+}
 </script>
 
 <style scoped lang="scss">
