@@ -117,7 +117,7 @@
 <script setup>
 import CardView from '@/components/CardView.vue';
 import ModalView from '@/components/ModalView.vue';
-import { DATA, SURVEYS } from '@/stores/survey';
+import { useSurveyStore, SURVEYS } from '@/stores/survey';
 import { reactive, ref, onMounted, nextTick } from 'vue';
 import { useAlertStore } from '@/stores/alert';
 import { useUserStore } from '@/stores/user';
@@ -125,6 +125,7 @@ import { useRouter } from 'vue-router';
 
 const alertStore = useAlertStore();
 const userStore = useUserStore();
+const surveyStore = useSurveyStore();
 const router = useRouter();
 
 // 라우터가 surveyId 를 prop 으로 넘겨줌
@@ -135,7 +136,7 @@ const props = defineProps({
     }
 })
 
-const targetData = DATA.find(i => i.id == props.surveyId);
+const targetData = surveyStore.data.find(i => i.id == props.surveyId);
 const targetSurvey = SURVEYS.find(i => i.surveyId == props.surveyId)
 
 const sectionCount = SURVEYS[0].section.length;
@@ -157,6 +158,8 @@ function autoResize(e) {
 
 // 기존 답변값이 있을 때도 리사이즈 (선택)
 onMounted(() => {
+    isIntervalAvailble()
+
     nextTick(() => {
         textareas.value.forEach(el => {
             if (el) {
@@ -166,6 +169,31 @@ onMounted(() => {
         });
     });
 });
+
+function isIntervalAvailble() {
+    console.log('pin1', targetData)
+    // lastComplete 및 interval 체크
+    if (targetData.lastComplete && targetData.intervalDays) {
+        const last = new Date(targetData.lastComplete);
+        const intervalDays = targetData.intervalDays;
+        const now = new Date();
+        const nextAvailable = new Date(last);
+        nextAvailable.setDate(last.getDate() + intervalDays);
+
+        console.log('pin2')
+
+        if (now < nextAvailable) {
+            // 접근 불가: 아직 재참여 불가
+            const remain = Math.ceil((nextAvailable - now) / (1000 * 60 * 60 * 24));
+            alertStore.danger(
+                `이미 참여하셨습니다.\n다음 참여까지 남은 대기일: ${remain}일`,
+                2500
+            );
+
+            router.replace('/survey');
+        }
+    }
+}
 
 
 function getInitialAnswers(targetSurvey) {
@@ -200,29 +228,6 @@ const answers = reactive(getInitialAnswers(targetSurvey));
 
 const isAgreed = ref(false);
 
-function isAllAnswered() {
-    // section별, 문항별 모두 순회
-    for (let sIdx = 0; sIdx < targetSurvey.section.length; sIdx++) {
-        const section = targetSurvey.section[sIdx];
-        for (let qIdx = 0; qIdx < section.questions.length; qIdx++) {
-            const q = section.questions[qIdx];
-            const a = answers[sIdx][qIdx];
-            if (q.type === 'single') {
-                if (!a.single) return false; // 미선택
-                if (hasOtherOption(q) && a.single === '기타' && !a.other.trim()) return false; // 기타인데 입력값 없음
-            }
-            else if (q.type === 'multiple') {
-                if (!a.multiple.length) return false;
-                if (hasOtherOption(q) && a.multiple.includes('기타') && !a.other.trim()) return false;
-            }
-            else if (q.type === 'text') {
-                if (!a.text.trim()) return false;
-            }
-        }
-    }
-    return true;
-}
-
 function getSubmitResult() {
     return targetSurvey.section.map((section, sIdx) =>
         section.questions.map((q, qIdx) => {
@@ -251,8 +256,6 @@ function submitSurvey() {
         const unans = findFirstUnanswered();
         if (unans) {
             alertStore.danger('답변하지 않은 문항이 있습니다.', 2000);
-
-            // 해당 질문 위치로 스크롤 (하이라이트는 빼고)
             nextTick(() => {
                 const el = questionRefs.value?.[unans.sIdx]?.[unans.qIdx];
                 if (el && el.scrollIntoView) {
@@ -269,15 +272,24 @@ function submitSurvey() {
     const result = getSubmitResult();
     console.log(result);
 
+    // ✅ 설문 완료 시간 기록
+    const now = new Date().toISOString();
+    surveyStore.data.forEach(item => {
+        if (item.id == props.surveyId) {
+            item.lastComplete = now;
+        }
+    });
+
+    console.log(surveyStore.data)
+
     // 보상 지급
-    userStore.addPoint(targetData.reward)
+    userStore.addPoint(targetData.reward);
 
     // 완료 모달 띄우기
     showCompleteModal.value = true;
 
-    alertStore.success('설문이 제출되었습니다!', 3000)
+    alertStore.success('설문이 제출되었습니다!', 3000);
 }
-
 
 
 // 모든 질문 DOM 참조를 이중 배열로 관리: questionRefs[섹션][문항]
