@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <div class="findIdTitle">
             <h3>아이디를 찾을 방법을 선택해주세요.</h3>
         </div>
@@ -44,18 +44,24 @@ const router = useRouter();
 
 const inputPhoneNumber = () => {
     setTimeout(() => {
-    alert("전화번호로 찾기 선택됨");
-  }, 10);
+        alert("전화번호로 찾기 선택됨");
+    }, 10);
 }
 
 const inputEmail = () => {
     setTimeout(() => {
-    router.push('/findUserId/findUserIdEmail');
-  }, 10);
+        router.push('/findUserId/findUserIdEmail');
+    }, 10);
 }
 </script>
 
 <style lang="scss" scoped>
+.container {
+    width: 90vw; 
+    // max-width: 600px;
+    margin: 0 auto;
+}
+
 .findIdTitle {
     padding-top: 20px;
 }

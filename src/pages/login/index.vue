@@ -4,20 +4,12 @@
 
     <div class="input-wrap">
       <!-- 아이디 입력 -->
-      <input
-        type="text"
-        placeholder="아이디를 입력하세요"
-        v-model="userId"
-        :class="['input', { 'error-border': showError, 'normal-border': !userId }]"
-      />
+      <input type="text" placeholder="아이디를 입력하세요" v-model="userId"
+        :class="['input', { 'error-border': showError, 'normal-border': !userId }]" />
 
       <!-- 비밀번호 입력 -->
-      <input
-        type="password"
-        placeholder="비밀번호를 입력하세요"
-        v-model="userPw"
-        :class="['input', { 'error-border': showError, 'normal-border': !userPw }]"
-      />
+      <input type="password" placeholder="비밀번호를 입력하세요" v-model="userPw"
+        :class="['input', { 'error-border': showError, 'normal-border': !userPw }]" />
     </div>
 
     <!-- 오류 메시지 -->
@@ -28,12 +20,8 @@
     </div>
 
     <!-- 로그인 버튼 -->
-    <button
-      class="login-button"
-      :disabled="!userId || !userPw"
-      :class="{ disabled: !userId || !userPw }"
-      @click="handleLogin"
-    >
+    <button class="login-button" :disabled="isLoginDisabled" :class="{ disabled: isLoginDisabled }"
+      @click="handleLogin">
       로그인
     </button>
 
@@ -62,32 +50,48 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from "vue-router";
-import Swal from 'sweetalert2';
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
+import { db } from '@/services/supabase'
+import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
+const userStore = useUserStore()
+
+const router = useRouter()
 
 const userId = ref('')
 const userPw = ref('')
 const showError = ref(false)
 
+//중복된 조건을 computed로 정의
+const isLoginDisabled = computed(() => !userId.value || !userPw.value)
+
 const handleLogin = async () => {
-  if (userId.value === 'admin' && userPw.value === 'admin') {
-    showError.value = false;
+  const { data, error } = await db
+    .from('user')
+    .select('*')
+    .eq('id', userId.value)
+    .eq('password', userPw.value)
+    .single();
 
-    await Swal.fire({
-      icon: 'success',
-      title: '로그인 성공!',
-      text: '메인 페이지로 이동합니다 😊',
-      confirmButtonColor: '#1e3a8a',
-      confirmButtonText: '확인'
-    });
+  console.log('data:', data)
 
-    router.push('/main');
-  } else {
+  userStore.login({  //supabase에서 가져온값을 넣어줌으로써 로그인처리가된다.
+    id: data['id'],
+    name: data['name'],
+    nickname: data['nickname'],
+    phone: data['phone'],
+    birthday: data['birthday'],
+    totalReward: data['total_reward'],
+    createdAt: data['createdAt']
+  })
+
+  console.log(userStore);
+  
+
+  if (error || !data) {
     showError.value = true;
-
     await Swal.fire({
       icon: 'error',
       title: '로그인 실패',
@@ -95,27 +99,33 @@ const handleLogin = async () => {
       confirmButtonColor: '#ef4444',
       confirmButtonText: '다시 시도'
     });
+  } else {
+    showError.value = false;
+    await Swal.fire({
+      icon: 'success',
+      title: '로그인 성공!',
+      text: `환영합니다, ${data.nickname}님!`,
+      confirmButtonColor: '#1e3a8a',
+      confirmButtonText: '확인'
+    });
+    router.push('/main');
   }
 };
 
 const goToFindId = () => {
-  router.push('/findUserId') 
+  router.push('/findUserId')
 }
 
 const goToFindPw = () => {
-  router.push('/findUserPw') 
+  router.push('/findUserPw')
 }
 
 </script>
 
 <style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-
-
-
 /* 전체 모바일 컨테이너 */
 .container {
-  /* width: 100vw; */
+  width: 100%;
   margin: 0 auto;
   padding: 0 24px;
   font-family: 'Noto Sans KR', sans-serif;
@@ -126,8 +136,8 @@ const goToFindPw = () => {
 }
 
 .input-wrap {
-    /* border: 1px solid red; */
-    /* width: 100%; */
+  /* border: 1px solid red; */
+  /* width: 100%; */
 }
 
 /* 입력칸 공통 스타일 */
@@ -184,7 +194,7 @@ const goToFindPw = () => {
 /* 비활성화 상태 */
 .disabled {
   background-color: #D9D9D9;
-  color : $color-dark-gray;
+  color: $color-dark-gray;
   cursor: not-allowed;
 }
 
@@ -268,19 +278,19 @@ const goToFindPw = () => {
   background-image: url('https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg');
 }
 
-/*페이스북*/ 
+/*페이스북*/
 .facebook {
   background-color: #1777F0;
-  background-image: url('https://blog.kakaocdn.net/dn/lhU48/btqRoQfJhbZ/9E6G4WxknrC7MPv2gV1DSk/img.jpg');
+  background-image: url('https://blog.kakaocdn.net/dn/UGS0q/btree5Viurw/l07AH1VgWJHm4stsAHLdL0/img.png');
   background-size: 100%;
 }
 
 /* 네이버 */
 .naver {
   background-color: white;
-  background-image: url('https://mblogthumb-phinf.pstatic.net/MjAyMjEyMTVfMTE0/MDAxNjcxMDkwNjU3NTkw.KoGra3iQfkuqnbSFoQ7PA3YMqnExItsdfOLk960Rxnkg.umx5uLYTj2TEMhx7rMA5uNxvyJD2T42OSeSFsxNUQygg.PNG.y2kwooga/%EB%84%A4%EC%9D%B4%EB%B2%84_AI-04.png?type=w800');
-  background-size: 150%;
-  border: 1px solid #03c75a;
+  background-image: url('https://m.coffeeclan.net/moa/img/default/login_naver.png');
+  background-size: 110%;
+  border: 1px solid #2AB605;
 }
 
 .kakao {
