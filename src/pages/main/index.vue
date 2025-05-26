@@ -20,7 +20,7 @@
         <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
       </p>
       <div class="reward-info">
-        <p id="bonus" v-if="!userStore.isParticipatedToday">오늘의 챌린지 완료하면 <span class="highlight">연속 {{ userStore.continuousDays + 1 }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가 지금!</p>
+        <p id="bonus" v-if="!userStore.isParticipatedToday && bonusReward">오늘의 챌린지 완료하면 <span class="highlight">연속 {{ userStore.continuousDays + 1 }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가 지금!</p>
         <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{ userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>
         <p id="cheer-up">조금만 더 화이팅✨</p>
       </div>
@@ -123,6 +123,7 @@ import { useShopStore, ITEMS } from '@/stores/shop'
 import { useUserStore } from '@/stores/user'
 import { useAlertStore } from '@/stores/alert'
 import { submitQuizAnswer } from '@/services/quizService'
+import { updateUserTotalPoint } from '@/services/pointService'
 
 const router = useRouter()
 const shopStore = useShopStore()
@@ -134,6 +135,7 @@ const progressPercent = computed(() => {
   return Math.round((userStore.progressDays / userStore.totalNeedDays) * 100 * 10) / 10
 })
 
+// TODO 리워드 양이 10으로 고정되는게 맞나? db에서 동적으로 가져와야하는건 아닌지?
 const CORRECT_REWARD = 10
 const bonusReward = userStore.calcContinuousBonus(CORRECT_REWARD)
 const TOTAL_REWARD = CORRECT_REWARD + bonusReward
@@ -187,12 +189,16 @@ async function checkAnswer(userAnswer) {
   reasonText.value = question.explanation
   isCorrectAnswer.value = isCorrect
 
-  await submitQuizAnswer(userStore.id, question.id, isCorrect)
-
   if (isKnowledge) {
     if (isCorrect) {
       confetti({ spread: 10, origin: { y: 0.6 } })
       showCorrectModal.value = true
+
+      await submitQuizAnswer(userStore.id, question.id, isCorrect, TOTAL_REWARD)
+
+      const updatedPoint = await updateUserTotalPoint(userStore.id)
+      userStore.recordParticipation()
+      userStore.setPoint(updatedPoint)
     } else {
       showWrongModal.value = true
       return
@@ -202,7 +208,7 @@ async function checkAnswer(userAnswer) {
     showCorrectModal.value = true
   }
 
-  userStore.recordParticipation()
+  
 }
 </script>
 

@@ -30,18 +30,26 @@ showAlerts()
 
 */
 
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useAlertStore = defineStore('alert', () => {
     const alerts = ref([])
+    const queue = ref([])       // ⬅️ 추가: Splash 중 대기 큐
+    const isReady = ref(true)   // ⬅️ Splash 끝나면 true, 기본 true(평상시엔 바로 띄움)
 
     function _notify(type, message, duration) {
         const id = Date.now() + Math.random()
         const alert = { id, type, message, duration }
-        alerts.value.unshift(alert)
 
+        // Splash 중이면 큐에 넣고 리턴
+        if (!isReady.value) {
+            queue.value.push(alert)
+            return
+        }
+
+        // Splash 끝났으면 바로 alerts로 push
+        alerts.value.unshift(alert)
         if (typeof duration === 'number' && duration > 0) {
             setTimeout(() => remove(id), duration)
         }
@@ -58,6 +66,23 @@ export const useAlertStore = defineStore('alert', () => {
         if (idx !== -1) alerts.value.splice(idx, 1)
     }
 
+    // ⬇️ Splash 끝난 뒤에 호출: 큐에 있던 알림들 한 번에 띄우기
+    function flushQueue() {
+        isReady.value = true
+        while (queue.value.length > 0) {
+            const alert = queue.value.shift()
+            alerts.value.unshift(alert)
+            if (typeof alert.duration === 'number' && alert.duration > 0) {
+                setTimeout(() => remove(alert.id), alert.duration)
+            }
+        }
+    }
+
+    // Splash 시작시 호출 (isReady를 false로)
+    function hold() {
+        isReady.value = false
+    }
+
     return {
         alerts,
         info,
@@ -65,6 +90,10 @@ export const useAlertStore = defineStore('alert', () => {
         warning,
         danger,
         confirm,
-        remove
+        remove,
+        hold,
+        flushQueue,
+        isReady,
+        queue, // for debugging
     }
 })
