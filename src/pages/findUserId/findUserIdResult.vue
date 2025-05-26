@@ -1,49 +1,71 @@
 <template>
   <div class="result-page">
-    <p class="label-text">등록된 아이디는</p>
-    <p class="user-id">{{ userId }}</p>
-    <p class="label-text">입니다.</p>
+    <!-- 결과 문장을 한 줄로 보여주는 부분 -->
+    <p class="full-sentence">
+      등록된 아이디는 <span class="user-id">{{ userId }}</span>입니다.
+    </p>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
+// vue-router에서 현재 페이지의 쿼리스트링(query parameter)을 가져옵니다.
+import { useRoute } from 'vue-router'
 
-const props = defineProps({
-  userId: {
-    type: String,
-    required: true
-  }
-})
+// 현재 라우트 정보를 가져옵니다.
+const route = useRoute()
+
+// 쿼리스트링에서 전달된 id 값을 userId에 저장합니다.
+const userId = route.query.id
 </script>
 
 <style scoped>
+/* 결과 페이지 전체 스타일 */
 .result-page {
-  max-width: 400px;
+  width: 100%;
+  /* 화면 너비에 따라 늘어남 */
+  /* max-width: 500px; */
   margin: 40px auto;
   padding: 30px 20px;
   border-radius: 8px;
   font-family: 'Noto Sans KR', sans-serif;
   text-align: center;
-  background-color: #e0f0ff; 
+  background-color: #e0f0ff;
   color: #2563eb;
+  /* padding 포함한 넓이 계산 */
+  box-sizing: border-box;
+  /* Flexbox로 정렬 */
+  display: flex;
+  /* 가로 중앙 */
+  justify-content: center;
+  /* 세로 중앙 */
+  align-items: center;
+  /* 내부 텍스트 가로 가운데 정렬 */
+  text-align: center;
+
+
 }
 
-/* '등록된 아이디는', '입니다.' 텍스트 */
-.label-text {
-  font-weight: 400; /* 얇게 */
-  font-size: 1.1rem;
+/* 한 줄 문장 전체 스타일 */
+.full-sentence {
+  font-size: 1.3rem;
+  font-weight: 500;
   margin: 0;
-  margin-bottom: 8px;
+  line-height: 1.6;
 }
 
-/* 아이디 부분을 크게, 더 굵게 */
+/* 아이디 부분만 강조한 스타일 */
 .user-id {
   font-weight: 700;
-  font-size: 2.4rem;
-  margin: 0 0 12px 0;
-  color: #1e40af; /* 더 진한 파랑 */
-  letter-spacing: 2px;
-  user-select: all; /* 아이디 복사 편하게 */
+  /* 굵게 */
+  font-size: 1.8rem;
+  /* 크게 */
+  margin: 0 4px;
+  /* 좌우 여백 */
+  color: #283A97;
+  /* 진한 파란색 */
+  letter-spacing: 1px;
+  /* 글자 간격 */
+  user-select: all;
+  /* 복사 쉽게 가능하도록 */
 }
 </style>

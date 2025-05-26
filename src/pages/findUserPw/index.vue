@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <div class="findIdTitle">
             <h3>비밀번호를 재설정할 방법을 선택해주세요.</h3>
         </div>
@@ -51,6 +51,13 @@ const inputEmail = () => {
 </script>
 
 <style lang="scss" scoped>
+
+.container {
+    width: 90vw; 
+    // max-width: 600px;
+    margin: 0 auto;
+}
+
 .findIdTitle {
     padding-top: 20px;
 }

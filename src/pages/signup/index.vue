@@ -122,6 +122,7 @@ import { reactive, ref, computed, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'
+import { db } from '@/services/supabase'
 
 const router = useRouter()
 
@@ -196,7 +197,34 @@ const openTermsPopup = () => { showTermModal.value = true }
 const agreeTerm = () => { agree.value = true }
 const denyTerm = () => { agree.value = false }
 const openConfirmation = () => { showConfirmModal.value = true }
-const confirmRegister = () => { router.push('/welcome') }
+
+ // <-- 이 위치가 맞습니다!
+
+const confirmRegister = async () => {
+  if (!canSubmit.value) return
+
+  const id = username.value.trim()  // 사용자가 입력한 아이디를 id로 사용
+
+  const { data, error } = await db.from('user').insert({
+    id,
+    name: name.value,
+    nickname : name.value,
+    phone: phone.value,
+    birthday: birth.value,
+    email: email.value,
+    password: password.value // 운영 시 해싱 꼭!
+  })
+
+  if (error) {
+    console.error('에러 내용:', error)
+    alert('회원가입 실패: ' + error.message)
+    return
+  }
+
+  alert('회원가입 성공!')
+  router.push('/welcome')
+}
+
 </script>
 
 <style lang="scss" scoped>

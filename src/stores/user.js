@@ -8,10 +8,10 @@
 import { useUserStore } from '@/stores/user'
 
 // 1. Pinia 스토어 인스턴스 가져오기 (setup 함수 안에서 실행)
-const user = useUserStore()
+const userStore = useUserStore()
 
 // 로그인
-user.login({  //supabase에서 가져온값을 넣어줌으로써 로그인처리가된다.
+userStore.login({  //supabase에서 가져온값을 넣어줌으로써 로그인처리가된다.
   id: 'user123',
   name: '홍길동',
   nickname: '길동이',

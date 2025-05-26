@@ -36,29 +36,36 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { db } from '@/services/supabase' // Supabase 인스턴스 import
 
 const userEmail = ref('')
 const showError = ref(false)
 const router = useRouter()
 
-// 등록된 이메일 리스트
-const registeredEmails = ['test@example.com', 'hello@example.com', 'user123@example.com']
-
 // 이메일 제출 핸들러
-const handleEmailSubmit = () => {
-  if (registeredEmails.includes(userEmail.value.trim())) {
-    showError.value = false
-    router.push('/findUserId/findUserIdResult')
+const handleEmailSubmit = async () => {
+  // Supabase에서 입력된 이메일로 사용자 정보 조회
+  const { data, error } = await db
+    .from('user')
+    .select('id')         // id만 가져옴 (보안상 최소한의 정보만)
+    .eq('email', userEmail.value.trim())
+    .single()
+
+  // 조회 실패 또는 데이터 없음
+  if (error || !data) {
+    showError.value = true
   } else {
-    showError.value = true  
+    showError.value = false
+    // 결과 페이지로 이동하면서 id를 query로 전달
+    router.push({
+      path: '/findUserId/findUserIdResult',
+      query: { id: data.id }
+    })
   }
 }
 </script>
 
-
 <style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-
 .container {
   width: 100%;
   margin: 0 auto;
@@ -70,7 +77,6 @@ const handleEmailSubmit = () => {
   color: $color-primary;
   font-size: 20px;
   font-weight: bold;
-  // text-align: center;
   margin-bottom: 20px;
 }
 
@@ -80,7 +86,6 @@ const handleEmailSubmit = () => {
   gap: 12px;
 }
 
-/* 입력칸 스타일 */
 .input {
   width: 100%;
   padding: 0.7rem;
@@ -103,7 +108,6 @@ const handleEmailSubmit = () => {
   border-color: #ccc;
 }
 
-/* 확인 버튼 스타일 */
 .check-button {
   width: 100%;
   height: 48px;
@@ -128,7 +132,6 @@ const handleEmailSubmit = () => {
   cursor: not-allowed;
 }
 
-/* 에러 메시지 */
 .error-message {
   color: red;
   text-align: center;
