@@ -127,5 +127,7 @@ export const useUserStore = defineStore('user', {
             const progressPct = progressDays / this.totalNeedDays;
             return Math.round(todayReward * progressPct) * threshold;
         }
+
+        // 5d/7d * 10p = 7p  -> 10 + 7 = 17
     }
 })

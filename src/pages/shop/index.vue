@@ -1,4 +1,4 @@
-searchQueryse<template>
+<template>
     <div class="shop-main">
         <!-- 헤더 -->
         <div class="top-bar">

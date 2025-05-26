@@ -39,7 +39,7 @@ import TopButton from '@/components/TopButton.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 import AlertView from '@/components/AlertView.vue';
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const scrollContainer = ref(null)
@@ -75,6 +75,34 @@ if (userStore.totalReward === DEFAULT_POINT) {
   localStorage.removeItem('orderList')
   console.log('🗑 주문내역 초기화됨 (기본 포인트 감지)')
 }
+
+
+// FIXME 작동안됨
+// 라우트별 스크롤 위치 저장 객체(메모리)
+// const scrollPositions = {}
+
+// onMounted(() => {
+//   // 라우트 변경 감지
+//   watch(
+//     () => route.fullPath,
+//     async (to, from) => {
+//       // 1. from이 있으면, 이전 라우트의 스크롤 위치 저장
+//       if (from && scrollContainer.value) {
+//         scrollPositions[from] = scrollContainer.value.scrollTop
+//       }
+//       // 2. 새 라우트 진입 후, DOM 업데이트를 기다렸다가 복원
+//       await nextTick()
+//       setTimeout(() => {
+//         if (scrollPositions[to] !== undefined && scrollContainer.value) {
+//           scrollContainer.value.scrollTop = scrollPositions[to]
+//         } else if (scrollContainer.value) {
+//           scrollContainer.value.scrollTop = 0
+//         }
+//       }, 0)
+//     },
+//     { immediate: true }
+//   )
+// })
 
 
 </script>
