@@ -9,7 +9,7 @@
         {{ userStore.continuousDays }}일 동안 열심히 활동해주신
         <span class="title-name" @click="openTitleModal">
           {{ currentTitle }}
-          <img src="/images/mypage/pen-icon-white.png" alt="수정 아이콘" class="edit-icon" @click.stop="openTitleModal" />
+          <img :src="`${BASE_URL}/images/mypage/pen-icon-white.png`" alt="수정 아이콘" class="edit-icon" @click.stop="openTitleModal" />
         </span>
       </p>
       <div class="points">
@@ -25,8 +25,8 @@
         :class="{ active: activeButtonIndex === index }" @click="activeButtonIndex = index"
         @mouseover="hoveredButtonIndex = index" @mouseleave="hoveredButtonIndex = null">
         <img :src="activeButtonIndex === index || hoveredButtonIndex === index
-          ? `/images/mypage/${item.name}-active.png`
-          : `/images/mypage/${item.name}.png`
+          ? `${BASE_URL}/images/mypage/${item.name}-active.png`
+          : `${BASE_URL}/images/mypage/${item.name}.png`
           " :alt="item.label + ' 아이콘'" class="icon-image" />
         <span>{{ item.label }}</span>
         <div v-if="index < menuButtons.length - 1" class="divider"></div>
@@ -39,8 +39,8 @@
         @mouseleave="hoveredIndex = null" @click="handleMenuClick(index)" :class="{ hovered: hoveredIndex === index }">
         {{ item }}
         <img class="arrow-icon" :src="hoveredIndex === index
-          ? '/images/mypage/angle-right-active.png'
-          : '/images/mypage/angle-right.png'
+          ? `${BASE_URL}/images/mypage/angle-right-active.png`
+          : `${BASE_URL}/images/mypage/angle-right.png`
           " alt="화살표 아이콘" />
       </li>
     </ul>
