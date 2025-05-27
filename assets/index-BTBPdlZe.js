@@ -1,0 +1,1 @@
+import{_ as t,f as n,a as o,g as s,P as r,o as _}from"./index-BUBhNg3D.js";const d={class:"admin-layout"},c={__name:"index",setup(i){return(l,e)=>{const a=r("router-view");return _(),n("div",d,[e[0]||(e[0]=o("header",null,"Admin Header or Nav",-1)),o("main",null,[s(a)])])}}},p=t(c,[["__scopeId","data-v-1dba4366"]]);export{p as default};
