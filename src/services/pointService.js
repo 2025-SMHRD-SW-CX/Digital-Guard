@@ -2,7 +2,7 @@ import { db } from './supabase'
 
 /**
  * 사용자의 ID를 이용해 point_history 테이블에서 자신의 point 내역 합을 가져온다.
- * 포인트가 변하는 작업 후에 리턴값을 이용해 userStore.totalReward를 업데이트 해주면 된다.
+ * 포인트가 변하는 작업 후에 리턴값을 이용해 userStore.total_point를 업데이트 해주면 된다.
  * @param {string} userId 사용자 ID
  */
 export const updateUserTotalPoint = async (userId) => {

@@ -38,7 +38,7 @@
           <span class="date">{{ formatDateTime(item.created_at) }}</span>
           <span class="point">
             <img :src="`${BASE_URL}/images/coin_icon.png`" class="coin-icon" alt="포인트 아이콘" />
-            +{{ item.point }}P
+            +{{ item.reward_point }}P
           </span>
         </div>
         <p class="question">

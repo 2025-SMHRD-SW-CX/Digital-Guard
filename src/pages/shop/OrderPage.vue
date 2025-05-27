@@ -47,7 +47,7 @@
     <section class="summary-section">
       <h2>구매</h2>
       <div class="summary-row">
-        <span>보유 포인트</span><span>{{ userStore.totalReward }} Point</span>
+        <span>보유 포인트</span><span>{{ userStore.total_point }} Point</span>
       </div>
       <div class="summary-row">
         <span>결제 포인트</span><span>- {{ totalPrice.toLocaleString() }} Point</span>
@@ -133,7 +133,7 @@ const totalPrice = computed(() =>
   shopStore.orderItems.filter(i => selectedIds.value.includes(i.id)).reduce((sum, item) => sum + item.price, 0)
 )
 
-const remainingPoint = computed(() => userStore.totalReward - totalPrice.value)
+const remainingPoint = computed(() => userStore.total_point - totalPrice.value)
 
 function isValidPhone(phone) {
   return /^01[016789]-\d{3,4}-\d{4}$/.test(phone)
@@ -168,7 +168,7 @@ function handleConfirmPayment() {
 
   const orderedItems = shopStore.orderItems.filter(i => selectedIds.value.includes(i.id))
   const total = totalPrice.value
-  const futureRemaining = userStore.totalReward - total
+  const futureRemaining = userStore.total_point - total
 
   userStore.addPoint(-total)
 
@@ -179,7 +179,7 @@ function handleConfirmPayment() {
     request: selectedRequest.value,
     orderedItems,
     totalPrice: total,
-    remainingPoint: userStore.totalReward
+    remainingPoint: userStore.total_point
   }))
 
   const prevOrders = JSON.parse(localStorage.getItem('orderList')) || []

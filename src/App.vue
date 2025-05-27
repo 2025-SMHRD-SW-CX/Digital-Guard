@@ -87,9 +87,9 @@ onMounted(async () => {
 // import { useUserStore } from '@/stores/user'
 // const userStore = useUserStore()
 
-// const DEFAULT_POINT = 20000 // ⬅️ DEFAULT_VALUES.totalReward와 같게
+// const DEFAULT_POINT = 20000 // ⬅️ DEFAULT_VALUES.total_point와 같게
 
-// if (userStore.totalReward === DEFAULT_POINT) {
+// if (userStore.total_point === DEFAULT_POINT) {
 //   localStorage.removeItem('orderList')
 //   console.log('🗑 주문내역 초기화됨 (기본 포인트 감지)')
 // }
