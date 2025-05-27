@@ -1,5 +1,5 @@
 <template>
-  <div class="finish-wrapper" v-if="orderInfo">
+  <div class="finish-wrapper" v-if="orderInfoReady">
     <div class="checkmark">✅</div>
     <h1 class="title">주문이 완료되었습니다!</h1>
     <p class="desc">
@@ -12,110 +12,56 @@
       <button class="shop-button" @click="goShop">계속 쇼핑하기</button>
     </div>
 
-    <!-- 주문 정보 -->
     <div class="order-details">
       <h2>배송정보</h2>
+      <hr>
       <div class="info-box">
         <p><strong>받는 분:</strong> {{ orderInfo.name }} / {{ orderInfo.phone }}</p>
         <p><strong>주소:</strong> {{ orderInfo.address }}</p>
       </div>
-
-
-      <div class="history-section">
-        <h2>이전 주문 내역</h2>
-        <div v-for="order in orderList" :key="order && order.id" v-if="order && order.date">
-          <p><strong>주문일 : </strong> {{ new Date(order.date).toLocaleString() }}</p>
-          <p><strong>받는 분 : </strong> {{ order.name }} / {{ order.phone }}</p>
-          <p><strong>주소 : </strong> {{ order.address }}</p>
-          <p><strong>결제한 상품</strong></p>
-          <ul>
-            <li v-for="item in order.orderedItems" :key="item.id">
-              {{ item.brand }} - {{ item.name }} ({{ item.price.toLocaleString() }}P)
-            </li>
-          </ul>
-          <p><strong>결제 금액:</strong> {{ order.totalPrice.toLocaleString() }}P</p>
-          <p><strong>남은 포인트:</strong> {{ order.remainingPoint.toLocaleString() }}P</p>
-          <hr />
-        </div>
-      </div>
-      <button class="clear-button" @click="clearOrderList">🗑 주문 목록 초기화</button>
-
+      <!-- 주문내역 컴포넌트로 대체 -->
+      <OrderList :orderList="orderList" @clear="clearOrderList"/>
     </div>
   </div>
-
+  <div v-else class="no-order-info">
+    <div class="checkmark">❌</div>
+    <h1 class="title">주문 정보가 없습니다</h1>
+    <button class="home-button" @click="goHome">홈으로 가기</button>
+  </div>
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { computed, onMounted, ref } from 'vue'
-import { useShopStore } from '@/stores/shop';
-const shopStore = useShopStore();
+import OrderList from '@/components/OrderList.vue'
 
 const router = useRouter()
-
-function goHome() {
-  // localStorage.removeItem('orderInfo')
-  router.push('/main')
-}
-function goShop() {
-  router.push('/shop')
-}
-function clearOrderList() {
-  const confirmClear = confirm("정말로 모든 주문 내역을 삭제하시겠습니까?")
-  if (!confirmClear) return
-
-  localStorage.removeItem('orderList')
-  orderList.value = [] // 화면에서도 즉시 반영
-  alert("주문 내역이 삭제되었습니다.")
-}
-
-
-// ✅ localStorage에서 orderInfo 복원 (필요할 경우)
-// onMounted(() => {
-//   if (!globalStore.orderInfo.name) {
-//     const saved = JSON.parse(localStorage.getItem('orderInfo'))
-//     if (saved) {
-//       globalStore.orderInfo = {
-//         ...globalStore.orderInfo,
-//         ...saved
-//       }
-//     }
-//   }
-// })
-console.log(JSON.parse(localStorage.getItem('orderInfo')))
-onMounted(() => {
-  const saved = JSON.parse(localStorage.getItem('orderInfo'))
-  console.log(saved)
-  if (saved) {
-    shopStore.orderInfo = saved
-    console.log(shopStore.orderInfo)
-    orderInfo.value = saved;
-    console.log('야호', orderInfo.value)
-  }
-
-})
+const orderInfo = ref(null)
 const orderList = ref([])
 
 onMounted(() => {
-  const savedOrders = JSON.parse(localStorage.getItem('orderList')) || []
-  orderList.value = savedOrders.reverse() // 최근 주문이 위로 오게
+  const raw = localStorage.getItem('orderInfo')
+  orderInfo.value = raw ? JSON.parse(raw) : null
+  const rawList = localStorage.getItem('orderList')
+  orderList.value = rawList ? JSON.parse(rawList).reverse() : []
 })
-
-// let orderInfo = globalStore.orderInfo
-
-let orderInfo = ref(null);
-
-// const name = computed(() => orderInfo.name || '')
-// const phone = computed(() => orderInfo.phone || '')
-// const address = computed(() => orderInfo.address || '')
-// const orderedItems = computed(() => orderInfo.orderedItems || [])
-// const totalPrice = computed(() => orderInfo.totalPrice || 0)
-// const remainingPoint = computed(() => orderInfo.remainingPoint || 0)
-
-console.log(name)
+const orderInfoReady = computed(() =>
+  orderInfo.value && typeof orderInfo.value === 'object' &&
+  Object.keys(orderInfo.value).length > 0 &&
+  'name' in orderInfo.value && 'phone' in orderInfo.value
+)
+function goHome() { router.push('/main') }
+function goShop() { router.push('/shop') }
+function clearOrderList() {
+  localStorage.removeItem('orderList')
+  orderList.value = []
+  alert("주문 내역이 삭제되었습니다.")
+}
 </script>
+<!-- 스타일은 기존 그대로 사용 -->
 
-<style scoped>
+
+<style lang="scss" scoped>
 .finish-wrapper {
   max-width: 480px;
   margin: auto;
@@ -171,14 +117,26 @@ console.log(name)
   border-radius: 12px;
   font-size: 14px;
   color: #333;
-}
 
-.order-details h2 {
-  font-size: 16px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 4px;
-  margin-top: 24px;
+  hr {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    margin: 0;
+  }
+
+  .upper-hr {
+    margin-bottom: 1rem;
+  }
+
+  .lower-hr {
+    margin-top: 1rem;
+  }
+
+
+
 }
 
 .info-box {
@@ -227,6 +185,15 @@ console.log(name)
   margin-top: 40px;
   text-align: left;
   font-size: 13px;
+
+  .history-order {
+    padding: 0.5rem;
+  }
+
+  li {
+    margin-left: 1.75rem;
+  }
+
 }
 
 .order-history-item {
@@ -246,6 +213,7 @@ console.log(name)
   cursor: pointer;
   font-size: 14px;
   margin-bottom: 20px;
+  margin-top: 1rem;
 }
 
 .clear-button:hover {

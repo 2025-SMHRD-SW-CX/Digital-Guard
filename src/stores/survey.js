@@ -108,6 +108,11 @@ export const useSurveyStore = defineStore('survey', {
   state: () => ({
     data: [...DATA]
   }),
+  actions: {
+    reset() {
+      this.data = [...DATA]  // 완전히 새로운 배열로 대입 (참조까지 바뀜)
+    }
+  }
 
 })
 

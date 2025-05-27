@@ -191,9 +191,10 @@ function getRemainText(item) {
         transition: filter 0.18s;
         width: 100%;
         display: flex;
+        gap: 1rem;
 
         &.blur {
-            filter: blur(1px) opacity(0.5);
+            filter: blur(0.75px) opacity(0.5) grayscale(1);
         }
 
         .title {

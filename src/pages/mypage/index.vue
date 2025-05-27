@@ -27,7 +27,7 @@
     <!-- 아이콘 메뉴 -->
     <nav class="menu-icons">
       <div v-for="(item, index) in menuButtons" :key="index" class="icon-btn"
-        :class="{ active: activeButtonIndex === index }" @click="handleIconButtonClick(index)" 
+        :class="{ active: activeButtonIndex === index }" @click="handleIconButtonClick(index)"
         @mouseover="hoveredButtonIndex = index" @mouseleave="hoveredButtonIndex = null">
         <img :src="activeButtonIndex === index || hoveredButtonIndex === index
           ? `${BASE_URL}/images/mypage/${item.name}-active.png`
@@ -80,9 +80,12 @@ import { ref } from 'vue'
 import { useUserStore } from '@/stores/user';
 import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
+import { runCheat } from '@/services/cheatService';
+import { useSurveyStore } from "@/stores/survey";
 
 const userStore = useUserStore();
 const alertStore = useAlertStore();
+const surveyStore = useSurveyStore();
 const router = useRouter();
 
 const activeButtonIndex = ref(null);
@@ -105,21 +108,27 @@ function handleIconButtonClick(index) {
 
   switch (selected.label) {
     case "내 정보":
-      router.push('/myinformation');
+      router.push('/mypage/myinformation');
       break;
-    case "나의 활동":
-      router.push("/myactivity");
-      break;
-    case "사용내역":
-      router.push("/myusage");
-      break;
-    case "문의하기":
-      router.push("/contact");
-      break;
+    // case "나의 활동":
+    // alertStore.notImplemented();
+    // router.push("/myactivity");
+    // break;
+    // case "사용내역":
+    // alertStore.notImplemented();
+    // router.push("/myusage");
+    // break;
+    // case "문의하기":
+    // alertStore.notImplemented();
+    // router.push("/contact");
+    // break;
+    default:
+      alertStore.notImplemented();
   }
 }
 
 const menuItems = [
+  "시연용 치트 활성화",
   "나의 찜 내역",
   "나의 주문 조회",
   "나의 반품 / 교환 내역",
@@ -176,13 +185,29 @@ function handleMenuClick(index) {
     logout();
   } else if (menuItems[index] === "나의 찜 내역") {
     router.push("shop/wishlist");
-  } else {
-    // TODO: 다른 메뉴 클릭 시 원하는 동작
+  } else if (menuItems[index] === "나의 주문 조회") {
+    router.push("/shop/OrderLog")
+  }
+
+  else if (menuItems[index] === "시연용 치트 활성화") {
+    runCheat({ userId: userStore.id, point: 5432, reason: '시연용 치트', continuousDays: 5 });
+    userStore.setPoint(5432);
+    userStore.progressDays = userStore.continuousDays = 5
+    userStore.lastParticiPate = null;
+    surveyStore.data.forEach((item, idx) => {
+      if (idx != 0) item.lastComplete = null;
+    })
+    alertStore.success('시연용 치트가 실행되었습니다! 포인트와 진행일 수 초기화!', 3000);
+  }
+  else {
+    alertStore.notImplemented();
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:color';
+
 .mypage {
   font-family: "Noto Sans KR", sans-serif;
   background: #f9f9f9;
@@ -435,6 +460,6 @@ function handleMenuClick(index) {
 }
 
 .confirm-box button:hover {
-  background-color: darken($color-primary, 10%);
+  background-color: color.scale($color-primary, $lightness: -10%);
 }
 </style>

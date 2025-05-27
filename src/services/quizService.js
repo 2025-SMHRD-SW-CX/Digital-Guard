@@ -1,6 +1,7 @@
 // src/services/quizService.js
 import { db } from './supabase'
 import { getKSTISOString } from '@/js/date'
+import { addPoint, PointReason } from '@/services/pointService'
 
 export const submitQuizAnswer = async (userId, questionId, isCorrect, rewardAmount) => {
   const kstNow = getKSTISOString()
@@ -19,13 +20,7 @@ export const submitQuizAnswer = async (userId, questionId, isCorrect, rewardAmou
 
   if (isCorrect) {
     // 2. 포인트 내역 저장
-    await db.from('point_history').insert([
-      {
-        user_id: userId,
-        point: reward,
-        reason: '퀴즈 정답 보상',
-      }
-    ])
+    await addPoint(userId, reward, PointReason.CHALLENGE_QUIZ_ANSWER)
 
     // 3. user_progress 갱신
     const { data: progress, error: progressError } = await db

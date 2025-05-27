@@ -72,7 +72,8 @@ import { ref, onMounted } from 'vue';
 import { useShopStore, ITEMS } from '@/stores/shop';
 import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
-
+import { useUserStore } from '@/stores/user' // 추가
+const userStore = useUserStore() // 추가
 const router = useRouter();
 const shopStore = useShopStore();
 const alertStore = useAlertStore();
@@ -120,7 +121,18 @@ function purchase() {
     showPurchaseModal.value = true;
 }
 
+
+
 function moveToPurchase() {
+    // ★ 추가: 포인트 부족시 경고
+    if (item.price > userStore.total_point) {
+        alertStore.warning(
+            `❌ 포인트가 부족합니다.<br>보유 포인트: <b>${userStore.total_point.toLocaleString()}P</b><br>상품 가격: <b>${item.price.toLocaleString()}P</b>`,
+            4000
+        )
+        return
+    }
+
     shopStore.orderItems = [item]
     router.push('/shop/OrderPage')
 }

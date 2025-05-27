@@ -2,13 +2,11 @@
   <div class="cart-wrapper">
     <!-- 상단 헤더 -->
     <header class="cart-header">
-      <!-- <span class="back-icon" @click="goBack">←</span> -->
       <div class="top-bar-icons">
         <h2 class="cart-title">
           <img :src="`${BASE_URL}/images/shop/icons/bags_icon.png`" alt="장바구니" class="icon-img">
           장바구니
         </h2>
-
       </div>
     </header>
 
@@ -16,18 +14,33 @@
     <div v-if="shopStore.cart.length === 0">
       장바구니가 비어 있습니다.
     </div>
-    <div v-else class="select-all-box">전체선택
-      <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" id="select-all" />
+    <div v-else class="select-all-box">
+      <label class="custom-checkbox" for="select-all">
+        <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" id="select-all" />
+        <span></span>
+        <p>전체선택</p>
+      </label>
     </div>
+
     <!-- 장바구니 아이템 -->
     <div class="cart-grid">
-      <div v-for="item in shopStore.cart" :key="item.id" class="cart-card">
-        <input type="checkbox" :value="item.id" v-model="shopStore.selectedCartIds" class="item-check" />
-        <img :src="item.image" class="item-image" />
-        <div class="item-info">
-          <div class="item-name">{{ item.name }}</div>
-          <div class="item-price">{{ item.price.toLocaleString() }} Point</div>
-          <button class="delete-btn" @click="remove(item.id)">🗑 삭제</button>
+      <div class="cart-card" v-for="item in shopStore.cart" :key="item.id">
+        <!-- 체크박스 클릭영역 (별도) -->
+        <div class="checkbox-wrapper" @click.stop>
+          <label class="custom-checkbox">
+            <input type="checkbox" :value="item.id" v-model="shopStore.selectedCartIds" class="item-check" />
+            <span></span>
+          </label>
+        </div>
+        <!-- 상품정보 클릭시 상세이동 -->
+        <div class="card-content" @click="goToDetail(item)"
+          style="flex:1;display:flex;align-items:center;cursor:pointer;">
+          <img :src="item.image" class="item-image" />
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-price">{{ item.price.toLocaleString() }} Point</div>
+            <button class="delete-btn" @click.stop="remove(item.id)">🗑 삭제</button>
+          </div>
         </div>
       </div>
     </div>
@@ -38,10 +51,10 @@
 
     <button class="buy-button" @click="buy">선택한 상품 구매하기</button>
   </div>
-  
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";
+<script setup>
+import { BASE_URL } from "@/js/baseUrl";
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShopStore, ITEMS } from '@/stores/shop'
@@ -54,9 +67,13 @@ const userStore = useUserStore()
 const alertStore = useAlertStore()
 const router = useRouter()
 
-const cartItems = computed(() => {
-  return shopStore.cart
-})
+function goToDetail(item) {
+  if (item.route) {
+    router.push(`/shop/view/${item.route}`);
+  } else {
+    alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
+  }
+}
 
 const isAllSelected = computed(() =>
   shopStore.cart.length > 0 &&
@@ -108,6 +125,13 @@ function buy() {
     return
   }
 
+  // ★ 구매불가(포인트부족) 체크 추가!
+  const totalSelectedPrice = selected.reduce((sum, item) => sum + item.price, 0)
+  if (totalSelectedPrice > userStore.total_point) {
+    alertStore.warning('❌ 포인트가 부족합니다.<br>보유 포인트보다 상품 총액이 큽니다.', 3000)
+    return
+  }
+
   shopStore.orderItems = selected
   router.push('/shop/OrderPage')
 }
@@ -130,8 +154,8 @@ onMounted(async () => {
 })
 </script>
 
-
-<style scoped>
+<style lang="scss" scoped>
+$color-primary: #1e3a8a;
 
 .cart-wrapper {
   padding: 16px;
@@ -143,7 +167,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
 }
 
 .cart-title {
@@ -160,14 +184,6 @@ onMounted(async () => {
   object-fit: contain;
 }
 
-.back-icon {
-  position: absolute;
-  left: 0;
-  font-size: 20px;
-  cursor: pointer;
-  margin-left: 8px;
-}
-
 .cart-grid {
   display: flex;
   flex-wrap: wrap;
@@ -177,7 +193,7 @@ onMounted(async () => {
 
 .cart-card {
   display: flex;
-  /* flex-direction: column; */
+  align-items: center;
   padding: 1rem;
   background-color: #fff;
   border: 1px solid #eee;
@@ -191,32 +207,23 @@ onMounted(async () => {
   }
 }
 
-.item-check {
-  margin-bottom: 0.5rem;
-}
-
-.item-image {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-}
-
-.item-info {
-  font-size: 14px;
-}
-
-.select-all-box {
+/* 체크박스 별도 영역 */
+.checkbox-wrapper {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
-  gap: 0.5rem;
-  font-size: 14px;
-  font-weight: bold;
+  justify-content: center;
+  padding: 0.5rem 0.8rem;
+  user-select: none;
+  height: 100%;
+  gap: 1rem;
 }
 
-
+/* 카드내부 클릭영역 */
+.card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
 
 .item-image {
   width: 80px;
@@ -228,6 +235,7 @@ onMounted(async () => {
 
 .item-info {
   flex: 1;
+  font-size: 14px;
 }
 
 .item-name {
@@ -262,11 +270,84 @@ onMounted(async () => {
   margin-top: 16px;
   width: 100%;
   padding: 12px;
-  background: black;
+  background: $color-primary;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
+}
+
+.select-all-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  // gap: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-left: 1.25rem;
+
+  .checkbox-wrapper {
+    margin-right: 0.6rem;
+    // padding: 4px 0;
+    padding: 0.5rem
+  }
+}
+
+/* Custom Checkbox 스타일 */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem; // 텍스트와 체크박스 사이 여백
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  span {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #f1f5fa;
+    border: 2.5px solid #bfc6d7;
+    position: relative;
+    transition: border-color 0.15s, background 0.15s;
+    box-sizing: border-box;
+
+    &::after {
+      content: "";
+      display: block;
+      width: 12px;
+      height: 7px;
+      border-left: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      position: absolute;
+      left: 7px;
+      top: 8px;
+      opacity: 0;
+      transform: scale(1.3) rotate(-45deg);
+      transition: opacity 0.15s, transform 0.15s, border-color 0.15s;
+    }
+  }
+
+  input[type="checkbox"]:checked+span {
+    background: $color-primary;
+    border-color: $color-primary;
+
+    &::after {
+      border-left: 3px solid #fff;
+      border-bottom: 3px solid #fff;
+      opacity: 1;
+      transform: scale(1) rotate(-45deg);
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    user-select: none;
+  }
 }
 </style>

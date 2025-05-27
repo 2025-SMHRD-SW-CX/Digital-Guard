@@ -17,20 +17,22 @@
 
     <!-- 찜한 상품 목록 -->
     <div
-      v-for="item in shopStore.wish"
-      :key="item.id"
-      class="wishlist-item"
-    >
-      <img :src="item.image" class="item-image" />
-      <div class="item-info">
-        <div class="item-name">{{ item.name }}</div>
-        <div class="item-price">{{ item.price.toLocaleString() }}Point</div>
-        <div class="buttons">
-          <button class="unwish-btn" @click="remove(item.id)">❤️ 해제</button>
-          <button class="cart-btn" @click="addToCart(item)">🛒 담기</button>
-        </div>
-      </div>
+  v-for="item in shopStore.wish"
+  :key="item.id"
+  class="wishlist-item"
+  @click="goToDetail(item)"
+  style="cursor:pointer"
+>
+  <img :src="item.image" class="item-image" />
+  <div class="item-info">
+    <div class="item-name">{{ item.name }}</div>
+    <div class="item-price">{{ item.price.toLocaleString() }}Point</div>
+    <div class="buttons">
+      <button class="unwish-btn" @click.stop="remove(item.id)">❤️ 해제</button>
+      <button class="cart-btn" @click.stop="addToCart(item)">🛒 담기</button>
     </div>
+  </div>
+</div>
   </div>
 </template>
 
@@ -41,10 +43,20 @@ import { useAlertStore } from '@/stores/alert';
 import { useUserStore } from '@/stores/user';
 import { db } from '@/services/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from 'vue-router'
 
 const shopStore = useShopStore();
 const alertStore = useAlertStore();
 const userStore = useUserStore();
+const router = useRouter();
+
+function goToDetail(item) {
+  if (item.route) {
+    router.push(`/shop/view/${item.route}`);
+  } else {
+    alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
+  }
+}
 
 async function remove(id) {
   const item = shopStore.wish.find(i => i.id === id);
@@ -101,6 +113,7 @@ async function addToCart(item) {
   object-fit:contain;
 }
 .wishlist-wrapper {
+  width: 100%;
   padding: 16px;
   font-family: Arial, sans-serif;
 }
@@ -110,7 +123,6 @@ async function addToCart(item) {
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 16px;
 }
 
 .wishlist-title {
