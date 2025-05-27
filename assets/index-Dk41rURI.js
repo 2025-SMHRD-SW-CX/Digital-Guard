@@ -1,1 +1,0 @@
-import{_ as s,e as c,a as o,o as t}from"./index-CwJMsvQU.js";const a={},r={class:"wrapper"};function n(_,e){return t(),c("div",r,e[0]||(e[0]=[o("h1",null,"관리자 로그인!",-1)]))}const l=s(a,[["render",n],["__scopeId","data-v-6ccd8ce6"]]);export{l as default};
