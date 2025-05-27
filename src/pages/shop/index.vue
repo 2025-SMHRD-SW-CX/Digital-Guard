@@ -56,13 +56,8 @@
     </div>
 </template>
 
-<<<<<<< Updated upstream
 <script setup>
 import { BASE_URL } from "@/js/baseUrl"
-=======
-<script setup>import { BASE_URL } from "@/js/baseUrl";
-
->>>>>>> Stashed changes
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ITEMS, useShopStore } from '@/stores/shop';
