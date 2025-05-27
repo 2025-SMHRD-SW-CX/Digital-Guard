@@ -1,5 +1,6 @@
 <template>
   <div class="app-wrapper">
+        <LoadingScreen />
     <!-- admin이 아닌 경우만 로더/공통레이아웃 노출 -->
     <template v-if="firstToken !== 'admin'">
       <transition name="loader-fade" mode="out-in">
@@ -10,16 +11,26 @@
           <div class="page-clipper" :key="route.fullPath" ref="scrollContainer">
             <HeaderView />
             <div class="content"><router-view /></div>
+            
           </div>
         </transition>
         <FooterView />
         <TopButton :scroll-target="scrollContainer" />
       </div>
     </template>
+
+
     <!-- admin 경로일 때는 오직 컨텐츠만 -->
     <template v-else>
       <div class="admin-content-only">
-        <router-view />
+        <AdminHeader />
+        <div class="content">
+          <AdminSidebar />
+          <div class="main">
+            <router-view />
+          </div>
+        </div>
+        <AdminFooter />
       </div>
     </template>
     <AlertView />
@@ -34,6 +45,10 @@ import FooterView from '@/components/FooterView.vue'
 import TopButton from '@/components/TopButton.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
 import AlertView from '@/components/AlertView.vue'
+import AdminHeader from '@/components/AdminHeader.vue'
+import AdminFooter from '@/components/AdminFooter.vue'
+import AdminSidebar from '@/components/AdminSidebar.vue'
+import LoadingScreen from '@/components/LoadingScreen.vue'
 
 // --- Composables ---
 import { usePathToken } from '@/composables/usePathToken'
@@ -104,11 +119,13 @@ onMounted(async () => {
   inset: 0;
   overflow: auto;
 }
+
 .page-clipper {
   flex-grow: 1;
   overflow: auto;
   display: flex;
   flex-direction: column;
+
   .content {
     flex-grow: 1;
     background-color: $color-content-background;
@@ -119,33 +136,64 @@ onMounted(async () => {
     align-items: center;
   }
 }
+
 .loader-fade-leave-active {
   transition: opacity 0.4s ease;
 }
+
 .loader-fade-leave-to {
   opacity: 0;
 }
+
 .page-fade-float-enter-active {
   transition:
     opacity 0.3s ease 0.2s,
     transform 0.3s ease 0.2s;
 }
+
 .page-fade-float-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .page-fade-float-enter-from {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .page-fade-float-enter-to {
   opacity: 1;
   transform: translateY(0);
 }
+
 .page-fade-float-leave-to {
   opacity: 0;
 }
+
+.admin-content-only {
+  background-color: $color-content-background;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .content {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    .main {
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+      background-color: purple;
+    }
+  }
+}
 </style>
 
+
 <style lang="scss">
-// 이 스타일태그 지우기 x
-</style>
+// 이 스타일태그 지우기 x</style>

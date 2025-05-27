@@ -21,7 +21,8 @@ const BLOCKED_FOR_LOGGED_IN = [
 ]
 // 로그인된 관리자가 접근 불가한 경로
 const ADMIN_BLOCKED_FOR_LOGGED_IN = [
-  '/admin/login'
+  '/admin/login',
+  '/admin'
 ]
 
 // ───────────── 라우터 가드 ──────────────
@@ -63,10 +64,19 @@ router.beforeEach(async (to, from, next) => {
   // 6. 관리자 로그인 필요한 페이지(일반유저/비로그인 접근 불가)
   if (
     ADMIN_NEED_LOGIN_TOKENS.includes(firstToken) &&
-    !adminStore.isLogined
+    !adminStore.isLogined &&
+    to.path !== '/admin/login' // ★ 추가!
   ) {
     alertStore.danger('로그인 후 이용 가능합니다.', 3000)
     return next('/admin/login')
+  }
+
+  // 가드 내에서 아래 추가
+  if (
+    adminStore.isLogined &&
+    (to.path === '/admin' || ADMIN_BLOCKED_FOR_LOGGED_IN.includes(to.path.split('?')[0]))
+  ) {
+    return next('/admin/main')
   }
 
   // 7. 그 외는 허용

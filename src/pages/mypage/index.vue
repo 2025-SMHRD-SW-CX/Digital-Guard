@@ -6,21 +6,17 @@
         <img :src="`${BASE_URL}/images/mypage/knight-and-horse.png`" alt="아바타 이미지" />
       </div>
       <p class="badge">
-    {{ userStore.continuousDays }}일 동안 열심히 활동해주신
-    <span class="title-name" @click="openTitleModal">
-      {{ currentTitle }}
-      <img
-        :src="`${BASE_URL}/images/mypage/pen-icon-white.png`"
-        alt="수정 아이콘"
-        class="edit-icon"
-        @click.stop="openTitleModal"
-      />
-    </span>
-  </p>
+        {{ userStore.continuousDays }}일 동안 열심히 활동해주신
+        <span class="title-name" @click="openTitleModal">
+          {{ currentTitle }}
+          <img :src="`${BASE_URL}/images/mypage/pen-icon-white.png`" alt="수정 아이콘" class="edit-icon"
+            @click.stop="openTitleModal" />
+        </span>
+      </p>
 
-  <p class="username">
-    <span>{{ userStore.nickname || userStore.name }}</span><span class="honorific"> 님</span>
-  </p>
+      <p class="username">
+        <span>{{ userStore.nickname || userStore.name }}</span><span class="honorific"> 님</span>
+      </p>
       <div class="points">
         <img :src="`${BASE_URL}/images/mypage/coins.png`" alt="포인트 아이콘" class="coin-icon" />
         <span>나의 포인트</span>
@@ -31,7 +27,7 @@
     <!-- 아이콘 메뉴 -->
     <nav class="menu-icons">
       <div v-for="(item, index) in menuButtons" :key="index" class="icon-btn"
-        :class="{ active: activeButtonIndex === index }" @click="activeButtonIndex = index"
+        :class="{ active: activeButtonIndex === index }" @click="handleIconButtonClick(index)" 
         @mouseover="hoveredButtonIndex = index" @mouseleave="hoveredButtonIndex = null">
         <img :src="activeButtonIndex === index || hoveredButtonIndex === index
           ? `${BASE_URL}/images/mypage/${item.name}-active.png`
@@ -101,6 +97,28 @@ const menuButtons = [
   { label: "사용내역", name: "calculator" },
   { label: "문의하기", name: "headphone" },
 ];
+
+function handleIconButtonClick(index) {
+  activeButtonIndex.value = index;
+
+  const selected = menuButtons[index];
+
+  switch (selected.label) {
+    case "내 정보":
+      router.push('/myinformation');
+      break;
+    case "나의 활동":
+      router.push("/myactivity");
+      break;
+    case "사용내역":
+      router.push("/myusage");
+      break;
+    case "문의하기":
+      router.push("/contact");
+      break;
+  }
+}
+
 const menuItems = [
   "나의 찜 내역",
   "나의 주문 조회",

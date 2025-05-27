@@ -17,7 +17,8 @@ const DEFAULT_VALUES = {
     totalNeedDays: 7, //꼭 챌린지가 계속 7일이 아니라 더 큰 챌린지를 참여하는 식으로 확장이 가능할 여지가 있으니 고정값으로 조정
     progressDays: null,
     continuousDays: null,
-    lastParticipate: null
+    lastParticipate: null,
+    email: null
 }
 
 export const useUserStore = defineStore('user', {
@@ -100,6 +101,7 @@ export const useUserStore = defineStore('user', {
             this.progressDays = data['progress_days']
             this.continuousDays = data['continuous_days']
             this.lastParticipate = data['last_participated']
+            this.email = data['email']
 
             console.log("User Data: ", data)
         },
