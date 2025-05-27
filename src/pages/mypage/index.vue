@@ -70,19 +70,11 @@
   </div>
 </template>
 
-<<<<<<< Updated upstream
 <script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user';
 import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
-=======
-<script setup>
-import { ref } from "vue";
-import { useUserStore } from "@/stores/user";
-import { useAlertStore } from "@/stores/alert";
-import { useRouter } from "vue-router";
->>>>>>> Stashed changes
 
 const userStore = useUserStore();
 const alertStore = useAlertStore();
