@@ -20,49 +20,52 @@
 
     <!-- 퀴즈 영역 -->
     <div class="quiz-section-wrapper">
-      <div class="quiz-info-overlay" v-if="!videoWatched">
-        <p>🎥 영상 시청 후 퀴즈를 풀어주세요!</p>
-        <p>💰 퀴즈를 풀면 <strong>100포인트</strong>가 지급됩니다!</p>
-      </div>
-
-      <div class="quiz-section" :class="{ blurred: !videoWatched || quizCompleted }">
-        <div class="quiz-title">문제</div>
-        <p class="quiz-question">
-          영상 속 주인공이 교육청에서 검정고시를 접수하던 중 직원분들께 소개받은 곳은?
-        </p>
-        <ol class="quiz-options">
-          <li v-for="(option, index) in options" :key="index">
-            <label>
-              <input type="radio" :value="index + 1" v-model="selectedAnswer" :disabled="quizCompleted" />
-              {{ option }}
-            </label>
-          </li>
-        </ol>
-        <button class="submit-button" @click="checkAnswer" :disabled="quizCompleted">정답 확인</button>
-      </div>
+      <<div class="quiz-info-overlay">
+        <template v-if="quizCompleted">
+          <p>🎉 이미 참여하셨습니다!</p>
+          <p>✅ 포인트가 지급된 상태입니다.</p>
+        </template>
+        <template v-else>
+          <p>🎥 영상 시청 후 퀴즈를 풀어주세요!</p>
+          <p>💰 퀴즈를 풀면 <strong>100포인트</strong>가 지급됩니다!</p>
+        </template>
     </div>
 
-    <!-- 결과 모달 -->
-    <ModalView
-      v-model="showModal"
-      :type="modalType"
-      :useButton="quizCompleted ? false : true"
-      @confirm="handleModalConfirm"
-    >
-      <template #default>
-        <div v-if="quizCompleted">
-          <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
-          <p>정답입니다! 100포인트가 적립되었습니다.</p>
-          <div class="modal-actions">
-            <button class="next-button" disabled>다음 교육영상 보기 (준비중)</button>
-            <button class="home-button" @click="goHome">홈으로</button>
-          </div>
+
+    <div class="quiz-section" :class="{ blurred: !videoWatched || quizCompleted }">
+      <div class="quiz-title">문제</div>
+      <p class="quiz-question">
+        영상 속 주인공이 교육청에서 검정고시를 접수하던 중 직원분들께 소개받은 곳은?
+      </p>
+      <ol class="quiz-options">
+        <li v-for="(option, index) in options" :key="index">
+          <label>
+            <input type="radio" :value="index + 1" v-model="selectedAnswer" :disabled="quizCompleted" />
+            {{ option }}
+          </label>
+        </li>
+      </ol>
+      <button class="submit-button" @click="checkAnswer" :disabled="quizCompleted">정답 확인</button>
+    </div>
+  </div>
+
+  <!-- 결과 모달 -->
+  <ModalView v-model="showModal" :type="modalType" :useButton="quizCompleted ? false : true"
+    @confirm="handleModalConfirm">
+    <template #default>
+      <div v-if="quizCompleted">
+        <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+        <p>정답입니다! 100포인트가 적립되었습니다.</p>
+        <div class="modal-actions">
+          <button class="next-button" disabled>다음 교육영상 보기 (준비중)</button>
+          <button class="home-button" @click="goHome">홈으로</button>
         </div>
-        <div v-else>
-          <p>{{ modalMessage }}</p>
-        </div>
-      </template>
-    </ModalView>
+      </div>
+      <div v-else>
+        <p>{{ modalMessage }}</p>
+      </div>
+    </template>
+  </ModalView>
   </div>
 </template>
 
@@ -142,7 +145,7 @@ function createPlayer() {
       playsinline: 1
     },
     events: {
-      onReady: () => {},
+      onReady: () => { },
       onStateChange: onPlayerStateChange
     }
   })
@@ -218,7 +221,7 @@ function goHome() {
 }
 
 // 유튜브 API 삽입 및 초기화
-onMounted(() => {
+onMounted(async () => {
   if (!window.YT) {
     const tag = document.createElement('script')
     tag.src = 'https://www.youtube.com/iframe_api'
@@ -230,7 +233,21 @@ onMounted(() => {
   window.onYouTubeIframeAPIReady = () => {
     createPlayer()
   }
+
+  // ✅ 이미 퀴즈 참여했는지 체크 (보상 여부도 포함)
+  const { data, error } = await db
+    .from('edu_quiz_participation')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('quiz_id', quizId)
+    .eq('reward_given', true)  // ✔️ 보상 받은 경우만 체크
+
+  if (!error && data && data.length > 0) {
+    quizCompleted.value = true
+    videoWatched.value = true // 비디오 안 봐도 퀴즈는 비활성화 상태
+  }
 })
+
 </script>
 
 <style scoped>
@@ -241,6 +258,7 @@ onMounted(() => {
   background: #f5f5f5;
   padding-bottom: 2rem;
 }
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -249,10 +267,12 @@ onMounted(() => {
   font-weight: bold;
   background: white;
 }
+
 .logo {
   font-size: 1.2rem;
   color: #2a3faa;
 }
+
 .play-toggle-button-header {
   padding: 8px 12px;
   background: #2a3faa;
@@ -262,21 +282,25 @@ onMounted(() => {
   font-size: 14px;
   cursor: pointer;
 }
+
 .video-section {
   background: #f3bcbc;
   text-align: center;
   padding: 0 0 1rem 0;
 }
+
 .video-wrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: black;
 }
+
 #youtubePlayer {
   width: 100%;
   height: 100%;
 }
+
 .click-blocker {
   position: absolute;
   top: 0;
@@ -287,9 +311,11 @@ onMounted(() => {
   background: transparent;
   pointer-events: auto;
 }
+
 .quiz-section-wrapper {
   position: relative;
 }
+
 .quiz-info-overlay {
   position: absolute;
   top: 0;
@@ -309,6 +335,7 @@ onMounted(() => {
   border-radius: 12px;
   padding: 1rem;
 }
+
 .quiz-section {
   position: relative;
   background: white;
@@ -317,10 +344,12 @@ onMounted(() => {
   padding: 1rem;
   transition: filter 0.3s ease;
 }
+
 .quiz-section.blurred {
   filter: blur(6px);
   pointer-events: none;
 }
+
 .quiz-title {
   font-weight: bold;
   background: #2a3faa;
@@ -331,15 +360,18 @@ onMounted(() => {
   font-size: 14px;
   margin-bottom: 8px;
 }
+
 .quiz-question {
   margin-bottom: 1rem;
   font-size: 15px;
 }
+
 .quiz-options li {
   margin: 6px 0;
   font-size: 15px;
   list-style: none;
 }
+
 .submit-button {
   margin-top: 1rem;
   padding: 10px 16px;
@@ -350,12 +382,14 @@ onMounted(() => {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .modal-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 1rem;
 }
+
 .modal-actions button {
   padding: 10px;
   font-size: 14px;
@@ -363,15 +397,18 @@ onMounted(() => {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .next-button {
   background-color: #ccc;
   color: #333;
   cursor: not-allowed;
 }
+
 .home-button {
   background-color: #2a3faa;
   color: white;
 }
+
 .confetti-canvas {
   position: absolute;
   top: 0;
