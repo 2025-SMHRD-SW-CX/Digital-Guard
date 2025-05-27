@@ -83,12 +83,12 @@
             <div class="wishlist-info">
               <p class="item-name">{{ item.name }}</p>
               <p class="item-price">{{ item.price.toLocaleString() }}P</p>
-              <template v-if="userStore.totalReward >= item.price">
+              <template v-if="userStore.total_point >= item.price">
                 <span class="badge badge-available">구매 가능</span>
               </template>
               <template v-else>
                 <div class="badge badge-short">
-                  <p class="short-price">{{ (item.price - userStore.totalReward).toLocaleString() }}P</p>
+                  <p class="short-price">{{ (item.price - userStore.total_point).toLocaleString() }}P</p>
                   <p class="its-short">부족해요!</p>
                 </div>
               </template>
@@ -140,6 +140,7 @@ import { useUserStore } from '@/stores/user'
 import { useAlertStore } from '@/stores/alert'
 import { submitQuizAnswer } from '@/services/quizService'
 import { updateUserTotalPoint } from '@/services/pointService'
+import { onMounted } from "vue";
 
 const router = useRouter()
 const shopStore = useShopStore()
@@ -162,7 +163,7 @@ const showCorrectModal = ref(false)
 const showWrongModal = ref(false)
 
 const hasInsufficientItems = computed(() =>
-  shopStore.wish.some(item => item.price > userStore.totalReward)
+  shopStore.wish.some(item => item.price > userStore.total_point)
 )
 
 const currentQuestion = ref({
@@ -224,6 +225,12 @@ async function checkAnswer(userAnswer) {
     showCorrectModal.value = true
   }
 }
+onMounted(async () => {
+  if (!userStore.id) return
+
+  const updatedPoint = await updateUserTotalPoint(userStore.id)
+  userStore.setPoint(updatedPoint)
+})
 </script>
 
 
