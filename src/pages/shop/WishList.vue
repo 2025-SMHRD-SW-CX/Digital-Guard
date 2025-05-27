@@ -38,32 +38,58 @@
 // import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 import { useAlertStore } from '@/stores/alert';
+import { useUserStore } from '@/stores/user';
+import { db } from '@/services/supabase';
+import { v4 as uuidv4 } from 'uuid';
 
-// const router = useRouter()
 const shopStore = useShopStore();
-const alertStore = useAlertStore(); 
+const alertStore = useAlertStore();
+const userStore = useUserStore();
 
-// function goBack() {
-//   router.back()
-// }
-
-function remove(id) {
+async function remove(id) {
   const item = shopStore.wish.find(i => i.id === id);
-  shopStore.wish = shopStore.wish.filter(i => i.id !== id);
+  if (!item || !userStore.id) return;
 
-  if (item) {
-    alertStore.warning(`[${item.name}] 찜 목록에서 제거되었습니다.`, 2000);
+  // 🔄 Supabase에서 삭제
+  const { error } = await db.from('wishlist').delete().match({
+    user_id: userStore.id,
+    item_id: item.id
+  });
+
+  if (error) {
+    alertStore.danger('찜 해제 실패!', 3000);
+    console.error(error);
+    return;
   }
+
+  shopStore.wish = shopStore.wish.filter(i => i.id !== id);
+  alertStore.warning(`[${item.name}] 찜 목록에서 제거되었습니다.`, 2000);
 }
 
-function addToCart(item) {
+async function addToCart(item) {
+  if (!userStore.id) return;
+
   const exists = shopStore.cart.find(i => i.id === item.id);
   if (exists) {
     alertStore.danger(`[${item.name}]은(는) 이미 장바구니에 담겨 있습니다!`, 2500);
-  } else {
-    shopStore.cart.push(item);
-    alertStore.success(`[${item.name}] 장바구니에 담겼습니다!`, 2500);
+    return;
   }
+
+  // 🔄 Supabase에 추가
+  const { error } = await db.from('cart').insert({
+    id: uuidv4(),
+    user_id: userStore.id,
+    item_id: item.id
+  });
+
+  if (error) {
+    alertStore.danger('장바구니 추가 실패!', 2500);
+    console.error(error);
+    return;
+  }
+
+  shopStore.cart.push(item);
+  alertStore.success(`[${item.name}] 장바구니에 담겼습니다!`, 2500);
 }
 </script>
 

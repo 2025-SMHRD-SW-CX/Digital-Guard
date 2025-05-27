@@ -316,13 +316,15 @@ export const ITEMS = [
 
 ]
 
+
+
 export const useShopStore = defineStore('shop', {
   state: () => ({
-    cart: [],
     wish: [],
-    selectedCartIds: [], // ✅ 선택된 장바구니 항목의 id 저장
-    orderInfo: {},
-    orderItems: [],
+    cart: [],
+    selectedCartIds: [],   // ✅ 이 줄 추가!
+    orderItems: []         // 선택한 상품을 구매페이지로 넘길 때 사용
+    
   }),
-
+  persist: true  // ✅ 상태 유지
 })
