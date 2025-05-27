@@ -5,10 +5,12 @@
       <div class="avatar">
         <img :src="`${BASE_URL}/images/mypage/knight-and-horse.png`" alt="아바타 이미지" />
       </div>
-      <p class="badge">{{ userStore.continuousDays }}일 동안 열심히 활동해주신 성실맨</p>
-      <p class="username">
-        <span>{{ userStore.nickname || userStore.name }}</span>
-        <span class="honorific"> 님</span>
+      <p class="badge">
+        {{ userStore.continuousDays }}일 동안 열심히 활동해주신
+        <span class="title-name" @click="openTitleModal">
+          {{ currentTitle }}
+          <img src="/images/mypage/pen-icon-white.png" alt="수정 아이콘" class="edit-icon" @click.stop="openTitleModal" />
+        </span>
       </p>
       <div class="points">
         <img :src="`${BASE_URL}/images/mypage/coins.png`" alt="포인트 아이콘" class="coin-icon" />
@@ -24,7 +26,8 @@
         @mouseover="hoveredButtonIndex = index" @mouseleave="hoveredButtonIndex = null">
         <img :src="activeButtonIndex === index || hoveredButtonIndex === index
           ? `/images/mypage/${item.name}-active.png`
-          : `/images/mypage/${item.name}.png`" :alt="item.label + ' 아이콘'" class="icon-image" />
+          : `/images/mypage/${item.name}.png`
+          " :alt="item.label + ' 아이콘'" class="icon-image" />
         <span>{{ item.label }}</span>
         <div v-if="index < menuButtons.length - 1" class="divider"></div>
       </div>
@@ -37,51 +40,123 @@
         {{ item }}
         <img class="arrow-icon" :src="hoveredIndex === index
           ? '/images/mypage/angle-right-active.png'
-          : '/images/mypage/angle-right.png'" alt="화살표 아이콘" />
+          : '/images/mypage/angle-right.png'
+          " alt="화살표 아이콘" />
       </li>
     </ul>
+
+    <!-- 칭호 모달 -->
+    <div v-if="isTitleModalOpen" class="modal-overlay" @click.self="closeTitleModal">
+      <div class="modal-content">
+        <h2>칭호 선택</h2>
+        <ul class="title-list">
+          <li v-for="(title, idx) in titles" :key="title.name" :class="{
+            disabled: userStore.continuousDays < title.requiredDays,
+            selected: selectedTitleIndex === idx
+          }" @click="selectTitle(idx)">
+            <strong>{{ title.name }}</strong>
+          </li>
+        </ul>
+        <div v-if="selectedTitleIndex !== null" class="confirm-box">
+          <p>
+            <strong>“{{ titles[selectedTitleIndex].name }}”</strong> 칭호<br />
+            {{ titles[selectedTitleIndex].description }}
+          </p>
+          <button @click="applyTitle">적용</button>
+          <button @click="closeTitleModal">취소</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
+<<<<<<< Updated upstream
 <script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user';
 import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
+=======
+<script setup>
+import { ref } from "vue";
+import { useUserStore } from "@/stores/user";
+import { useAlertStore } from "@/stores/alert";
+import { useRouter } from "vue-router";
+>>>>>>> Stashed changes
 
 const userStore = useUserStore();
 const alertStore = useAlertStore();
 const router = useRouter();
 
-const activeButtonIndex = ref(null)
-const hoveredButtonIndex = ref(null)
-const hoveredIndex = ref(null)
+const activeButtonIndex = ref(null);
+const hoveredButtonIndex = ref(null);
+const hoveredIndex = ref(null);
+
+const currentTitle = ref("새내기"); // 초기 칭호
 
 const menuButtons = [
-  { label: '내 정보', name: 'person' },
-  { label: '나의 활동', name: 'trophy' },
-  { label: '사용내역', name: 'calculator' },
-  { label: '문의하기', name: 'headphone' },
-]
+  { label: "내 정보", name: "person" },
+  { label: "나의 활동", name: "trophy" },
+  { label: "사용내역", name: "calculator" },
+  { label: "문의하기", name: "headphone" },
+];
 const menuItems = [
-  '나의 찜 내역',
-  '나의 주문 조회',
-  '나의 반품 / 교환 내역',
-  '공지사항',
-  '자주 묻는 질문',
-  '로그아웃'
-]
+  "나의 찜 내역",
+  "나의 주문 조회",
+  "나의 반품 / 교환 내역",
+  "공지사항",
+  "자주 묻는 질문",
+  "로그아웃",
+];
+
+// 칭호 데이터
+const titles = [
+  { name: "새내기", description: "디지털 가드에 첫 걸음을 내딛으셨습니다!", requiredDays: 0 },
+  { name: "노력가", description: "3일 동안 열심히 활동해 주셨습니다!", requiredDays: 3 },
+  { name: "성실맨", description: "5일 동안 열심히 활동해 주셨습니다!", requiredDays: 5 },
+  { name: "정복자", description: "7일 동안 열심히 활동해 주셨습니다!", requiredDays: 7 },
+];
+
+const isTitleModalOpen = ref(false);
+const selectedTitleIndex = ref(null);
+
+function openTitleModal() {
+  isTitleModalOpen.value = true;
+  selectedTitleIndex.value = null;
+}
+
+function closeTitleModal() {
+  isTitleModalOpen.value = false;
+  selectedTitleIndex.value = null;
+}
+
+function selectTitle(idx) {
+  if (userStore.continuousDays < titles[idx].requiredDays) return;
+  selectedTitleIndex.value = idx;
+}
+
+function applyTitle() {
+  if (selectedTitleIndex.value === null) return;
+
+  const chosenTitle = titles[selectedTitleIndex.value];
+  currentTitle.value = chosenTitle.name; // 칭호 적용
+
+  alertStore.success(`"${chosenTitle.name}" 칭호가 적용되었습니다!`, 2000);
+  closeTitleModal();
+}
 
 // 로그아웃 메서드
 function logout() {
   userStore.logout();
-  alertStore.warning('로그아웃 되었습니다!', 2000);
-  router.replace('/login');
+  alertStore.warning("로그아웃 되었습니다!", 2000);
+  router.replace("/login");
 }
 
 function handleMenuClick(index) {
-  if (menuItems[index] === '로그아웃') {
+  if (menuItems[index] === "로그아웃") {
     logout();
+  } else if (menuItems[index] === "나의 찜 내역") {
+    router.push("shop/wishlist");
   } else {
     // TODO: 다른 메뉴 클릭 시 원하는 동작
   }
@@ -90,7 +165,7 @@ function handleMenuClick(index) {
 
 <style lang="scss" scoped>
 .mypage {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
   background: #f9f9f9;
   padding: 0 4vw 40px;
   width: 100%;
@@ -247,5 +322,100 @@ function handleMenuClick(index) {
 .arrow-icon {
   width: 16px;
   height: 16px;
+}
+
+/* 모달 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 15px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.title-list {
+  list-style: none;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.title-list li {
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.title-list li:hover {
+  background-color: #eef3ff;
+  border-color: $color-primary;
+}
+
+.title-list li.disabled {
+  cursor: not-allowed;
+  color: #aaa;
+  background-color: #f5f5f5;
+}
+
+.title-list li.selected {
+  background-color: $color-primary;
+  color: white;
+  font-weight: bold;
+}
+
+.title-name {
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+
+  .edit-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    cursor: pointer;
+  }
+}
+
+.confirm-box {
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+  text-align: center;
+}
+
+.confirm-box p {
+  margin-bottom: 12px;
+}
+
+.confirm-box button {
+  background-color: $color-primary;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 25px;
+  cursor: pointer;
+  margin: 0 10px;
+  transition: background-color 0.3s;
+}
+
+.confirm-box button:hover {
+  background-color: darken($color-primary, 10%);
 }
 </style>
