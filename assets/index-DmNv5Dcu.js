@@ -1,1 +1,0 @@
-import{_ as t,e as n,a as o,f as s,P as r,o as _}from"./index-833oLE3s.js";const c={class:"admin-layout"},d={__name:"index",setup(i){return(l,e)=>{const a=r("router-view");return _(),n("div",c,[e[0]||(e[0]=o("header",null,"Admin Header or Nav",-1)),o("main",null,[s(a)])])}}},p=t(d,[["__scopeId","data-v-2779ef06"]]);export{p as default};
