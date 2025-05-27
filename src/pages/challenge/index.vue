@@ -64,7 +64,7 @@
 </template>
 
 <script setup>import { BASE_URL } from "@/js/baseUrl";
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'
