@@ -42,7 +42,11 @@
 </template>
 
 <script setup>import { BASE_URL } from "@/js/baseUrl";
+<<<<<<< Updated upstream
 import { computed, onMounted } from 'vue'
+=======
+import { computed } from 'vue'
+>>>>>>> Stashed changes
 import { useRouter } from 'vue-router'
 import { useShopStore, ITEMS } from '@/stores/shop'
 import { useUserStore } from '@/stores/user'

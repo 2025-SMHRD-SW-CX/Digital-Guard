@@ -23,7 +23,7 @@
 
       <div class="history-section">
         <h2>이전 주문 내역</h2>
-        <div v-for="order in orderList" :key="order.id" class="order-history-item">
+        <div v-for="order in orderList" :key="order && order.id" v-if="order && order.date">
           <p><strong>주문일 : </strong> {{ new Date(order.date).toLocaleString() }}</p>
           <p><strong>받는 분 : </strong> {{ order.name }} / {{ order.phone }}</p>
           <p><strong>주소 : </strong> {{ order.address }}</p>
