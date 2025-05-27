@@ -42,32 +42,27 @@
 </template>
 
 <script setup>import { BASE_URL } from "@/js/baseUrl";
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useShopStore } from '@/stores/shop';
-import { useAlertStore } from '@/stores/alert';
-const alertStore = useAlertStore();
+import { useShopStore, ITEMS } from '@/stores/shop'
+import { useUserStore } from '@/stores/user'
+import { useAlertStore } from '@/stores/alert'
+import { db } from '@/services/supabase'
 
-const shopStore = useShopStore();
+const shopStore = useShopStore()
+const userStore = useUserStore()
+const alertStore = useAlertStore()
 const router = useRouter()
 
-// function goBack() {
-//   router.back()
-// }
-
-function remove(id) {
-  const item = shopStore.cart.find(i => i.id === id)
-  if (!item) return;
-
-  shopStore.cart = shopStore.cart.filter(i => i.id !== id)
-  shopStore.selectedCartIds = shopStore.selectedCartIds.filter(sid => sid !== id)
-
-  alertStore.info(`[${item.name}] 상품이 장바구니에서 삭제되었습니다.`, 3000)
-}
-const isAllSelected = computed(() => {
-  return shopStore.cart.length > 0 &&
-    shopStore.cart.every(item => shopStore.selectedCartIds.includes(item.id))
+const cartItems = computed(() => {
+  return shopStore.cart
 })
+
+const isAllSelected = computed(() =>
+  shopStore.cart.length > 0 &&
+  shopStore.cart.every(item => shopStore.selectedCartIds.includes(item.id))
+)
+
 function toggleSelectAll(e) {
   if (e.target.checked) {
     shopStore.selectedCartIds = shopStore.cart.map(item => item.id)
@@ -82,20 +77,59 @@ const totalPrice = computed(() =>
     .reduce((sum, item) => sum + item.price, 0)
 )
 
+async function remove(id) {
+  const item = shopStore.cart.find(i => i.id === id)
+  if (!item) return
+
+  // Supabase에서 삭제
+  const { error } = await db.from('cart').delete().match({
+    user_id: userStore.id,
+    item_id: id
+  })
+
+  if (error) {
+    alertStore.danger('장바구니 항목 삭제 실패', 3000)
+    return
+  }
+
+  // 로컬 상태에서도 제거
+  shopStore.cart = shopStore.cart.filter(i => i.id !== id)
+  shopStore.selectedCartIds = shopStore.selectedCartIds.filter(sid => sid !== id)
+  alertStore.info(`[${item.name}] 장바구니에서 제거되었습니다`, 3000)
+}
+
 function buy() {
   const selected = shopStore.cart.filter(i =>
     shopStore.selectedCartIds.includes(i.id)
   )
 
   if (selected.length === 0) {
-    alertStore.warning('❗ 상품을 선택하지 않았습니다. <br /> 🎁구매할 상품을 선택해주세요.', 3000);
+    alertStore.warning('❗ 상품을 선택하지 않았습니다. <br /> 🎁구매할 상품을 선택해주세요.', 3000)
     return
   }
 
   shopStore.orderItems = selected
   router.push('/shop/OrderPage')
 }
+
+onMounted(async () => {
+  await userStore.syncLoginCookieState()
+
+  if (!userStore.id) return
+
+  // cart DB에서 로딩
+  const { data: cartList, error } = await db
+    .from('cart')
+    .select('item_id')
+    .eq('user_id', userStore.id)
+
+  if (!error && cartList) {
+    const cartIds = cartList.map(c => Number(c.item_id))
+    shopStore.cart = ITEMS.filter(item => cartIds.includes(item.id))
+  }
+})
 </script>
+
 
 <style scoped>
 
