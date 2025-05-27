@@ -14,11 +14,8 @@
             </div>
         </div>
 
-
-        <!-- 정렬 버튼 및 드롭다운 -->
         <div class="sort-section">
             <span @click="toggleSortMenu">▼ {{ sortLabel }}</span>
-
             <transition name="fade-slide">
                 <ul v-if="showSortMenu" class="sort-menu">
                     <li @click.stop="setSort('default')">추천순</li>
@@ -26,7 +23,6 @@
                     <li @click.stop="setSort('high')">가격 높은순</li>
                 </ul>
             </transition>
-
         </div>
 
         <!-- 상품 목록 -->
@@ -58,121 +54,180 @@
         </div>
 
     </div>
-
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";
-
+<script setup>
+import { BASE_URL } from "@/js/baseUrl"
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ITEMS, useShopStore } from '@/stores/shop';
 import { useAlertStore } from '@/stores/alert';
+import { useUserStore } from '@/stores/user';
+import { db } from '@/services/supabase';
+import { v4 as uuidv4 } from 'uuid';
 import CardView from '@/components/CardView.vue';
 
 const shopStore = useShopStore();
 const alertStore = useAlertStore();
+const userStore = useUserStore();
+const router = useRouter();
 
-const router = useRouter()
-const searchQuery = ref('')
-const showSortMenu = ref(false)
-const sortType = ref('default')
-const calculateDiscount = (original, current) => {
+const searchQuery = ref('');
+const showSortMenu = ref(false);
+const sortType = ref('default');
+
+function calculateDiscount(original, current) {
     return Math.round(((original - current) / original) * 100);
 }
 
 function setSort(type) {
-    sortType.value = type
-    showSortMenu.value = false
+    sortType.value = type;
+    showSortMenu.value = false;
 }
+
 function handleClickOutside(e) {
-    const sortMenu = document.querySelector('.sort-section')
+    const sortMenu = document.querySelector('.sort-section');
     if (sortMenu && !sortMenu.contains(e.target)) {
-        showSortMenu.value = false
+        showSortMenu.value = false;
     }
 }
+
 function goToDetail(item) {
     if (item.route) {
-        router.push(`/shop/view/${item.route}`)
+        router.push(`/shop/view/${item.route}`);
     } else {
         alertStore.danger(`[${item.name}] 상품은 상세페이지가 준비되어 있지 않습니다!`, 3000);
     }
 }
-onMounted(() => {
-    document.addEventListener('click', handleClickOutside)
-})
-
-onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside)
-})
-const sortLabel = computed(() => {
-    switch (sortType.value) {
-        case 'low': return '가격 낮은순'
-        case 'high': return '가격 높은순'
-        default: return '추천순'
-    }
-})
-
 
 function toggleSortMenu() {
-    showSortMenu.value = !showSortMenu.value
-}
-function goToCart() {
-    router.push('/shop/ShopCart')
-}
-function goToWishlist() {
-    router.push('/shop/WishList')
+    showSortMenu.value = !showSortMenu.value;
 }
 
+function goToCart() {
+    router.push('/shop/ShopCart');
+}
+
+function goToWishlist() {
+    router.push('/shop/WishList');
+}
 
 const filteredItems = computed(() => {
     let result = ITEMS.map(item => {
-        // ✅ 찜 목록에 있는 상품이면 liked = true
-        item.liked = shopStore.wish.some(w => w.id === item.id)
-        return item
-    })
-
-    // 정렬
-    if (sortType.value === 'low') {
-        result = result.sort((a, b) => a.price - b.price)
-    } else if (sortType.value === 'high') {
-        result = result.sort((a, b) => b.price - a.price)
-    }
-
-    // 검색 필터
+        item.liked = shopStore.wish.some(w => w.id === item.id);
+        return item;
+    });
+    if (sortType.value === 'low') result.sort((a, b) => a.price - b.price);
+    else if (sortType.value === 'high') result.sort((a, b) => b.price - a.price);
     return result.filter(item =>
         item.brand.includes(searchQuery.value) || item.name.includes(searchQuery.value)
-    )
-})
+    );
+});
 
+async function toggleLike(item) {
+    if (!userStore.id) return;
 
-function toggleLike(item) {
-    item.liked = !item.liked
+    item.liked = !item.liked;
 
     if (item.liked) {
-        const exists = shopStore.wish.find(i => i.id === item.id)
-        if (!exists) {
-            shopStore.wish.push(item)
+        const { error } = await db.from('wishlist').insert({
+            user_id: userStore.id,
+            item_id: item.id
+        });
+        if (!error) {
+            shopStore.wish.push(item);
+            alertStore.success(`[${item.name}] 상품이 찜 되었습니다!`, 3000);
+        } else {
+            item.liked = false;
+            console.error('찜 추가 실패', error);
+            alertStore.danger('찜 추가 실패!', 3000);
         }
-        alertStore.success(`[${item.name}] 상품이 찜 되었습니다!`, 3000);
     } else {
-        shopStore.wish = shopStore.wish.filter(i => i.id !== item.id)
-        alertStore.warning(`[${item.name}] 상품이 찜 해제 되었습니다!`, 3000);
+        const { error } = await db.from('wishlist').delete().match({
+            user_id: userStore.id,
+            item_id: item.id
+        });
+        if (!error) {
+            shopStore.wish = shopStore.wish.filter(i => i.id !== item.id);
+            alertStore.warning(`[${item.name}] 상품이 찜 해제 되었습니다!`, 3000);
+        } else {
+            item.liked = true;
+            console.error('찜 삭제 실패', error);
+            alertStore.danger('찜 삭제 실패!', 3000);
+        }
     }
 }
 
+async function addToCart(item) {
+    if (!userStore.id) return;
 
-function addToCart(item) {
-    const exists = shopStore.cart.find(i => i.id === item.id)
-
+    const exists = shopStore.cart.find(i => i.id === item.id);
     if (exists) {
         alertStore.danger(`[${item.name}] 상품은 이미 장바구니에 담겨 있습니다!`, 3000);
-    } else {
-        shopStore.cart.push(item)
-        alertStore.success(`[${item.name}] 상품이 장바구니에 담겼습니다!`, 3000);
+        return;
     }
+
+    const { error } = await db.from('cart').insert({
+    id: uuidv4(),
+    user_id: userStore.id,
+    item_id: item.id
+  });
+  if (!error) {
+    shopStore.cart.push(item);
+    alertStore.success(`[${item.name}] 상품이 장바구니에 담겼습니다!`, 3000);
+  } else {
+    console.error('장바구니 추가 실패', error);
+    alertStore.danger('장바구니 추가 실패!', 3000);
+  }
 }
 
+onMounted(async () => {
+  document.addEventListener('click', handleClickOutside);
+
+  await userStore.syncLoginCookieState();
+
+  if (!userStore.id) return;
+
+  const { data: wishList, error: wishError } = await db
+    .from('wishlist')
+    .select('item_id')
+    .eq('user_id', userStore.id);
+
+  const { data: cartList, error: cartError } = await db
+    .from('cart')
+    .select('item_id')
+    .eq('user_id', userStore.id);
+
+  if (!wishError && wishList) {
+    const wishIds = wishList.map(w => Number(w.item_id));
+    shopStore.wish = ITEMS.filter(item => wishIds.includes(item.id));
+  }
+
+  if (!cartError && cartList) {
+    const cartIds = cartList.map(c => Number(c.item_id));
+    shopStore.cart = ITEMS.filter(item => cartIds.includes(item.id));
+  }
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+const sortLabel = computed(() => {
+  switch (sortType.value) {
+    case 'low': return '가격 낮은순';
+    case 'high': return '가격 높은순';
+    default: return '추천순';
+  }
+});
 </script>
+
+
+
+
+
+
+
 
 <style lang="scss" scoped>
 .shop-main {

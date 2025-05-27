@@ -69,6 +69,7 @@ onUnmounted(() => {
 
 // 5. 유저 쿠키 로그인 복구 (Splash와 동시에 진행)
 const userStore = useUserStore()
+
 onMounted(async () => {
   await router.isReady()
   userStore.syncLoginCookieState()
