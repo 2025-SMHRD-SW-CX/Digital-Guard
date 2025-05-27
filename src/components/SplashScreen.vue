@@ -12,13 +12,13 @@
 
     <!-- 로고 및 브랜드 이미지: 슬라이드 인 애니메이션 적용 -->
     <div id="logo-brand-wrap">
-      <img id="logo" src="/images/logo.png" alt="로고 이미지" />
-      <img id="brand" src="/images/brand.png" alt="브랜드 이미지" />
+      <img id="logo" :src="`${BASE_URL}/images/logo.png`" alt="로고 이미지" />
+      <img id="brand" :src="`${BASE_URL}/images/brand.png`" alt="브랜드 이미지" />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const curtain = ref(null)

@@ -21,7 +21,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const gifList = [

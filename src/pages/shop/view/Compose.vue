@@ -1,7 +1,7 @@
 <template>
   <ShopItemViewer :id="32" :likedCount="978">
     <section class="store-info">
-      <img src="/images/shop/compose_americano/compose-banner.png" alt="컴포즈커피 로고" class="banner" />
+      <img :src="`${BASE_URL}/images/shop/compose_americano/compose-banner.png`" alt="컴포즈커피 로고" class="banner" />
       <br />
       <div class="info-box">
         <h2 class="info-title">이용안내</h2>
@@ -20,7 +20,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import ShopItemViewer from '@/components/ShopItemViewer.vue';
 
 </script>

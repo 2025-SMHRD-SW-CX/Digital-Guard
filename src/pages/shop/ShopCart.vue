@@ -5,7 +5,7 @@
       <!-- <span class="back-icon" @click="goBack">←</span> -->
       <div class="top-bar-icons">
         <h2 class="cart-title">
-          <img src="/images/shop/icons/bags_icon.png" alt="장바구니" class="icon-img">
+          <img :src="`${BASE_URL}/images/shop/icons/bags_icon.png`" alt="장바구니" class="icon-img">
           장바구니
         </h2>
 
@@ -41,7 +41,7 @@
   
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';

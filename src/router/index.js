@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import routes from 'virtual:generated-pages'
 import { useUserStore } from '@/stores/user'
 import { useAdminStore } from '@/stores/admin'
 import { useAlertStore } from '@/stores/alert'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 })
 

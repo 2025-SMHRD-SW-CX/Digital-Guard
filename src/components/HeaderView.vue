@@ -1,16 +1,16 @@
 <template>
     <!-- 헤더 -->
     <div class="header-wrap">
-        <img src="/images/header/brand.png" v-if="!headerStore.title" @click="goToMain" style="cursor: pointer;">
+        <img :src="`${BASE_URL}/images/header/brand.png`" v-if="!headerStore.title" @click="goToMain" style="cursor: pointer;">
         <div class="title-indicator" v-else>
-            <img @click="clickBackBtn" src="/images/prev_page.png">
+            <img @click="clickBackBtn" :src="`${BASE_URL}/images/prev_page.png`">
             <p>{{ headerStore.title }}</p>
         </div>
 
         <div class="indicator-wrap" v-if="headerStore.show && userStore.isLogined">
             <div id="user" class="key-icon-wrap">
                 <div class="icon">
-                    <img src="/images/header/user_icon.png">
+                    <img :src="`${BASE_URL}/images/header/user_icon.png`">
                 </div>
                 <div class="value">
                     <p>{{ userStore.nickname }}</p>
@@ -19,7 +19,7 @@
 
             <div id="point" class="key-icon-wrap">
                 <div class="icon">
-                    <img src="/images/coin_icon.png">
+                    <img :src="`${BASE_URL}/images/coin_icon.png`">
                 </div>
                 <div class="value">
                     <p>{{ formattedReward }}</p>
@@ -29,7 +29,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHeaderStore, TITLE_MAP } from '@/stores/header'

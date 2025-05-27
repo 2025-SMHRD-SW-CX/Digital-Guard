@@ -4,9 +4,9 @@
     <header class="wishlist-header">
       <!-- <span class="back-icon" @click="goBack">←</span> -->
       <h2 class="wishlist-title">
-      <img src="/images/shop/icons/heart_icon_filled.png" alt="장바구니" class="icon-img">
+      <img :src="`${BASE_URL}/images/shop/icons/heart_icon_filled.png`" alt="장바구니" class="icon-img">
           찜한 아이템
-        <img src="/images/shop/icons/heart_icon_filled.png" alt="장바구니" class="icon-img">
+        <img :src="`${BASE_URL}/images/shop/icons/heart_icon_filled.png`" alt="장바구니" class="icon-img">
       </h2>
     </header>
 
@@ -34,7 +34,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 // import { useRouter } from 'vue-router'
 import { useShopStore } from '@/stores/shop';
 import { useAlertStore } from '@/stores/alert';

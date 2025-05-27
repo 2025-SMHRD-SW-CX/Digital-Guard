@@ -5,12 +5,12 @@
 
             <div class="search-container">
                 <input v-model="searchQuery" class="search-bar" placeholder="검색어를 입력하세요" />
-                <img class="search-icon" src="/images/shop/icons/search_icon.png">
+                <img class="search-icon" :src="`${BASE_URL}/images/shop/icons/search_icon.png`">
             </div>
 
             <div class="top-bar-icons">
-                <img src="/images/shop/icons/bags_icon.png" @click.stop="goToCart">
-                <img src="/images/shop/icons/heart_icon_filled.png" @click.stop="goToWishlist">
+                <img :src="`${BASE_URL}/images/shop/icons/bags_icon.png`" @click.stop="goToCart">
+                <img :src="`${BASE_URL}/images/shop/icons/heart_icon_filled.png`" @click.stop="goToWishlist">
             </div>
         </div>
 
@@ -47,9 +47,9 @@
                             </span>
                         </div>
                         <div class="icons">
-                            <img :src="`/images/shop/icons/heart_icon${item.liked ? '_filled' : ''}.png`"
+                            <img :src="`${BASE_URL}/images/shop/icons/heart_icon${item.liked ? '_filled' : ''}.png`"
                                 @click.stop="toggleLike(item)">
-                            <img id="cart" src="/images/shop/icons/cart_icon.png" @click.stop="addToCart(item)">
+                            <img id="cart" :src="`${BASE_URL}/images/shop/icons/cart_icon.png`" @click.stop="addToCart(item)">
                         </div>
                     </div>
                 </CardView>
@@ -61,7 +61,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'

@@ -66,8 +66,7 @@
   </div>
 </template>
 
-<script setup>
-// 기본 모듈
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { useRouter } from 'vue-router'
 import { ref, onMounted, nextTick } from 'vue'
 

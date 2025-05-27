@@ -37,8 +37,8 @@
         <div class="record-sub">
           <span class="date">{{ formatDateTime(item.created_at) }}</span>
           <span class="point">
-            <img src="/images/coin_icon.png" class="coin-icon" alt="포인트 아이콘" />
-            +{{ item.reward_point }}P
+            <img :src="`${BASE_URL}/images/coin_icon.png`" class="coin-icon" alt="포인트 아이콘" />
+            +{{ item.point }}P
           </span>
         </div>
         <p class="question">
@@ -63,9 +63,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import { db } from '@/services/supabase'
+<script setup>import { BASE_URL } from "@/js/baseUrl";
+import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'

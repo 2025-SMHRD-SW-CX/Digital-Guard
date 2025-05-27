@@ -1,19 +1,19 @@
 <template>
   <ShopItemViewer :id="16" :likedCount="574">
     <section class="store-info">
-        <img src="/images/shop/catkey/데배.jpg" alt="배송정보" class="banner" />
+        <img :src="`${BASE_URL}/images/shop/catkey/데배.jpg`" alt="배송정보" class="banner" />
         <br />
-        <img src="/images/shop/catkey/데2.jpg" alt="브랜드" class="banner" />
+        <img :src="`${BASE_URL}/images/shop/catkey/데2.jpg`" alt="브랜드" class="banner" />
         <br />
-        <img src="/images/shop/catkey/데상세.jpg" alt="브랜드정보" class="banner" />
-        <img src="/images/shop/catkey/데상세2.jpg" alt="브랜드정보" class="banner" />
-        <img src="/images/shop/catkey/데상세3.jpg" alt="브랜드정보" class="banner" />
+        <img :src="`${BASE_URL}/images/shop/catkey/데상세.jpg`" alt="브랜드정보" class="banner" />
+        <img :src="`${BASE_URL}/images/shop/catkey/데상세2.jpg`" alt="브랜드정보" class="banner" />
+        <img :src="`${BASE_URL}/images/shop/catkey/데상세3.jpg`" alt="브랜드정보" class="banner" />
       </section>
   </ShopItemViewer>
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import ShopItemViewer from '@/components/ShopItemViewer.vue';
 
 </script>

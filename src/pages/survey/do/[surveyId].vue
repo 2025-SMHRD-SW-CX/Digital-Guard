@@ -7,7 +7,7 @@
             <div class="indicator-wrap">
                 <!-- 리워드 획득량 -->
                 <div class="icon-value-wrap">
-                    <img src="/images/coin_icon.png">
+                    <img :src="`${BASE_URL}/images/coin_icon.png`">
                     <p>보상 +{{ targetData.reward }}P</p>
                 </div>
             </div>
@@ -15,24 +15,24 @@
                 <!-- 리워드 획득량 -->
                 <!-- 소요시간 -->
                 <div class="icon-value-wrap">
-                    <img src="/images/survey/sandclock_icon.png">
+                    <img :src="`${BASE_URL}/images/survey/sandclock_icon.png`">
                     <p>소요시간 {{ targetData.time }}</p>
                 </div>
                 <!-- 난이도 -->
                 <div class="icon-value-wrap">
-                    <img :src="`/images/survey/star_${targetData.feelLevel[0]}.png`">
+                    <img :src="`${BASE_URL}/images/survey/star_${targetData.feelLevel[0]}.png`">
                     <p>난이도 {{ targetData.feelLevel[1] }}</p>
                 </div>
             </div>
             <div class="indicator-wrap">
                 <!-- 섹션 수 -->
                 <div class="icon-value-wrap">
-                    <img src="/images/survey/sections_icon.png">
+                    <img :src="`${BASE_URL}/images/survey/sections_icon.png`">
                     <p>섹션 {{ sectionCount }}개</p>
                 </div>
                 <!-- 문항 수 -->
                 <div class="icon-value-wrap">
-                    <img src="/images/survey/questions_icon.png">
+                    <img :src="`${BASE_URL}/images/survey/questions_icon.png`">
                     <p>총 문항 {{ totalQuestionCount }}개</p>
                 </div>
             </div>
@@ -114,7 +114,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import CardView from '@/components/CardView.vue';
 import ModalView from '@/components/ModalView.vue';
 import { useSurveyStore, SURVEYS } from '@/stores/survey';

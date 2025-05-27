@@ -10,7 +10,7 @@
     </button>
 
     <div class="footer-logo-wrap" @click="go('/main')">
-      <img src="/images/logo.png" class="footer-logo" alt="로고" />
+      <img :src="`${BASE_URL}/images/logo.png`" class="footer-logo" alt="로고" />
     </div>
 
     <button class="footer-btn" @click="go('/shop')">
@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFooterStore, FOOTER_MAP } from '@/stores/footer'
@@ -47,7 +47,7 @@ watch(firstToken, (token) => {
 // 기존의 showFooter, isActive 대신 store 사용
 const showFooter = computed(() => footer.show)
 const iconSrc = (tab) => {
-  const base = `/images/footer/${tab}`
+  const base = `${BASE_URL}/images/footer/${tab}`
   return footer.activeTab === tab
     ? `${base}-active.png`
     : `${base}.png`

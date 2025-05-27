@@ -35,5 +35,6 @@ export default defineConfig({
       dirs: 'src/pages',
       extensions: ['vue'],
     })
-  ]
+  ],
+  base: '/Digital-Guard/',
 })

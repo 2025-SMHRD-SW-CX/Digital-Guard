@@ -45,7 +45,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import { useShopStore } from '@/stores/shop';

@@ -41,7 +41,7 @@
       <div v-if="userStore.isParticipatedToday || isCorrectAnswer" class="overlay-message">
         오늘의 챌린지를 완료했습니다
         <div class="rewarded-message">
-          <img src="/images/coin_icon.png" />
+          <img :src="`${BASE_URL}/images/coin_icon.png`">
           <span class="highlight">{{ TOTAL_REWARD }}P 획득!</span>
         </div>
       </div>
@@ -69,9 +69,9 @@
     <CardView class="wishlist-card-container">
       <div>
         <div class="wishlist-header">
-          <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
+          <img :src="`${BASE_URL}/images/shop/icons/heart_icon_filled.png`" class="icon-img" />
           <p class="title">찜한 아이템</p>
-          <img src="/images/shop/icons/heart_icon_filled.png" class="icon-img" />
+          <img :src="`${BASE_URL}/images/shop/icons/heart_icon_filled.png`" class="icon-img" />
         </div>
         <div class="wishlist-scroll">
           <div v-if="shopStore.wish.length === 0" class="empty-text">
@@ -110,7 +110,7 @@
       <template #default>
         <p class="reason">{{ reasonText }}</p>
         <div class="point-gain">
-          <img src="/images/coin_icon.png" alt="코인 아이콘" />
+          <img :src="`${BASE_URL}/images/coin_icon.png`" alt="코인 아이콘" />
           <span>{{ TOTAL_REWARD }}P 획득!</span>
           <template v-if="bonusReward">
             <span class="highlight bonus">연속 보너스 +{{ bonusReward }}P</span>
@@ -129,7 +129,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CardView from '@/components/CardView.vue'

@@ -1,12 +1,10 @@
 // src/services/supabase.js
 import { createClient } from '@supabase/supabase-js'
 
-// 임시로 직접 url, key 기재. 나중에 .env로 뺄수 있는지 볼것임
-const supabaseUrl = 'https://ljrpsrahxfwgayetsuil.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqcnBzcmFoeGZ3Z2F5ZXRzdWlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2MTU5NjAsImV4cCI6MjA2MzE5MTk2MH0.q-UAlXW9bvI5wqxqPFYn0tpCcBjgDL-JQroAaF6Bi7Y'
-
-// Supabase 클라이언트 인스턴스
-export const db = createClient(supabaseUrl, supabaseKey)
+export const db = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_SECRET_KEY
+)
 
 /*
 아래는 사용 예시코드

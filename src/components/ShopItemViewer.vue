@@ -37,7 +37,7 @@
                     <div class="container">
                         <div class="heart-wrapper">
                             <div class="like-btn" @click="toggleLike">
-                                <img :src="`/images/shop/icons/heart_icon${liked ? '_filled' : ''}.png`">
+                                <img :src="`${BASE_URL}/images/shop/icons/heart_icon${liked ? '_filled' : ''}.png`">
                                 <p>+{{ likedCount }}</p>
                             </div>
                         </div>
@@ -59,7 +59,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 const props = defineProps({
     id: { type: Number, require: true },
     likedCount: { type: Number, default: 0 }
