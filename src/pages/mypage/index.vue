@@ -13,7 +13,7 @@
       <div class="points">
         <img src="/images/mypage/coins.png" alt="포인트 아이콘" class="coin-icon" />
         <span>나의 포인트</span>
-        <strong>{{ (+userStore.totalPoint).toLocaleString() }}P</strong>
+        <strong>{{ (+userStore.total_point).toLocaleString() }}P</strong>
       </div>
     </section>
 

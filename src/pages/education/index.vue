@@ -42,30 +42,47 @@
       </div>
     </div>
 
-    <ModalView v-model="showModal" :type="modalType" :useButton="quizCompleted ? false : true" @confirm="handleModalConfirm">
-  <template #default>
-    <div v-if="quizCompleted">
-      <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
-      <p>정답입니다! 100포인트가 적립되었습니다.</p>
-      <div class="modal-actions">
-        <button class="next-button" disabled>다음 교육영상 보기 (준비중)</button>
-        <button class="home-button" @click="goHome">홈으로</button>
-      </div>
-    </div>
-    <div v-else>
-      <p>{{ modalMessage }}</p>
-    </div>
-  </template>
-</ModalView>
+    <!-- 결과 모달 -->
+    <ModalView
+      v-model="showModal"
+      :type="modalType"
+      :useButton="quizCompleted ? false : true"
+      @confirm="handleModalConfirm"
+    >
+      <template #default>
+        <div v-if="quizCompleted">
+          <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+          <p>정답입니다! 100포인트가 적립되었습니다.</p>
+          <div class="modal-actions">
+            <button class="next-button" disabled>다음 교육영상 보기 (준비중)</button>
+            <button class="home-button" @click="goHome">홈으로</button>
+          </div>
+        </div>
+        <div v-else>
+          <p>{{ modalMessage }}</p>
+        </div>
+      </template>
+    </ModalView>
   </div>
 </template>
 
 <script setup>
+// 기본 모듈
 import { useRouter } from 'vue-router'
 import { ref, onMounted, nextTick } from 'vue'
+
+// Supabase 클라이언트 및 사용자 상태
+import { db } from '@/services/supabase'
+import { useUserStore } from '@/stores/user'
+
+// 외부 컴포넌트 및 라이브러리
 import ModalView from '@/components/ModalView.vue'
 import confetti from 'canvas-confetti'
 
+const router = useRouter()
+const user = useUserStore()
+
+// 상태 변수
 const videoWatched = ref(false)
 const quizCompleted = ref(false)
 const selectedAnswer = ref(null)
@@ -73,9 +90,10 @@ const showModal = ref(false)
 const modalMessage = ref('')
 const modalType = ref('alert')
 const isPlaying = ref(false)
-const router = useRouter()
 
+// 퀴즈 정보
 const correctAnswer = 3
+const quizId = 1
 const options = [
   '직업훈련 교육학원',
   '동사무소',
@@ -85,6 +103,7 @@ const options = [
 
 let player
 
+// 유튜브 상태 변화 감지
 function onPlayerStateChange(event) {
   if (event.data === YT.PlayerState.ENDED) {
     videoWatched.value = true
@@ -97,6 +116,7 @@ function onPlayerStateChange(event) {
   }
 }
 
+// 재생/일시정지 버튼
 function togglePlay() {
   if (!player) return
   const state = player.getPlayerState()
@@ -107,6 +127,7 @@ function togglePlay() {
   }
 }
 
+// 유튜브 플레이어 생성
 function createPlayer() {
   player = new YT.Player('youtubePlayer', {
     height: '260',
@@ -128,9 +149,47 @@ function createPlayer() {
   })
 }
 
-function checkAnswer() {
+// 정답 확인 및 포인트 지급
+async function checkAnswer() {
   if (selectedAnswer.value === correctAnswer) {
     quizCompleted.value = true
+
+    try {
+      // 1. participation 테이블 기록
+      const { error } = await db.from('edu_quiz_participation').insert({
+        user_id: user.id,
+        quiz_id: quizId,
+        is_correct: true,
+        reward_given: true
+      })
+
+      if (error) {
+        console.error('❗ participation insert error:', error)
+      } else {
+        console.log('✅ participation 저장 성공!')
+      }
+
+      // 2. user 테이블 포인트 업데이트
+      await db.from('user')
+        .update({ total_point: user.total_point + 100 })
+        .eq('id', user.id)
+
+      // 3. point_history 이력 기록
+      await db.from('point_history').insert({
+        user_id: user.id,
+        point: 100,
+        reason: '영상 퀴즈 정답 포인트 지급'
+      })
+
+      // 4. 사용자 스토어 포인트 반영
+      user.point += 100
+
+    } catch (error) {
+      console.error('포인트 지급 중 오류:', error)
+      modalMessage.value = '포인트 지급 중 오류가 발생했습니다.'
+    }
+
+    // 5. 축하 이펙트
     nextTick(() => {
       const canvas = document.getElementById('confetti-canvas')
       if (canvas) {
@@ -141,20 +200,25 @@ function checkAnswer() {
         })
       }
     })
+
   } else {
     modalMessage.value = '조금만 더 고민해보세요!'
   }
+
   showModal.value = true
 }
 
+// 모달 닫기
 function handleModalConfirm() {
   showModal.value = false
 }
 
+// 홈으로 이동
 function goHome() {
   router.push('/main')
 }
 
+// 유튜브 API 삽입 및 초기화
 onMounted(() => {
   if (!window.YT) {
     const tag = document.createElement('script')
