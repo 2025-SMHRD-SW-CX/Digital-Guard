@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import Cookies from 'js-cookie'
 import { db } from '@/services/supabase'
 import bcrypt from 'bcryptjs'
+import { getTimeLeftUntilNextMidnight, toLocalDateTimeString } from '@/js/date'
 
 const COOKIE_KEY = 'login_user_id';
 const COOKIE_EXPIRES = 7;
@@ -24,17 +25,21 @@ export const useUserStore = defineStore('user', {
     getters: {
         isLogined: state => !!state.id,
         isParticipatedToday: (state) => {
-            // lastParticipate가 date(yyyy-mm-dd)라면 → 반드시 UTC 0시로!
-            // (ex: '2024-05-29' 형태거나, Date 객체로 넘어와도 안전하게 변환)
-            const lastStr = typeof state.lastParticipate === 'string'
-                ? state.lastParticipate.slice(0, 10)
-                : new Date(state.lastParticipate).toISOString().slice(0, 10);
+            const last = state.lastParticipate;
+            if (!last) return false;
 
-            // 오늘도 UTC 0시 기준 yyyy-mm-dd로
-            const todayStr = new Date().toISOString().slice(0, 10);
+            // 이제는 변환 필요 없음!
+            const lastStr = toLocalDateTimeString(last).slice(0, 10);
+            const todayStr = toLocalDateTimeString().slice(0, 10);
+
+            // 남은 시간도 기존 함수 그대로 사용
+            const left = getTimeLeftUntilNextMidnight();
+            console.log(`[isParticipatedToday] 다음날 0시까지 남은 시간: ${left.hours}시간 ${left.mins}분 ${left.secs}초`);
 
             return lastStr === todayStr;
-        }
+        },
+
+
 
     },
     actions: {
