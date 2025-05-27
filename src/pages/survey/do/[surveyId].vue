@@ -1,47 +1,42 @@
 <template>
-
     <div class="wrapper">
+        <!-- 1. 설문 인트로 카드 -->
         <CardView class="survey-card">
-            <p class="survey-title" @click="handleTitleClick">{{ targetData.title }}</p>
+            <p class="survey-title">{{ targetData.title }}</p>
             <p class="survey-detail">{{ targetSurvey.detail }}</p>
             <div class="indicator-wrap">
-                <!-- 리워드 획득량 -->
                 <div class="icon-value-wrap">
-                    <img :src="`${BASE_URL}/images/coin_icon.png`">
+                    <img :src="`${BASE_URL}/images/coin_icon.png`" />
                     <p>보상 +{{ targetData.reward }}P</p>
                 </div>
             </div>
             <div class="indicator-wrap">
-                <!-- 리워드 획득량 -->
-                <!-- 소요시간 -->
                 <div class="icon-value-wrap">
-                    <img :src="`${BASE_URL}/images/survey/sandclock_icon.png`">
+                    <img :src="`${BASE_URL}/images/survey/sandclock_icon.png`" />
                     <p>소요시간 {{ targetData.time }}</p>
                 </div>
-                <!-- 난이도 -->
                 <div class="icon-value-wrap">
-                    <img :src="`${BASE_URL}/images/survey/star_${targetData.feelLevel[0]}.png`">
+                    <img :src="`${BASE_URL}/images/survey/star_${targetData.feelLevel[0]}.png`" />
                     <p>난이도 {{ targetData.feelLevel[1] }}</p>
                 </div>
             </div>
             <div class="indicator-wrap">
-                <!-- 섹션 수 -->
                 <div class="icon-value-wrap">
-                    <img :src="`${BASE_URL}/images/survey/sections_icon.png`">
+                    <img :src="`${BASE_URL}/images/survey/sections_icon.png`" />
                     <p>섹션 {{ sectionCount }}개</p>
                 </div>
-                <!-- 문항 수 -->
                 <div class="icon-value-wrap">
-                    <img :src="`${BASE_URL}/images/survey/questions_icon.png`">
+                    <img :src="`${BASE_URL}/images/survey/questions_icon.png`" />
                     <p>총 문항 {{ totalQuestionCount }}개</p>
                 </div>
             </div>
-            <p class="be-honest">여러분의 응답은 정부나 기관의 정책 수립과 피해 예방 활동에 귀중한 자료가 됩니다.
-                <br><b>솔직한 답변 부탁드리며, 모든 응답은 익명으로 처리되어 개인 정보는 절대 공개되지 않습니다.</b>
+            <p class="be-honest">
+                여러분의 응답은 정부나 기관의 정책 수립과 피해 예방 활동에 귀중한 자료가 됩니다.<br />
+                <b>솔직한 답변 부탁드리며, 모든 응답은 익명으로 처리되어 개인 정보는 절대 공개되지 않습니다.</b>
             </p>
         </CardView>
 
-        <!-- 각 섹션 반복 -->
+        <!-- 2. 섹션/문항 반복 출력 -->
         <CardView v-for="(section, sIdx) in targetSurvey.section" :key="sIdx" class="survey-section">
             <p class="section-title">{{ section.title }}</p>
             <ul class="questions-list">
@@ -87,7 +82,7 @@
             </ul>
         </CardView>
 
-        <!-- 설문 동의 & 제출 -->
+        <!-- 3. 동의 및 제출 카드 -->
         <CardView class="survey-consent-card">
             <div class="consent-submit-wrap">
                 <label class="consent-label">
@@ -96,25 +91,28 @@
                         <b>설문 결과 활용 및 개인정보 수집·이용(익명) 동의</b>에 동의합니다.
                     </span>
                 </label>
-                <button class="submit-btn" :disabled="!isAgreed" @click="submitSurvey">
-                    제출하기
-                </button>
+                <button class="submit-btn" :disabled="!isAgreed" @click="submitSurvey">제출하기</button>
             </div>
         </CardView>
 
+        <!-- 4. 미응답 경고 모달 -->
+        <ModalView v-model="showIgnoreModal" title="완료하시겠습니까?" cancelText="문항으로 이동" @confirm="ignoreLeftSurveyAndSubmit"
+            @cancel="goToUnanswered" type="confirm">
+            <p>아직 답변하지 않은 문항이 있습니다. 무시하고 완료 하시겠습니까?</p>
+            <!-- <p style="margin-top: 0.5rem;"><small>미응답 문항의 수가 50%이상인 경우 추후 포인트가 회수될 수 있습니다!</small></p> -->
+        </ModalView>
+
+        <!-- 5. 완료 모달 -->
+        <ModalView v-model="showCompleteModal" title="설문조사 완료!" confirmText="야호!" @confirm="gotoSurveyList">
+            <!-- <p>설문조사를 완료했어요!</p> -->
+            <div class="reward-announce" ><img :src="`${BASE_URL}/images/coin_icon.png`"><p>보상 +{{ targetData.reward }}P 획득!</p></div>
+        </ModalView>
     </div>
-
-
-    <ModalView v-model="showCompleteModal" title="설문조사 완료!" confirmText="야호!" @confirm="gotoSurveyList">
-
-        <p>설문조사를 완료했어요!</p>
-        <p>보상 +{{ targetData.reward }}P 획득!</p>
-
-    </ModalView>
-
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";
+<script setup>
+// ────────────── 1. 외부 의존성/스토어/라우터 등 import ──────────────
+import { BASE_URL } from "@/js/baseUrl";
 import CardView from '@/components/CardView.vue';
 import ModalView from '@/components/ModalView.vue';
 import { useSurveyStore, SURVEYS } from '@/stores/survey';
@@ -122,44 +120,43 @@ import { reactive, ref, onMounted, nextTick } from 'vue';
 import { useAlertStore } from '@/stores/alert';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import { addPoint, PointReason, updateUserTotalPoint } from '@/services/pointService' ;
 
+// ────────────── 2. Props/Store/Router 초기화 ──────────────
 const alertStore = useAlertStore();
 const userStore = useUserStore();
 const surveyStore = useSurveyStore();
 const router = useRouter();
 
-// 라우터가 surveyId 를 prop 으로 넘겨줌
 const props = defineProps({
-    surveyId: {
-        type: String,
-        required: true
-    }
-})
+    surveyId: { type: String, required: true }
+});
 
+// ────────────── 3. 설문 데이터/계산 ──────────────
 const targetData = surveyStore.data.find(i => i.id == props.surveyId);
-const targetSurvey = SURVEYS.find(i => i.surveyId == props.surveyId)
+const targetSurvey = SURVEYS.find(i => i.surveyId == props.surveyId);
 
-const sectionCount = SURVEYS[0].section.length;
-
-const totalQuestionCount = SURVEYS[0].section
+const sectionCount = targetSurvey.section.length;
+const totalQuestionCount = targetSurvey.section
     .map(sec => sec.questions.length)
     .reduce((a, b) => a + b, 0);
 
+// ────────────── 4. 입력 관련 상태 및 핸들러 ──────────────
+const answers = reactive(getInitialAnswers(targetSurvey));
+const isAgreed = ref(false);
+const showIgnoreModal = ref(false);
+const showCompleteModal = ref(false);
+const skipValidation = ref(false);
 
-
+// 자동 textarea 리사이즈
 const textareas = ref([]);
-
-// 자동 리사이즈 함수
 function autoResize(e) {
     const el = e.target;
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
 }
-
-// 기존 답변값이 있을 때도 리사이즈 (선택)
 onMounted(() => {
-    isIntervalAvailble()
-
+    isIntervalAvailble();
     nextTick(() => {
         textareas.value.forEach(el => {
             if (el) {
@@ -170,64 +167,32 @@ onMounted(() => {
     });
 });
 
-function isIntervalAvailble() {
-    console.log('pin1', targetData)
-    // lastComplete 및 interval 체크
-    if (targetData.lastComplete && targetData.intervalDays) {
-        const last = new Date(targetData.lastComplete);
-        const intervalDays = targetData.intervalDays;
-        const now = new Date();
-        const nextAvailable = new Date(last);
-        nextAvailable.setDate(last.getDate() + intervalDays);
-
-        console.log('pin2')
-
-        if (now < nextAvailable) {
-            // 접근 불가: 아직 재참여 불가
-            const remain = Math.ceil((nextAvailable - now) / (1000 * 60 * 60 * 24));
-            alertStore.danger(
-                `이미 참여하셨습니다.\n다음 참여까지 남은 대기일: ${remain}일`,
-                2500
-            );
-
-            router.replace('/survey');
-        }
-    }
-}
-
-
+// 초기 answers 상태 생성
 function getInitialAnswers(targetSurvey) {
     return targetSurvey.section.map(section =>
         section.questions.map(q => ({
-            single: '',          // single 타입
-            multiple: [],        // multiple 타입
-            text: '',            // text 타입
-            other: ''            // 기타 직접입력
+            single: '',
+            multiple: [],
+            text: '',
+            other: ''
         }))
     );
 }
 
-// 기타 옵션이 있는지 판별
+// 기타 옵션 체크
 function hasOtherOption(question) {
     return question.selectables && question.selectables.includes('기타');
 }
-
-// 기타 선택지에 따른 입력창 제어용 핸들러 (single)
 function onSingleOtherChange(sIdx, qIdx, value) {
     if (value !== '기타') answers[sIdx][qIdx].other = '';
 }
-
-// 기타 선택지에 따른 입력창 제어용 핸들러 (multiple)
 function onMultipleOtherChange(sIdx, qIdx, value) {
     if (!answers[sIdx][qIdx].multiple.includes('기타')) {
         answers[sIdx][qIdx].other = '';
     }
 }
 
-const answers = reactive(getInitialAnswers(targetSurvey));
-
-const isAgreed = ref(false);
-
+// ────────────── 5. 제출 관련 로직 및 검증 ──────────────
 function getSubmitResult() {
     return targetSurvey.section.map((section, sIdx) =>
         section.questions.map((q, qIdx) => {
@@ -242,64 +207,9 @@ function getSubmitResult() {
             } else if (q.type === 'text') {
                 value = a.text;
             }
-            return {
-                section: section.title,
-                question: q.title,
-                answer: value
-            };
+            return { section: section.title, question: q.title, answer: value };
         })
     ).flat();
-}
-
-function submitSurvey() {
-    if (!skipValidation.value) {
-        const unans = findFirstUnanswered();
-        if (unans) {
-            alertStore.danger('답변하지 않은 문항이 있습니다.', 2000);
-            nextTick(() => {
-                const el = questionRefs.value?.[unans.sIdx]?.[unans.qIdx];
-                if (el && el.scrollIntoView) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            });
-            return;
-        }
-    }
-    if (!isAgreed.value) {
-        alertStore.warning('정보 활용 동의가 필요합니다.', 3000)
-        return;
-    }
-    const result = getSubmitResult();
-    console.log(result);
-
-    // ✅ 설문 완료 시간 기록
-    const now = new Date().toISOString();
-    surveyStore.data.forEach(item => {
-        if (item.id == props.surveyId) {
-            item.lastComplete = now;
-        }
-    });
-
-    console.log(surveyStore.data)
-
-    // 보상 지급
-    userStore.addPoint(targetData.reward);
-
-    // 완료 모달 띄우기
-    showCompleteModal.value = true;
-
-    alertStore.success('설문이 제출되었습니다!', 3000);
-}
-
-
-// 모든 질문 DOM 참조를 이중 배열로 관리: questionRefs[섹션][문항]
-const questionRefs = ref([]);
-
-// ref 셋팅 함수
-function setQuestionRef(el, sIdx, qIdx) {
-    if (!el) return;
-    if (!questionRefs.value[sIdx]) questionRefs.value[sIdx] = [];
-    questionRefs.value[sIdx][qIdx] = el;
 }
 
 function findFirstUnanswered() {
@@ -311,12 +221,10 @@ function findFirstUnanswered() {
             if (q.type === 'single') {
                 if (!a.single) return { sIdx, qIdx };
                 if (hasOtherOption(q) && a.single === '기타' && !a.other.trim()) return { sIdx, qIdx };
-            }
-            else if (q.type === 'multiple') {
+            } else if (q.type === 'multiple') {
                 if (!a.multiple.length) return { sIdx, qIdx };
                 if (hasOtherOption(q) && a.multiple.includes('기타') && !a.other.trim()) return { sIdx, qIdx };
-            }
-            else if (q.type === 'text') {
+            } else if (q.type === 'text') {
                 if (!a.text.trim()) return { sIdx, qIdx };
             }
         }
@@ -324,34 +232,81 @@ function findFirstUnanswered() {
     return null;
 }
 
-const skipValidation = ref(false);
-let clickTimestamps = [];
-
-function handleTitleClick() {
-    const now = Date.now();
-    clickTimestamps = clickTimestamps.filter(ts => now - ts < 2000); // 최근 2초 이내만 유지
-    clickTimestamps.push(now);
-
-    if (clickTimestamps.length >= 5) {
-        skipValidation.value = !skipValidation.value;
-        alertStore.info(
-            skipValidation.value
-                ? "입력값 검증이 비활성화되었습니다. 미입력 문항이 있어도 제출이 가능합니다."
-                : "입력값 검증이 다시 활성화되었습니다. 미입력 문항이 있으면 제출할 수 없습니다.",
-            2500
-        );
-        clickTimestamps = [];
+// 제출 및 검증 로직
+async function submitSurvey() {
+    if (!skipValidation.value) {
+        const unans = findFirstUnanswered();
+        if (unans) {
+            showIgnoreModal.value = true;
+            return;
+        }
     }
+    if (!isAgreed.value) {
+        alertStore.warning('정보 활용 동의가 필요합니다.', 3000);
+        return;
+    }
+    const result = getSubmitResult();
+    console.log(result);
+
+    // 설문 완료 기록
+    const now = new Date().toISOString();
+    surveyStore.data.forEach(item => {
+        if (item.id == props.surveyId) item.lastComplete = now;
+    });
+
+    // 보상 지급
+    await addPoint(userStore.id, targetData.reward, PointReason.SURVEY);
+    userStore.addPoint(targetData.reward);
+    await updateUserTotalPoint(userStore.id);
+
+    // 완료 모달
+    showCompleteModal.value = true;
+    alertStore.success('설문이 제출되었습니다!', 3000);
 }
-
-const showCompleteModal = ref(false);
-
+function ignoreLeftSurveyAndSubmit() {
+    skipValidation.value = true;
+    submitSurvey();
+}
+function goToUnanswered() {
+    const unans = findFirstUnanswered();
+    nextTick(() => {
+        const el = questionRefs.value?.[unans.sIdx]?.[unans.qIdx];
+        if (el && el.scrollIntoView) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+}
 function gotoSurveyList() {
     router.replace('/survey');
 }
 
+// ────────────── 6. 설문 주기 제한/참여 가능여부 체크 ──────────────
+function isIntervalAvailble() {
+    if (targetData.lastComplete && targetData.intervalDays) {
+        const last = new Date(targetData.lastComplete);
+        const intervalDays = targetData.intervalDays;
+        const now = new Date();
+        const nextAvailable = new Date(last);
+        nextAvailable.setDate(last.getDate() + intervalDays);
+
+        if (now < nextAvailable) {
+            const remain = Math.ceil((nextAvailable - now) / (1000 * 60 * 60 * 24));
+            alertStore.danger(`이미 참여하셨습니다.\n다음 참여까지 남은 대기일: ${remain}일`, 2500);
+            router.replace('/survey');
+        }
+    }
+}
+
+// ────────────── 7. DOM/질문 ref 관리 ──────────────
+const questionRefs = ref([]);
+function setQuestionRef(el, sIdx, qIdx) {
+    if (!el) return;
+    if (!questionRefs.value[sIdx]) questionRefs.value[sIdx] = [];
+    questionRefs.value[sIdx][qIdx] = el;
+}
 
 </script>
+
 
 <style lang="scss" scoped>
 p,
@@ -394,6 +349,11 @@ span {
 }
 
 // ------------------- Indicator Bar -------------------
+.coin-icon {
+    width: 1.4rem;
+    object-fit: scale-down;
+}
+
 .indicator-wrap {
     display: flex;
     gap: 1rem;
@@ -568,6 +528,15 @@ span {
                 cursor: not-allowed;
             }
         }
+    }
+}
+
+.reward-announce {
+    display: flex;
+    gap: 0.5rem;
+    img {
+        width: 1.2rem;
+        object-fit: scale-down;
     }
 }
 

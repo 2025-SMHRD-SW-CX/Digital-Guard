@@ -17,3 +17,18 @@ export const updateUserTotalPoint = async (userId) => {
         return updated;
     }
 }
+
+export const PointReason = Object.freeze({
+    CHALLENGE_QUIZ_ANSWER: '퀴즈 정답 보상',
+    EDUCATION_QUIZ_ANSWER: '영상 퀴즈 정답 포인트 지급',
+    PURCHASE_ITEM: '물품 구매',
+    SURVEY: '설문 완료'
+})
+
+export const addPoint = async (userId, amount, reason) => {
+    await db.from('point_history').insert([
+      { user_id: userId, point: amount, reason: reason }
+    ])
+}
+
+    

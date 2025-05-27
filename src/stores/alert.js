@@ -83,6 +83,10 @@ export const useAlertStore = defineStore('alert', () => {
         isReady.value = false
     }
 
+    function notImplemented() {
+        this.danger('해당 기능은 아직 구현되지 않았습니다', 2000);
+    }
+
     return {
         alerts,
         info,
@@ -95,5 +99,6 @@ export const useAlertStore = defineStore('alert', () => {
         flushQueue,
         isReady,
         queue, // for debugging
+        notImplemented
     }
 })

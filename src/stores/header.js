@@ -24,5 +24,6 @@ export const TITLE_MAP = {
     survey: '설문조사',
     education: '교육',
     mypage: '마이페이지',
-    challenge: '오늘의 챌린지'
+    challenge: '오늘의 챌린지',
+    myinformation: '내 정보'
 };
