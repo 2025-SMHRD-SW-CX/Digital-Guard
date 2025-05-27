@@ -6,12 +6,21 @@
         <img :src="`${BASE_URL}/images/mypage/knight-and-horse.png`" alt="아바타 이미지" />
       </div>
       <p class="badge">
-        {{ userStore.continuousDays }}일 동안 열심히 활동해주신
-        <span class="title-name" @click="openTitleModal">
-          {{ currentTitle }}
-          <img :src="`${BASE_URL}/images/mypage/pen-icon-white.png`" alt="수정 아이콘" class="edit-icon" @click.stop="openTitleModal" />
-        </span>
-      </p>
+    {{ userStore.continuousDays }}일 동안 열심히 활동해주신
+    <span class="title-name" @click="openTitleModal">
+      {{ currentTitle }}
+      <img
+        :src="`${BASE_URL}/images/mypage/pen-icon-white.png`"
+        alt="수정 아이콘"
+        class="edit-icon"
+        @click.stop="openTitleModal"
+      />
+    </span>
+  </p>
+
+  <p class="username">
+    <span>{{ userStore.nickname || userStore.name }}</span><span class="honorific"> 님</span>
+  </p>
       <div class="points">
         <img :src="`${BASE_URL}/images/mypage/coins.png`" alt="포인트 아이콘" class="coin-icon" />
         <span>나의 포인트</span>
