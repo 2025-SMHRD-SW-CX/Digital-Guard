@@ -33,7 +33,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { db } from '@/services/supabase' // Supabase 인스턴스 import

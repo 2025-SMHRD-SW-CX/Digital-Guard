@@ -5,7 +5,7 @@
 </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 
 </script>
 

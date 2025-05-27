@@ -29,7 +29,7 @@
   </transition>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { computed } from 'vue'
 
 const props = defineProps({

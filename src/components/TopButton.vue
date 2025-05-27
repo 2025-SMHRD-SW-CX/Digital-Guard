@@ -10,7 +10,7 @@
 </template>
 
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref, watch, onUnmounted } from 'vue'
 
 const props = defineProps({

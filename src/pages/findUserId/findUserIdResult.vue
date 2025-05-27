@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 // vue-router에서 현재 페이지의 쿼리스트링(query parameter)을 가져옵니다.
 import { useRoute } from 'vue-router'
 

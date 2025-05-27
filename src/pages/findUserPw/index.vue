@@ -36,7 +36,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 const inputPhoneNumber = () => {
     setTimeout(() => {
     alert("전화번호로 인증하기 선택됨");

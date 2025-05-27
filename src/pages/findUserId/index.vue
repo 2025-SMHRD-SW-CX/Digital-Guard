@@ -36,7 +36,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 
 import { useRouter } from "vue-router";
 

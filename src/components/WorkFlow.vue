@@ -6,14 +6,14 @@
       <div v-if="current" :key="pageNum" class="slide-content">
         <h1 class="title">{{ current.title }}</h1>
         <p class="subtitle">{{ current.subtitle }}</p>
-        <img class="img" :src="`/images/workflow/workflow${pageNum}.png`" :alt="`워크플로우 ${pageNum} 이미지`" />
+        <img class="img" :src="`${BASE_URL}/images/workflow/workflow${pageNum}.png`" :alt="`워크플로우 ${pageNum} 이미지`" />
       </div>
     </transition>
 
     <!-- 네비게이션 컨트롤 -->
     <div class="nav-wrapper">
       <button class="nav-btn" :disabled="isAnimating || pageNum === 1" @click="goPrevPage">
-        <img src="/images/prev_page.png" alt="이전" />
+        <img :src="`${BASE_URL}/images/prev_page.png`" alt="이전" />
       </button>
 
       <!-- 페이지 인디케이터 -->
@@ -24,7 +24,7 @@
       </div>
 
       <button class="nav-btn" :disabled="isAnimating || pageNum === pageData.length" @click="goNextPage">
-        <img src="/images/workflow/next_page.png" alt="다음" />
+        <img :src="`${BASE_URL}/images/workflow/next_page.png`" alt="다음" />
       </button>
     </div>
 
@@ -50,7 +50,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
+
 import { ref, computed } from 'vue';
 
 // 현재 페이지 번호 상태

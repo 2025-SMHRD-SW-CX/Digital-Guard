@@ -2,7 +2,7 @@
   <WorkFlow/>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import WorkFlow from '@/components/WorkFlow.vue'
 </script>
 

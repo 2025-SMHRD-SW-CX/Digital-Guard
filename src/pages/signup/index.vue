@@ -107,7 +107,7 @@
   </ModalView>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'
 import InputField from '@/components/InputField.vue'

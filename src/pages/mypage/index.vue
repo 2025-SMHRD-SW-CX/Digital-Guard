@@ -3,7 +3,7 @@
     <!-- 프로필 -->
     <section class="profile">
       <div class="avatar">
-        <img src="/images/mypage/knight-and-horse.png" alt="아바타 이미지" />
+        <img :src="`${BASE_URL}/images/mypage/knight-and-horse.png`" alt="아바타 이미지" />
       </div>
       <p class="badge">{{ userStore.continuousDays }}일 동안 열심히 활동해주신 성실맨</p>
       <p class="username">
@@ -11,7 +11,7 @@
         <span class="honorific"> 님</span>
       </p>
       <div class="points">
-        <img src="/images/mypage/coins.png" alt="포인트 아이콘" class="coin-icon" />
+        <img :src="`${BASE_URL}/images/mypage/coins.png`" alt="포인트 아이콘" class="coin-icon" />
         <span>나의 포인트</span>
         <strong>{{ (+userStore.total_point).toLocaleString() }}P</strong>
       </div>
@@ -43,7 +43,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user';
 import { useAlertStore } from '@/stores/alert';

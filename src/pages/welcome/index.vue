@@ -1,7 +1,7 @@
 <template>
   <div class="welcome-page">
     <div class="image-container">
-      <img src="/images/fluent-emoji-high-contrast_party-popper.png" alt="환영 이미지" />
+      <img :src="`${BASE_URL}/images/fluent-emoji-high-contrast_party-popper.png`" alt="환영 이미지" />
     </div>
 
     <div></div>
@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 defineOptions({
   name: "WelcomePage",
 });

@@ -18,11 +18,11 @@
                 <p class="title">{{ item.title }}</p>
                 <div class="indicator-wrap">
                     <div class="icon-value-wrap">
-                        <img src="/images/coin_icon.png">
+                        <img :src="`${BASE_URL}/images/coin_icon.png`">
                         <p>+{{ item.reward }}P</p>
                     </div>
                     <div class="icon-value-wrap">
-                        <img src="/images/survey/sandclock_icon.png">
+                        <img :src="`${BASE_URL}/images/survey/sandclock_icon.png`">
                         <p>{{ item.time }}</p>
                     </div>
                 </div>
@@ -42,17 +42,17 @@
                 <div class="indicator-inline">
                     <div class="indicator-wrap">
                         <div class="icon-value-wrap">
-                            <img src="/images/coin_icon.png">
+                            <img :src="`${BASE_URL}/images/coin_icon.png`">
                             <p>+{{ targetData.reward }}</p>
                         </div>
                         <!-- 소요시간 -->
                         <div class="icon-value-wrap">
-                            <img src="/images/survey/sandclock_icon.png">
+                            <img :src="`${BASE_URL}/images/survey/sandclock_icon.png`">
                             <p>{{ targetData.time }}</p>
                         </div>
                         <!-- 난이도 -->
                         <div class="icon-value-wrap">
-                            <img :src="`/images/survey/star_${targetData.feelLevel[0]}.png`">
+                            <img :src="`${BASE_URL}/images/survey/star_${targetData.feelLevel[0]}.png`">
                             <p>{{ targetData.feelLevel[1] }}</p>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
 
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 
 import { ref } from 'vue';
 import CardView from '@/components/CardView.vue';
