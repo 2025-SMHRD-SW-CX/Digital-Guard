@@ -9,10 +9,9 @@ const head = createHead()
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
-const app = createApp(App)
-app.use(pinia)
 
+const app = createApp(App)
 app.use(head)
-app.use(pinia)           // plugin 적용된 pinia 등록
+app.use(pinia)           
 app.use(router)
 app.mount('#app')
