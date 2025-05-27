@@ -64,12 +64,8 @@
 </template>
 
 <script setup>import { BASE_URL } from "@/js/baseUrl";
-<<<<<<< Updated upstream
 import { ref, computed, onMounted } from 'vue'
 import { db } from '@/services/supabase';
-=======
-import { ref, computed } from 'vue'
->>>>>>> Stashed changes
 import { useUserStore } from '@/stores/user'
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'
