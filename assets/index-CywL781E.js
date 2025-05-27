@@ -1,0 +1,1 @@
+import{_ as s,g as t,a,o}from"./index-rhhAAXmD.js";const r={class:"wrapper"},_={__name:"index",setup(n){return(c,e)=>(o(),t("div",r,e[0]||(e[0]=[a("h1",null,"관리자 메인!",-1)])))}},d=s(_,[["__scopeId","data-v-c68496d9"]]);export{d as default};
