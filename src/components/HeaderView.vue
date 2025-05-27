@@ -42,7 +42,7 @@ const userStore = useUserStore()
 const { firstToken } = usePathToken()
 
 const formattedReward = computed(() => {
-  const value = Number(userStore.totalPoint) || 0
+  const value = Number(userStore.total_point) || 0
   return value.toLocaleString('ko-KR') + 'P'
 })
 

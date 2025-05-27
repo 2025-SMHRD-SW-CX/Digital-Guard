@@ -1,18 +1,22 @@
 <template>
   <div class="main-container">
-    <!-- ⸺⸺⸺⸺⸺⸺⸺ 오늘의 미션 카드 ⸺⸺⸺⸺⸺⸺⸺ -->
+    <!-- 오늘의 미션 카드 -->
     <CardView class="mission-card" @click="myClickHandler">
       <p class="card-title">오늘의 챌린지는 완료하셨나요?</p>
       <div class="progress-circle">
         <svg viewBox="0 0 36 36" class="circular-chart">
           <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          <path class="circle" :style="{
-            strokeDasharray: 100,
-            strokeDashoffset: 100 - progressPercent
-          }" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path
+            class="circle"
+            :style="{
+              strokeDasharray: 100,
+              strokeDashoffset: 100 - progressPercent
+            }"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
         </svg>
         <div class="progress-text">
-          {{ userStore.progressDays }}<small class="fraction">/{{ userStore.totalNeedDays }}</small>
+          {{ progressText }}<small class="fraction">/{{ userStore.totalNeedDays || 0 }}</small>
         </div>
       </div>
       <p class="card-subtext">
@@ -20,36 +24,48 @@
         <span v-else>{{ userStore.progressDays + 1 }}일차 미완료</span>
       </p>
       <div class="reward-info">
-        <p id="bonus" v-if="!userStore.isParticipatedToday && bonusReward">오늘의 챌린지 완료하면 <span class="highlight">연속 {{ userStore.continuousDays + 1 }}일</span> 보너스 <span class="highlight">{{ bonusReward }}P</span> 추가 지금!</p>
-        <p id="total">총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지 {{ userStore.totalNeedDays - userStore.progressDays }}일 남았어요!</p>
+        <p id="bonus" v-if="!userStore.isParticipatedToday && bonusReward">
+          오늘의 챌린지 완료하면 <span class="highlight">연속 {{ userStore.continuousDays + 1 }}일</span>
+          보너스 <span class="highlight">{{ bonusReward }}P</span> 추가 지금!
+        </p>
+        <p id="total">
+          총 {{ userStore.totalNeedDays }}일 완료 보상 <span class="highlight">100P</span> 획득까지
+          {{ userStore.totalNeedDays - userStore.progressDays }}일 남았어요!
+        </p>
         <p id="cheer-up">조금만 더 화이팅✨</p>
       </div>
     </CardView>
 
-    <!-- ⸺⸺⸺⸺⸺⸺⸺ 오늘의 챌린지(퀴즈) 카드 ⸺⸺⸺⸺⸺⸺⸺ -->
+    <!-- 오늘의 챌린지(퀴즈) 카드 -->
     <CardView class="quiz-card">
       <div v-if="userStore.isParticipatedToday || isCorrectAnswer" class="overlay-message">
         오늘의 챌린지를 완료했습니다
         <div class="rewarded-message">
-          <img src="/images/coin_icon.png">
+          <img src="/images/coin_icon.png" />
           <span class="highlight">{{ TOTAL_REWARD }}P 획득!</span>
         </div>
       </div>
       <p class="card-title">오늘의 챌린지</p>
-      <p class="quiz-question">
-        Q. {{ currentQuestion.text }}
-      </p>
+      <p class="quiz-question">Q. {{ currentQuestion.text }}</p>
       <div class="quiz-buttons">
-        <button class="btn-ox blue"
+        <button
+          class="btn-ox blue"
           :disabled="userStore.isParticipatedToday || isCorrectAnswer"
-          @click="checkAnswer(true)">O</button>
-        <button class="btn-ox red"
+          @click="checkAnswer(true)"
+        >
+          O
+        </button>
+        <button
+          class="btn-ox red"
           :disabled="userStore.isParticipatedToday || isCorrectAnswer"
-          @click="checkAnswer(false)">X</button>
+          @click="checkAnswer(false)"
+        >
+          X
+        </button>
       </div>
     </CardView>
 
-    <!-- 찜한 아이템 카드 유지 -->
+    <!-- 찜한 아이템 카드 -->
     <CardView class="wishlist-card-container">
       <div>
         <div class="wishlist-header">
@@ -116,9 +132,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import confetti from 'canvas-confetti'
 import CardView from '@/components/CardView.vue'
 import ModalView from '@/components/ModalView.vue'
+import confetti from 'canvas-confetti'
 import { useShopStore, ITEMS } from '@/stores/shop'
 import { useUserStore } from '@/stores/user'
 import { useAlertStore } from '@/stores/alert'
@@ -134,8 +150,8 @@ const progressPercent = computed(() => {
   if (!userStore.totalNeedDays) return 0
   return Math.round((userStore.progressDays / userStore.totalNeedDays) * 100 * 10) / 10
 })
+const progressText = computed(() => userStore.progressDays || 0)
 
-// TODO 리워드 양이 10으로 고정되는게 맞나? db에서 동적으로 가져와야하는건 아닌지?
 const CORRECT_REWARD = 10
 const bonusReward = userStore.calcContinuousBonus(CORRECT_REWARD)
 const TOTAL_REWARD = CORRECT_REWARD + bonusReward
@@ -195,10 +211,10 @@ async function checkAnswer(userAnswer) {
       showCorrectModal.value = true
 
       await submitQuizAnswer(userStore.id, question.id, isCorrect, TOTAL_REWARD)
-
       const updatedPoint = await updateUserTotalPoint(userStore.id)
       userStore.recordParticipation()
       userStore.setPoint(updatedPoint)
+      await userStore.syncLoginCookieState()
     } else {
       showWrongModal.value = true
       return
@@ -207,10 +223,9 @@ async function checkAnswer(userAnswer) {
     confetti({ spread: 10, origin: { y: 0.6 } })
     showCorrectModal.value = true
   }
-
-  
 }
 </script>
+
 
 <style scoped lang="scss">
 // ───────────────────────────────────────
