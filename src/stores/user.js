@@ -17,8 +17,7 @@ const DEFAULT_VALUES = {
     totalNeedDays: 7, //꼭 챌린지가 계속 7일이 아니라 더 큰 챌린지를 참여하는 식으로 확장이 가능할 여지가 있으니 고정값으로 조정
     progressDays: null,
     continuousDays: null,
-    lastParticipate: null,
-    email: null
+    lastParticipate: null
 }
 
 export const useUserStore = defineStore('user', {
@@ -101,7 +100,6 @@ export const useUserStore = defineStore('user', {
             this.progressDays = data['progress_days']
             this.continuousDays = data['continuous_days']
             this.lastParticipate = data['last_participated']
-            this.email = data['email']
 
             console.log("User Data: ", data)
         },
@@ -138,11 +136,11 @@ export const useUserStore = defineStore('user', {
         },
 
         setPoint(value) {
-            // totalReward 값을 직접 설정
+            // total_point 값을 직접 설정
             this.total_point = value
         },
         addPoint(amount) {
-            // totalReward 값을 amount만큼 증가 (숫자 변환 및 null 체크)
+            // total_point 값을 amount만큼 증가 (숫자 변환 및 null 체크)
             this.total_point = (Number(this.total_point) || 0) + Number(amount)
         },
     }

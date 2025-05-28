@@ -9,13 +9,8 @@
         {{ userStore.continuousDays }}일 동안 열심히 활동해주신
         <span class="title-name" @click="openTitleModal">
           {{ currentTitle }}
-          <img :src="`${BASE_URL}/images/mypage/pen-icon-white.png`" alt="수정 아이콘" class="edit-icon"
-            @click.stop="openTitleModal" />
+          <img :src="`${BASE_URL}/images/mypage/pen-icon-white.png`" alt="수정 아이콘" class="edit-icon" @click.stop="openTitleModal" />
         </span>
-      </p>
-
-      <p class="username">
-        <span>{{ userStore.nickname || userStore.name }}</span><span class="honorific"> 님</span>
       </p>
       <div class="points">
         <img :src="`${BASE_URL}/images/mypage/coins.png`" alt="포인트 아이콘" class="coin-icon" />
@@ -27,7 +22,7 @@
     <!-- 아이콘 메뉴 -->
     <nav class="menu-icons">
       <div v-for="(item, index) in menuButtons" :key="index" class="icon-btn"
-        :class="{ active: activeButtonIndex === index }" @click="handleIconButtonClick(index)"
+        :class="{ active: activeButtonIndex === index }" @click="activeButtonIndex = index"
         @mouseover="hoveredButtonIndex = index" @mouseleave="hoveredButtonIndex = null">
         <img :src="activeButtonIndex === index || hoveredButtonIndex === index
           ? `${BASE_URL}/images/mypage/${item.name}-active.png`
@@ -62,65 +57,61 @@
             <strong>{{ title.name }}</strong>
           </li>
         </ul>
-        <!-- 아래 확인 박스는 선택한 칭호에 관계없이 항상 노출 -->
         <div v-if="selectedTitleIndex !== null" class="confirm-box">
           <p>
             <strong>“{{ titles[selectedTitleIndex].name }}”</strong> 칭호<br />
             {{ titles[selectedTitleIndex].description }}
           </p>
-          <button v-if="userStore.continuousDays >= titles[selectedTitleIndex].requiredDays" @click="applyTitle">적용</button>
+          <button @click="applyTitle">적용</button>
           <button @click="closeTitleModal">취소</button>
         </div>
       </div>
     </div>
+
+    <!-- 로그아웃 확인 모달 -->
+    <ModalView
+      v-model="isLogoutModalOpen"
+      title="로그아웃"
+      type="confirm"
+      confirmText="로그아웃"
+      cancelText="취소"
+      @confirm="logout"
+    >
+      <template #default>
+        <p>정말 로그아웃하시겠습니까?</p>
+      </template>
+    </ModalView>
   </div>
 </template>
 
 <script setup>
 import { BASE_URL } from "@/js/baseUrl";
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/user';
 import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
-import { runCheat } from '@/services/cheatService';
-import { useSurveyStore } from "@/stores/survey";
+import ModalView from '@/components/ModalView.vue'
 
 const userStore = useUserStore();
 const alertStore = useAlertStore();
-const surveyStore = useSurveyStore();
 const router = useRouter();
 
 const activeButtonIndex = ref(null);
 const hoveredButtonIndex = ref(null);
 const hoveredIndex = ref(null);
 
-// 현재 적용된 칭호
 const currentTitle = ref("새내기");
+const isTitleModalOpen = ref(false);
+const selectedTitleIndex = ref(null);
+const isLogoutModalOpen = ref(false);
 
-// 아이콘 메뉴 버튼 목록
 const menuButtons = [
   { label: "내 정보", name: "person" },
   { label: "나의 활동", name: "trophy" },
   { label: "사용내역", name: "calculator" },
   { label: "문의하기", name: "headphone" },
 ];
-
-// 아이콘 버튼 클릭 시 페이지 이동 또는 알림
-function handleIconButtonClick(index) {
-  activeButtonIndex.value = index;
-  const selected = menuButtons[index];
-  switch (selected.label) {
-    case "내 정보":
-      router.push('/mypage/myinformation');
-      break;
-    default:
-      alertStore.notImplemented();
-  }
-}
-
-// 메뉴 리스트 항목
 const menuItems = [
-  "시연용 치트 활성화",
   "나의 찜 내역",
   "나의 주문 조회",
   "나의 반품 / 교환 내역",
@@ -129,16 +120,12 @@ const menuItems = [
   "로그아웃",
 ];
 
-// 칭호 목록 (고정)
 const titles = [
   { name: "새내기", description: "디지털 가드에 첫 걸음을 내딛으셨습니다!", requiredDays: 0 },
   { name: "노력가", description: "3일 동안 열심히 활동해 주셨습니다!", requiredDays: 3 },
   { name: "성실맨", description: "5일 동안 열심히 활동해 주셨습니다!", requiredDays: 5 },
   { name: "정복자", description: "7일 동안 열심히 활동해 주셨습니다!", requiredDays: 7 },
 ];
-
-const isTitleModalOpen = ref(false); // 모달 열림 상태
-const selectedTitleIndex = ref(null); // 현재 선택된 칭호 인덱스
 
 function openTitleModal() {
   isTitleModalOpen.value = true;
@@ -151,53 +138,36 @@ function closeTitleModal() {
 }
 
 function selectTitle(idx) {
-  selectedTitleIndex.value = idx; // 조건 관계없이 항상 선택 가능
+  if (userStore.continuousDays < titles[idx].requiredDays) return;
+  selectedTitleIndex.value = idx;
 }
 
 function applyTitle() {
   if (selectedTitleIndex.value === null) return;
-
   const chosenTitle = titles[selectedTitleIndex.value];
-  if (userStore.continuousDays < chosenTitle.requiredDays) return;
-
   currentTitle.value = chosenTitle.name;
   alertStore.success(`"${chosenTitle.name}" 칭호가 적용되었습니다!`, 2000);
   closeTitleModal();
 }
 
-// 로그아웃 처리
 function logout() {
   userStore.logout();
   alertStore.warning("로그아웃 되었습니다!", 2000);
   router.replace("/login");
 }
 
-// 메뉴 클릭 처리
 function handleMenuClick(index) {
   if (menuItems[index] === "로그아웃") {
-    logout();
+    isLogoutModalOpen.value = true;
   } else if (menuItems[index] === "나의 찜 내역") {
     router.push("shop/wishlist");
-  } else if (menuItems[index] === "나의 주문 조회") {
-    router.push("/shop/OrderLog");
-  } else if (menuItems[index] === "시연용 치트 활성화") {
-    runCheat({ userId: userStore.id, point: 5432, reason: '시연용 치트', continuousDays: 5 });
-    userStore.setPoint(5432);
-    userStore.progressDays = userStore.continuousDays = 5;
-    userStore.lastParticiPate = null;
-    surveyStore.data.forEach((item, idx) => {
-      if (idx !== 0) item.lastComplete = null;
-    });
-    alertStore.success('시연용 치트가 실행되었습니다! 포인트와 진행일 수 초기화!', 3000);
   } else {
-    alertStore.notImplemented();
+    // TODO: 다른 메뉴 클릭 시 원하는 동작
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:color';
-
 .mypage {
   font-family: "Noto Sans KR", sans-serif;
   background: #f9f9f9;
@@ -450,6 +420,6 @@ function handleMenuClick(index) {
 }
 
 .confirm-box button:hover {
-  background-color: color.scale($color-primary, $lightness: -10%);
+  background-color: darken($color-primary, 10%);
 }
 </style>
