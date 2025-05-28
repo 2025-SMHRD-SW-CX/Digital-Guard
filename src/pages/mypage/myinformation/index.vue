@@ -1,4 +1,3 @@
-
 <template>
   <div v-if="userStore.id" class="container">
     <h2 class="title">내 정보</h2>
@@ -18,7 +17,8 @@
       <!-- 비밀번호 확인 -->
       <div>
         <label class="label" for="passwordConfirm">비밀번호 확인</label>
-        <input id="passwordConfirm" type="password" v-model="form.passwordConfirm" class="form-input" autocomplete="new-password" />
+        <input id="passwordConfirm" type="password" v-model="form.passwordConfirm" class="form-input"
+          autocomplete="new-password" />
       </div>
 
       <!-- 이름 (변경 불가) -->
@@ -51,6 +51,22 @@
         <input id="email" type="email" v-model="form.email" class="form-input" />
       </div>
 
+      <!-- 소셜 플랫폼 연동 섹션 -->
+      <div class="social-switch-section">
+        <h3 class="switch-title">소셜 플랫폼 연동</h3>
+        <div class="switch-grid">
+          <!-- v-for로 플랫폼별 스위치 생성 -->
+          <div class="switch-item" v-for="platform in platforms" :key="platform.name">
+            <label class="switch-label">{{ platform.name }}</label>
+            <label class="switch">
+              <!-- 체크박스와 v-model 연동 + 변경 시 함수 호출 -->
+              <input type="checkbox" v-model="platform.linked" @change="toggleLink(platform)" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- 수정 버튼 -->
       <button type="submit" class="button-submit">수정하기</button>
     </form>
@@ -62,8 +78,8 @@
 </template>
 
 <script setup>
-// Vue 반응형 API 임포트
-import { ref, watch } from 'vue';
+// Vue의 반응형 ref, watch 가져오기
+import { ref, watch } from 'vue'
 
 // 라우터 이동용
 import { useRouter } from 'vue-router'
@@ -81,7 +97,7 @@ const alertStore = useAlertStore()
 
 const router = useRouter()
 
-// 폼 상태 관리
+// 폼 상태 객체 - 반응형으로 관리
 const form = ref({
   username: '',
   birth: '',
@@ -93,7 +109,7 @@ const form = ref({
   passwordConfirm: ''
 })
 
-// userStore 값 변화 감지하여 폼 초기화
+// userStore의 값이 변하면 폼에 반영 (초기값 포함)
 watch(
   () => ({
     id: userStore.id,
@@ -101,7 +117,7 @@ watch(
     name: userStore.name,
     nickname: userStore.nickname,
     phone: userStore.phone,
-    email: userStore.email,
+    email: userStore.email
   }),
   (newUser) => {
     form.value.username = newUser.id || ''
@@ -114,9 +130,26 @@ watch(
   { immediate: true }
 )
 
+// 소셜 플랫폼 리스트와 연동 상태 (초기값 false, 실제는 서버 연동 필요)
+const platforms = ref([
+  { name: 'Google', linked: false },
+  { name: 'Facebook', linked: false },
+  { name: 'Naver', linked: false },
+  { name: 'Kakao', linked: false }
+])
+
+// 스위치 토글 시 알림창 띄우기 (실제 연동 로직 미구현)
+const toggleLink = (platform) => {
+  if (platform.linked) {
+    alertStore.info(`${platform.name} 계정이 연동되었습니다.(기능 준비중)`,2000)
+  } else {
+    alertStore.info(`${platform.name} 계정 연동이 해제되었습니다.(기능 준비중)`,2000)
+  }
+}
+
 // 프로필 수정 함수
 const updateProfile = async () => {
-  // 비밀번호가 입력되어 있고, 확인란과 다르면 에러 출력 후 종료
+  // 비밀번호 입력 시 확인란과 다르면 에러 발생 후 종료
   if (form.value.password && form.value.password !== form.value.passwordConfirm) {
     alertStore.error('비밀번호가 일치하지 않습니다.')
     return
@@ -130,7 +163,7 @@ const updateProfile = async () => {
   }
 
   try {
-    // Supabase profiles 테이블에 update 요청
+    // Supabase DB 업데이트 요청
     const { error } = await db
       .from('user')
       .update(updateData)
@@ -141,9 +174,9 @@ const updateProfile = async () => {
       return
     }
 
-    // 비밀번호 변경은 별도 함수나 supabase.auth API를 통해 처리 (아래 주석 참고)
+    // 비밀번호 변경 처리 (주석 참고)
     if (form.value.password) {
-      // 예시) supabase.auth.updateUser() 로 비밀번호 변경 처리
+      // supabase.auth.updateUser() 로 비밀번호 변경 처리 가능
       const { error: pwError } = await db.auth.updateUser({
         password: form.value.password
       })
@@ -155,7 +188,6 @@ const updateProfile = async () => {
 
     alertStore.success('정보가 수정되었습니다.')
     router.push('/mypage')
-
   } catch (err) {
     alertStore.error('서버 통신 중 오류가 발생했습니다.')
   }
@@ -163,7 +195,7 @@ const updateProfile = async () => {
 </script>
 
 <style scoped lang="scss">
-/* 컨테이너: 너비 95%, 중앙 정렬, 배경색, 테두리 둥글게, 그림자 */
+/* 컨테이너 스타일 */
 .container {
   width: 95%;
   margin: 2rem auto;
@@ -173,7 +205,7 @@ const updateProfile = async () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* 제목 스타일: 중앙 정렬, 크기, 색상, 아래 경계선 */
+/* 제목 스타일 */
 .title {
   text-align: center;
   font-size: 1.25rem;
@@ -185,7 +217,7 @@ const updateProfile = async () => {
   gap: 2px;
 }
 
-/* 라벨 스타일: 블록, 색상, 아래 마진 */
+/* 라벨 스타일 */
 .label {
   display: block;
   font-size: 0.875rem;
@@ -193,15 +225,14 @@ const updateProfile = async () => {
   margin-bottom: 0.25rem;
 }
 
-/* 폼: 세로 정렬, 항목 간격 */
+/* 폼 내부 세로 정렬 및 간격 */
 .form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* 입력창 기본 스타일: 너비, 패딩, 테두리, 배경, 글자색 */
-/* 포커스 시 테두리와 그림자 효과 */
+/* 입력창 기본 스타일 */
 .form-input {
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -218,7 +249,7 @@ const updateProfile = async () => {
   box-shadow: 0 0 0 1px #283A97;
 }
 
-/* 비활성화된 입력창 스타일: 연한 회색 배경, 커서 없음 */
+/* 비활성화 입력창 스타일 */
 .form-static {
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -230,8 +261,7 @@ const updateProfile = async () => {
   cursor: not-allowed;
 }
 
-/* 제출 버튼: 너비 100%, 배경색, 흰색 글자, 테두리 없음, 둥근 모서리 */
-/* 마우스 오버 시 색상 변경 */
+/* 제출 버튼 스타일 */
 .button-submit {
   width: 100%;
   padding: 0.5rem 0;
@@ -245,5 +275,98 @@ const updateProfile = async () => {
 
 .button-submit:hover {
   background-color: #445194;
+}
+
+/* 소셜 연동 섹션 */
+.social-switch-section {
+  margin-top: 1.5rem;
+}
+
+/* 소셜 연동 제목 */
+.switch-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+/* 2열 그리드 배치 */
+.switch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* 각 스위치 아이템 스타일 */
+.switch-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* 플랫폼 이름 라벨 */
+.switch-label {
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+/* 스위치 컨테이너 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  /* 슬라이더 가로 길이 */
+  height: 22px;
+  /* 슬라이더 세로 높이 */
+}
+
+/* 숨긴 체크박스 */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 슬라이더 기본 배경 */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  /* top:0; right:0; bottom:0; left:0 */
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 22px;
+  /* 높이랑 같게 둥글게 */
+}
+
+/* 슬라이더 내부 동그라미 */
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  /* 동그라미 크기 */
+  width: 18px;
+  left: 2px;
+  /* 왼쪽 간격 */
+  bottom: 2px;
+  /* 아래 간격 */
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+  /* 완전 동그라미 */
+}
+
+/* 체크된 상태 - 배경 파란색 */
+input:checked+.slider {
+  background-color: #283A97;
+}
+
+/* 체크된 상태 - 동그라미 오른쪽으로 이동 */
+input:checked+.slider::before {
+  transform: translateX(18px);
 }
 </style>
