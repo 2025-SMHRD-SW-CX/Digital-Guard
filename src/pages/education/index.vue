@@ -1,9 +1,9 @@
 <template>
   <div class="quiz-container">
     <!-- 상단 헤더 -->
-    <header class="header">
+    <!-- <header class="header">
       <div class="logo">Digital Guard</div>
-    </header>
+    </header> -->
 
     <!-- 유튜브 영상 영역 -->
     <div class="video-section">
@@ -11,6 +11,9 @@
         <div id="youtubePlayer" @dblclick.prevent></div>
         <div class="click-blocker" @dblclick.prevent></div>
 
+      </div>
+      <div class="video-times">
+        ⏱ {{ currentDisplayTime }} / {{ durationDisplayTime }}
       </div>
       <!-- 영상 컨트롤러 (영상 하단 중앙) -->
       <div class="video-controls">
@@ -42,14 +45,14 @@
       <div class="quiz-section" :class="{ blurred: !videoWatched || quizCompleted }">
         <div class="quiz-title">문제</div>
         <p class="quiz-question">
-          영상 속 주인공이 교육청에서 검정고시를 접수하던 중 직원분들께 소개받은 곳은?
+          딥페이크 기술을 이용한 성적 허위 영상물과 관련한 처벌 대상이 아닌 항목은?
         </p>
         <ol class="quiz-options">
           <li v-for="(option, index) in options" :key="index">
-            <label>
-              <input type="radio" :value="index + 1" v-model="selectedAnswer" :disabled="quizCompleted" />
+            <button type="button" class="quiz-option-btn" :class="{ selected: selectedAnswer === index + 1 }"
+              :disabled="quizCompleted" @click="selectAnswer(index + 1)">
               {{ option }}
-            </label>
+            </button>
           </li>
         </ol>
         <button class="submit-button" @click="checkAnswer" :disabled="quizCompleted">정답 확인</button>
@@ -76,9 +79,9 @@
   </div>
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";
+<script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import { db } from '@/services/supabase'
 import { useUserStore } from '@/stores/user'
 import ModalView from '@/components/ModalView.vue'
@@ -101,14 +104,20 @@ const maxPlayedSeconds = ref(0)
 
 const correctAnswer = 3
 const quizId = 1
-const options = [
-  '직업훈련 교육학원',
-  '동사무소',
-  '학교밖청소년 지원센터',
-  '청소년 문화의 집'
-]
+const options = ['소지', '시청', '제작', '신고'];
 
 let player
+
+const currentTime = ref(0)
+const duration = ref(0)
+const currentDisplayTime = computed(() => formatTime(currentTime.value))
+const durationDisplayTime = computed(() => formatTime(duration.value))
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
 
 function onPlayerStateChange(event) {
   // console.log('[YT 이벤트] 상태 변화:', event.data)
@@ -136,6 +145,9 @@ function trackProgress() {
   progressInterval = setInterval(() => {
     if (player && typeof player.getCurrentTime === 'function') {
       const now = player.getCurrentTime()
+      currentTime.value = now                  // ✅ 현재시간 갱신!
+      const d = player.getDuration()
+      if (!isNaN(d)) duration.value = d        // ✅ 전체길이 갱신!
       if (now > maxPlayedSeconds.value) maxPlayedSeconds.value = now
     }
   }, 500)
@@ -190,7 +202,7 @@ function createPlayer() {
   player = new YT.Player('youtubePlayer', {
     height: '260',
     width: '100%',
-    videoId: 'Ab8Yi4IQhJM',
+    videoId: 'STJm09McLNw',
     playerVars: {
       autoplay: 0,
       mute: 0,
@@ -205,7 +217,9 @@ function createPlayer() {
         playerReady.value = true
         stopTrackProgress()
         maxPlayedSeconds.value = 0
-        // console.log('[YT 이벤트] 플레이어 준비(onReady)')
+        currentTime.value = player.getCurrentTime()
+        const d = player.getDuration()
+        if (!isNaN(d)) duration.value = d
       },
       onStateChange: onPlayerStateChange
     }
@@ -328,9 +342,13 @@ onMounted(async () => {
   }
 })
 
+function selectAnswer(idx) {
+  selectedAnswer.value = idx
+}
+
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .quiz-container {
   font-family: Arial, sans-serif;
   max-width: 480px;
@@ -454,33 +472,89 @@ onMounted(async () => {
 }
 
 .quiz-title {
+  width: 100%;
   font-weight: bold;
-  background: #2a3faa;
-  color: white;
+  background: white;
+  // color: white;
+  color: black;
+  border-bottom: 1px solid $color-dark-gray;
   padding: 4px 8px;
   border-radius: 6px;
   display: inline-block;
-  font-size: 14px;
+  font-size: 1rem;
+  // text-align: center;
   margin-bottom: 8px;
+  // font-weight: 400;
 }
 
 .quiz-question {
   margin-bottom: 1rem;
-  font-size: 15px;
+  font-size: 1rem;
 }
 
-.quiz-options li {
-  margin: 6px 0;
-  font-size: 15px;
-  list-style: none;
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: 100%;
+
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .quiz-option-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 1.15rem;
+    background: #f4f7fa;
+    border: 2px solid #c5d7ee;
+    border-radius: 0.9em;
+    padding: 0.95em 1.2em;
+    cursor: pointer;
+    user-select: none;
+    min-height: 2.3em;
+    font-weight: 500;
+    transition: border-color 0.22s, background 0.22s, color 0.22s;
+    outline: none;
+  }
+
+  .quiz-option-btn.selected,
+  .quiz-option-btn:focus-visible {
+    background: #e2f0ff;
+    border-color: #3182ce;
+    color: #3182ce;
+    font-weight: bold;
+  }
+
+  .quiz-option-btn:disabled {
+    background: #e9e9e9;
+    color: #bbb;
+    cursor: not-allowed;
+  }
 }
+
+.quiz-options label input[type="radio"] {
+  display: none;
+}
+
+// .quiz-options li {
+//   margin: 6px 0;
+//   font-size: 1rem;
+//   padding: 1rem;
+//   list-style: none;
+// }
 
 .submit-button {
+  width: 100%;
   margin-top: 1rem;
   padding: 10px 16px;
   background-color: #2a3faa;
   color: white;
-  font-size: 15px;
+  font-size: 1rem;
+  font-weight: bold;
   border: none;
   border-radius: 6px;
   cursor: pointer;

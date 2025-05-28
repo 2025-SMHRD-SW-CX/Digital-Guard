@@ -68,15 +68,25 @@
             <strong>“{{ titles[selectedTitleIndex].name }}”</strong> 칭호<br />
             {{ titles[selectedTitleIndex].description }}
           </p>
-          <button v-if="userStore.continuousDays >= titles[selectedTitleIndex].requiredDays" @click="applyTitle">적용</button>
+          <button v-if="userStore.continuousDays >= titles[selectedTitleIndex].requiredDays"
+            @click="applyTitle">적용</button>
           <button @click="closeTitleModal">취소</button>
         </div>
       </div>
     </div>
+
+    <!-- 로그아웃 확인 모달 -->
+    <ModalView v-model="isLogoutModalOpen" title="로그아웃" type="confirm" confirmText="로그아웃" cancelText="취소"
+      @confirm="logout">
+      <template #default>
+        <p>정말 로그아웃하시겠습니까?</p>
+      </template>
+    </ModalView>
   </div>
 </template>
 
 <script setup>
+import ModalView from "@/components/ModalView.vue";
 import { BASE_URL } from "@/js/baseUrl";
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
@@ -93,6 +103,7 @@ const router = useRouter();
 const activeButtonIndex = ref(null);
 const hoveredButtonIndex = ref(null);
 const hoveredIndex = ref(null);
+const isLogoutModalOpen = ref(false);
 
 // 현재 적용된 칭호
 const currentTitle = ref("새내기");
@@ -175,7 +186,7 @@ function logout() {
 // 메뉴 클릭 처리
 function handleMenuClick(index) {
   if (menuItems[index] === "로그아웃") {
-    logout();
+    isLogoutModalOpen.value = true;
   } else if (menuItems[index] === "나의 찜 내역") {
     router.push("shop/wishlist");
   } else if (menuItems[index] === "나의 주문 조회") {

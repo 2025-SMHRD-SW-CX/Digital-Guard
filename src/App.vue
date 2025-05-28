@@ -1,6 +1,6 @@
 <template>
   <div class="app-wrapper">
-        <LoadingScreen />
+    <LoadingScreen />
     <!-- admin이 아닌 경우만 로더/공통레이아웃 노출 -->
     <template v-if="firstToken !== 'admin'">
       <transition name="loader-fade" mode="out-in">
@@ -11,7 +11,7 @@
           <div class="page-clipper" :key="route.fullPath" ref="scrollContainer">
             <HeaderView />
             <div class="content"><router-view /></div>
-            
+
           </div>
         </transition>
         <FooterView />
@@ -23,14 +23,14 @@
     <!-- admin 경로일 때는 오직 컨텐츠만 -->
     <template v-else>
       <div class="admin-content-only">
-        <AdminHeader />
-        <div class="content">
-          <AdminSidebar />
-          <div class="main">
+        <AdminSidebar />
+        <div class="admin-main-col">
+          <AdminHeader />
+          <div class="main-content-scroll">
             <router-view />
           </div>
+          <!-- <AdminFooter /> -->
         </div>
-        <AdminFooter />
       </div>
     </template>
     <AlertView />
@@ -170,25 +170,41 @@ onMounted(async () => {
 }
 
 .admin-content-only {
-  background-color: $color-content-background;
+  display: flex;
+  flex-direction: row;
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 
-  .content {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
+  // 좌측: sidebar (AdminSidebar)
+  >.side-bar {
+    // 사이드바 기본 스타일 유지 (고정폭)
+    height: 100vh;
+  }
+
+  // 우측: 메인 컬럼
+  .admin-main-col {
     display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100vh;
+    width: 0; // flex-grow로 너비 확보
 
-    .main {
+    // 상단 헤더
+    >.header-wrap {
+      flex-shrink: 0;
+    }
+
+    // 중앙 컨텐츠 (스크롤영역)
+    .main-content-scroll {
       flex-grow: 1;
-      width: 100%;
-      height: 100%;
-      background-color: purple;
+      overflow-y: auto;
+      background: $color-content-background;
+      padding: 3rem 4rem; // 필요시 패딩
+    }
+
+    // 하단 푸터
+    >.footer-wrap {
+      flex-shrink: 0;
     }
   }
 }

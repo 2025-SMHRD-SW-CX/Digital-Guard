@@ -1,5 +1,5 @@
 <template>
-  <div class="finish-wrapper" v-if="orderInfo">
+  <div class="finish-wrapper" v-if="orderInfoReady">
     <div class="checkmark">✅</div>
     <h1 class="title">주문이 완료되었습니다!</h1>
     <p class="desc">
@@ -14,16 +14,15 @@
 
     <div class="order-details">
       <h2>배송정보</h2>
+      <hr>
       <div class="info-box">
         <p><strong>받는 분:</strong> {{ orderInfo.name }} / {{ orderInfo.phone }}</p>
         <p><strong>주소:</strong> {{ orderInfo.address }}</p>
       </div>
-
-      <!-- 주문내역을 컴포넌트로 출력 -->
-      <OrderList :orderList="orderList" @clear="clearOrderList" />
+      <!-- 주문내역 컴포넌트로 대체 -->
+      <OrderList :orderList="orderList" @clear="clearOrderList"/>
     </div>
   </div>
-
   <div v-else class="no-order-info">
     <div class="checkmark">❌</div>
     <h1 class="title">주문 정보가 없습니다</h1>
@@ -31,8 +30,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup>import { BASE_URL } from "@/js/baseUrl";
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import OrderList from '@/components/OrderList.vue'
 
@@ -40,30 +39,29 @@ const router = useRouter()
 const orderInfo = ref(null)
 const orderList = ref([])
 
-function goHome() {
-  router.push('/main')
-}
-function goShop() {
-  router.push('/shop')
-}
+onMounted(() => {
+  const raw = localStorage.getItem('orderInfo')
+  orderInfo.value = raw ? JSON.parse(raw) : null
+  const rawList = localStorage.getItem('orderList')
+  orderList.value = rawList ? JSON.parse(rawList).reverse() : []
+})
+const orderInfoReady = computed(() =>
+  orderInfo.value && typeof orderInfo.value === 'object' &&
+  Object.keys(orderInfo.value).length > 0 &&
+  'name' in orderInfo.value && 'phone' in orderInfo.value
+)
+function goHome() { router.push('/main') }
+function goShop() { router.push('/shop') }
 function clearOrderList() {
   localStorage.removeItem('orderList')
   orderList.value = []
   alert("주문 내역이 삭제되었습니다.")
 }
-
-onMounted(() => {
-  const saved = JSON.parse(localStorage.getItem('orderInfo'))
-  if (saved) orderInfo.value = saved
-  else router.replace('/main')
-
-  const savedOrders = JSON.parse(localStorage.getItem('orderList')) || []
-  orderList.value = savedOrders.reverse()
-})
 </script>
+<!-- 스타일은 기존 그대로 사용 -->
 
 
-<style scoped>
+<style lang="scss" scoped>
 .finish-wrapper {
   max-width: 480px;
   margin: auto;
@@ -119,14 +117,26 @@ onMounted(() => {
   border-radius: 12px;
   font-size: 14px;
   color: #333;
-}
 
-.order-details h2 {
-  font-size: 16px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 4px;
-  margin-top: 24px;
+  hr {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    margin: 0;
+  }
+
+  .upper-hr {
+    margin-bottom: 1rem;
+  }
+
+  .lower-hr {
+    margin-top: 1rem;
+  }
+
+
+
 }
 
 .info-box {
@@ -134,10 +144,64 @@ onMounted(() => {
   line-height: 1.6;
 }
 
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.order-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.order-info {
+  font-size: 13px;
+}
+
+.order-brand {
+  font-weight: bold;
+}
+
+.order-price {
+  font-weight: bold;
+  color: #444;
+}
+
+.summary {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.summary .highlight {
+  color: red;
+  font-weight: bold;
+}
+
 .history-section {
   margin-top: 40px;
   text-align: left;
   font-size: 13px;
+
+  .history-order {
+    padding: 0.5rem;
+  }
+
+  li {
+    margin-left: 1.75rem;
+  }
+
+}
+
+.order-history-item {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .clear-button {
@@ -149,16 +213,10 @@ onMounted(() => {
   cursor: pointer;
   font-size: 14px;
   margin-bottom: 20px;
-}
-.clear-button:hover {
-  background: #b91c1c;
+  margin-top: 1rem;
 }
 
-.no-order-info {
-  max-width: 480px;
-  margin: auto;
-  padding: 60px 20px;
-  text-align: center;
-  font-family: Arial, sans-serif;
+.clear-button:hover {
+  background: #b91c1c;
 }
 </style>

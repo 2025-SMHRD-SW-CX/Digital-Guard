@@ -1,3 +1,4 @@
+<!-- src/components/OrderList.vue -->
 <template>
   <div class="order-history-section">
     <h2>주문 내역</h2>
@@ -8,13 +9,13 @@
         <p><strong>받는 분 : </strong> {{ order.name }} / {{ order.phone }}</p>
         <p><strong>주소 : </strong> {{ order.address }}</p>
         <p><strong>결제한 상품</strong></p>
-        <ul v-if="order.orderedItems && order.orderedItems.length">
+        <ul>
           <li v-for="item in order.orderedItems" :key="item.id">
-            {{ item.brand }} - {{ item.name }} ({{ (item.price ?? 0).toLocaleString() }}P)
+            {{ item.brand }} - {{ item.name }} ({{ item.price.toLocaleString() }}P)
           </li>
         </ul>
-        <p><strong>결제 금액:</strong> {{ (order.totalPrice ?? 0).toLocaleString() }}P</p>
-        <p><strong>남은 포인트:</strong> {{ (order.remainingPoint ?? 0).toLocaleString() }}P</p>
+        <p><strong>결제 금액:</strong> {{ order.totalPrice.toLocaleString() }}P</p>
+        <p><strong>남은 포인트:</strong> {{ order.remainingPoint.toLocaleString() }}P</p>
         <hr class="lower-hr" />
       </div>
       <button class="clear-button" @click="clearOrderList">🗑 주문 목록 초기화</button>
@@ -37,7 +38,7 @@ function clearOrderList() {
   if (confirm('정말로 모든 주문 내역을 삭제하시겠습니까?')) emit('clear')
 }
 function formatDate(date) {
-  return date ? new Date(date).toLocaleString() : '-'
+  return new Date(date).toLocaleString()
 }
 </script>
 
