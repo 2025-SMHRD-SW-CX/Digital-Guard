@@ -282,6 +282,8 @@ const insights = {
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    padding: 1.2rem 1.5rem;
+    background: #f9fafb;
 
     h2,
     h3 {

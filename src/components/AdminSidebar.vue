@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="side-bar"
-    :class="{ collapsed: isCollapsed }"
-    @mouseenter="expandSidebar"
-    @mouseleave="collapseSidebar"
-  >
+  <div class="side-bar" :class="{ collapsed: isCollapsed }" @mouseenter="expandSidebar" @mouseleave="collapseSidebar">
     <!-- 접힌 상태에서만 나타나는 세로 MENU -->
     <div class="collapsed-menu" v-if="isCollapsed">
       <span v-for="char in menuLabelArr" :key="char" class="menu-char">
@@ -12,28 +7,39 @@
       </span>
     </div>
     <div class="top-wrapper">
-      <div class="menu-item" v-for="item in menuList" :key="item">
-        <span
-          class="menu-text"
-        >
-          {{ item }}
-        </span>
+      <div class="menu-item" v-for="item in menuList" :key="item.label" @click="goMenu(item.route)">
+        <span class="menu-text">{{ item.label }}</span>
         <div class="underline"></div>
       </div>
     </div>
-    <div class="bottom-wrapper"><div></div></div>
+    <div class="bottom-wrapper">
+      <div></div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-const menuList = ['대시보드', '그래프', '서비스 관리']
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const menuList = [
+  { label: '대시보드', route: '/admin/main' },
+  { label: '그래프', route: '/admin/graph' },
+  { label: '서비스 관리', route: '/admin/manage' }
+]
+
 const isCollapsed = ref(true)
 const menuLabel = 'MENU'
 const menuLabelArr = menuLabel.split('')
 
 function expandSidebar() { isCollapsed.value = false }
 function collapseSidebar() { isCollapsed.value = true }
+
+function goMenu(route) {
+  router.push(route)
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -48,6 +54,7 @@ function collapseSidebar() { isCollapsed.value = true }
   &.collapsed {
     width: 2.8rem;
     min-width: 2.8rem;
+
     .top-wrapper {
       .menu-item {
         .menu-text {
@@ -60,6 +67,7 @@ function collapseSidebar() { isCollapsed.value = true }
         }
       }
     }
+
     .collapsed-menu {
       opacity: 1;
       transform: translateY(0);
@@ -80,6 +88,7 @@ function collapseSidebar() { isCollapsed.value = true }
         opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
         transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .top-wrapper {
       .menu-item {
         .menu-text {
@@ -103,7 +112,9 @@ function collapseSidebar() { isCollapsed.value = true }
   justify-content: center;
   height: 100vh; // sidebar 전체 높이 맞춤
   position: absolute;
-  left: 0; top: 0; width: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
   z-index: 5;
   letter-spacing: 0.1em;
   font-weight: 700;
