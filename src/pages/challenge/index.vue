@@ -26,19 +26,14 @@
       <h2 class="section-title">완료 챌린지 기록</h2>
       <div class="section-divider"></div>
 
-      <div
-        class="record-item"
-        v-for="(item, index) in visibleLogs"
-        :key="index"
-        @click="openModal(item)"
-        style="cursor: pointer"
-      >
+      <div class="record-item" v-for="(item, index) in visibleLogs" :key="index" @click="openModal(item)"
+        style="cursor: pointer">
         <p class="day-label">연속 참여 챌린지 {{ index + 1 }}일차</p>
         <div class="record-sub">
           <span class="date">{{ formatDateTime(item.created_at) }}</span>
           <span class="point">
             <img :src="`${BASE_URL}/images/coin_icon.png`" class="coin-icon" alt="포인트 아이콘" />
-            +{{ item.reward_point }}P
+            +{{ item.reward_point + calcContinuousBonus(item.reward_point, index + 1)}}P
           </span>
         </div>
         <p class="question">
@@ -63,7 +58,7 @@
   </div>
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";import { BASE_URL } from "@/js/baseUrl";import { BASE_URL } from "@/js/baseUrl";
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref, computed, onMounted } from 'vue'
 import { db } from '@/services/supabase';
 import { useUserStore } from '@/stores/user'
@@ -119,6 +114,11 @@ onMounted(async () => {
 
 const visibleLogs = computed(() => logs.value)
 const remainingDays = computed(() => Math.max(user.totalNeedDays - user.progressDays, 0))
+
+function calcContinuousBonus(todayReward, progressDays) {
+  const progressPct = progressDays / user.totalNeedDays;
+  return Math.round(todayReward * progressPct);
+}
 </script>
 
 <style scoped lang="scss">
