@@ -76,7 +76,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { useRouter } from 'vue-router'
 import { ref, onMounted, nextTick } from 'vue'
 import { db } from '@/services/supabase'

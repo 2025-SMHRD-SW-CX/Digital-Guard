@@ -42,7 +42,7 @@
 </template>
 
 <script setup>import { BASE_URL } from "@/js/baseUrl";
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAlertStore } from '@/stores/alert'
@@ -59,11 +59,13 @@ const isLoginDisabled = computed(() => !userId.value || !userPw.value)
 
 const handleLogin = async () => {
   try {
+    // 반드시 await! (상태 업데이트까지 기다림)
     const data = await userStore.loginWithSupabase(userId.value, userPw.value)
     alertStore.success(`${data.nickname || data.name} 님 어서오세요!`, 2000)
+    await nextTick() // 상태 반영 후 이동 (필요시)
     router.push('/main')
   } catch (error) {
-    showError.value = true // <--- 이 부분 추가해야 에러 메시지 뜸
+    showError.value = true
     alertStore.danger(error.message, 2000)
     return
   }
