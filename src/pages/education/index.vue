@@ -12,6 +12,11 @@
           <div class="click-blocker" @dblclick.prevent></div>
         </div>
 
+        
+        <!-- ✅ 시간 정보 표시 -->
+        <div class="video-times">
+          ⏱ {{ currentDisplayTime }} / {{ durationDisplayTime }}
+        </div>
         <div class="video-controls">
           <button class="control-btn" @click="seek(-10)" :disabled="!canSeek(-10)">⏪ 10초</button>
           <button class="play-toggle-button" @click="togglePlay" :disabled="!playerReady">
@@ -20,10 +25,6 @@
           <button class="control-btn" @click="seek(10)" :disabled="!canSeek(10)">10초 ⏩</button>
         </div>
 
-        <!-- ✅ 시간 정보 표시 -->
-        <div class="video-times">
-          ⏱ {{ currentDisplayTime }} / {{ durationDisplayTime }}
-        </div>
       </div>
     </CardView>
 
@@ -111,6 +112,7 @@ const playerReady = ref(false)
 
 const currentTime = ref(0)
 const duration = ref(0)
+const maxPlayedSeconds = ref(0);
 
 const currentDisplayTime = computed(() => formatTime(currentTime.value))
 const durationDisplayTime = computed(() => formatTime(duration.value))
@@ -150,6 +152,9 @@ function startTrackProgress() {
       currentTime.value = player.getCurrentTime()
       const d = player.getDuration()
       if (!isNaN(d)) duration.value = d
+      // ⬇️ 여기서 최대 위치 추적
+      if (currentTime.value > maxPlayedSeconds.value)
+        maxPlayedSeconds.value = currentTime.value
     }
   }, 200)
 }
@@ -168,14 +173,16 @@ function togglePlay() {
 function seek(sec) {
   if (!player) return
   let target = player.getCurrentTime() + sec
-  target = sec > 0 ? Math.min(target, duration.value) : Math.max(0, target)
+  target = sec > 0 ? Math.min(target, maxPlayedSeconds.value) : Math.max(0, target)
   player.seekTo(target, true)
 }
 
 function canSeek(sec) {
   if (!playerReady.value || !player) return false
   const now = player.getCurrentTime()
-  return sec < 0 ? now > 0 : now + sec <= duration.value
+  if (sec < 0) return now > 0
+  if (sec > 0) return now + sec <= maxPlayedSeconds.value
+  return false
 }
 
 function createPlayer() {
@@ -333,6 +340,7 @@ onMounted(() => {
 
 .quiz-section-wrapper {
   position: relative;
+  
 }
 
 .quiz-info-overlay {
@@ -362,6 +370,9 @@ onMounted(() => {
   margin: 1rem;
   padding: 1rem;
   transition: filter 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 
 .quiz-section.blurred {
@@ -370,6 +381,7 @@ onMounted(() => {
 }
 
 .quiz-title {
+  width: 100%;
   font-weight: bold;
   background: #2a3faa;
   color: white;
@@ -382,16 +394,17 @@ onMounted(() => {
 
 .quiz-question {
   margin-bottom: 1rem;
-  font-size: 15px;
+  font-size: 1.2rem;
 }
 
 .quiz-options li {
   margin: 6px 0;
-  font-size: 15px;
+  font-size: 1.2rem;
   list-style: none;
 }
 
 .submit-button {
+  width: 100%;
   margin-top: 1rem;
   padding: 10px 16px;
   background-color: #2a3faa;
@@ -400,6 +413,7 @@ onMounted(() => {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .modal-actions {
