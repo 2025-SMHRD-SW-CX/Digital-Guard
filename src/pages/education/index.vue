@@ -1,68 +1,80 @@
 <template>
   <div class="quiz-container">
-    <!-- 상단 헤더 -->
-    <header class="header">
-      <div class="logo">Digital Guard</div>
-    </header>
+    <!-- ✅ 헤더 + 영상 카드 -->
+    <CardView :style="{ marginBottom: '1.5rem' }">
+      <header class="header">
+        <div class="logo">Digital Guard</div>
+      </header>
 
-    <!-- 유튜브 영상 영역 -->
-    <div class="video-section">
-      <div class="video-wrapper">
-        <div id="youtubePlayer" @dblclick.prevent></div>
-        <div class="click-blocker" @dblclick.prevent></div>
+      <div class="video-section">
+        <div class="video-wrapper">
+          <div id="youtubePlayer" @dblclick.prevent></div>
+          <div class="click-blocker" @dblclick.prevent></div>
+        </div>
 
-      </div>
-      <!-- 영상 컨트롤러 (영상 하단 중앙) -->
-      <div class="video-controls">
-        <button class="control-btn" @click="seek(-10)" :disabled="!canSeek(-10)">
-          ⏪ 10초
-        </button>
-        <button class="play-toggle-button" @click="togglePlay" :disabled="!playerReady">
-          {{ isPlaying ? '⏸ 일시정지' : '▶ 재생' }}
-        </button>
-        <button class="control-btn" @click="seek(10)" :disabled="!playerReady">
-          10초 ⏩
-        </button>
-      </div>
-    </div>
+        <div class="video-controls">
+          <button class="control-btn" @click="seek(-10)" :disabled="!canSeek(-10)">⏪ 10초</button>
+          <button class="play-toggle-button" @click="togglePlay" :disabled="!playerReady">
+            {{ isPlaying ? '⏸ 일시정지' : '▶ 재생' }}
+          </button>
+          <button class="control-btn" @click="seek(10)" :disabled="!canSeek(10)">10초 ⏩</button>
+        </div>
 
-    <!-- 퀴즈 영역 -->
-    <div class="quiz-section-wrapper">
-      <div class="quiz-info-overlay" v-if="!videoWatched || quizCompleted">
-        <template v-if="quizCompleted">
-          <p>🎉 이미 참여하셨습니다!</p>
-          <p>✅ 포인트가 지급된 상태입니다.</p>
-        </template>
-        <template v-else>
-          <p>🎥 영상 시청 후 퀴즈를 풀어주세요!</p>
-          <p>💰 퀴즈를 풀면 <strong>100포인트</strong>가 지급됩니다!</p>
-        </template>
+        <!-- ✅ 시간 정보 표시 -->
+        <div class="video-times">
+          ⏱ {{ currentDisplayTime }} / {{ durationDisplayTime }}
+        </div>
       </div>
+    </CardView>
 
-      <div class="quiz-section" :class="{ blurred: !videoWatched || quizCompleted }">
-        <div class="quiz-title">문제</div>
-        <p class="quiz-question">
-          영상 속 주인공이 교육청에서 검정고시를 접수하던 중 직원분들께 소개받은 곳은?
-        </p>
-        <ol class="quiz-options">
-          <li v-for="(option, index) in options" :key="index">
-            <label>
-              <input type="radio" :value="index + 1" v-model="selectedAnswer" :disabled="quizCompleted" />
-              {{ option }}
-            </label>
-          </li>
-        </ol>
-        <button class="submit-button" @click="checkAnswer" :disabled="quizCompleted">정답 확인</button>
+    <!-- ✅ 퀴즈 카드 -->
+    <CardView>
+      <div class="quiz-section-wrapper">
+        <div class="quiz-info-overlay" v-if="!videoWatched || quizCompleted">
+          <template v-if="quizCompleted">
+            <p>🎉 이미 참여하셨습니다!</p>
+            <p>✅ 포인트가 지급된 상태입니다.</p>
+          </template>
+          <template v-else>
+            <p>🎥 영상 시청 후 퀴즈를 풀어주세요!</p>
+            <p>💰 퀴즈를 풀면 <strong>100포인트</strong>가 지급됩니다!</p>
+          </template>
+        </div>
+
+        <div class="quiz-section" :class="{ blurred: !videoWatched || quizCompleted }">
+          <div class="quiz-title">문제</div>
+          <p class="quiz-question">
+            딥페이크 기술을 이용한 성적 허위 영상물과 관련한 처벌 대상이 아닌 항목은?
+          </p>
+          <ol class="quiz-options">
+            <li v-for="(option, index) in options" :key="index">
+              <label>
+                <input
+                  type="radio"
+                  :value="index + 1"
+                  v-model="selectedAnswer"
+                  :disabled="quizCompleted"
+                />
+                {{ option }}
+              </label>
+            </li>
+          </ol>
+          <button class="submit-button" @click="checkAnswer" :disabled="quizCompleted">정답 확인</button>
+        </div>
       </div>
-    </div>
+    </CardView>
 
     <!-- 결과 모달 -->
-    <ModalView v-model="showModal" :type="modalType" :useButton="quizCompleted ? false : true"
-      @confirm="handleModalConfirm">
+    <ModalView v-model="showModal" :type="modalType" :useButton="quizCompleted ? false : true" @confirm="handleModalConfirm">
       <template #default>
         <div v-if="quizCompleted">
           <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
-          <p>정답입니다! 100포인트가 적립되었습니다.</p>
+          <p>정답입니다! 100포인트가 적립되었습니다!</p>
+          <br />
+          <div class="explanation">
+            <p>🛑 해설: 딥페이크 기술을 이용한 허위 영상물과 관련해 <strong>제작, 배포, 소지, 구입, 저장, 시청</strong>은 모두 형사처벌 대상입니다.<br />
+            하지만 <strong>‘신고’는 우리가 해야 할 일</strong> 입니다.</p>
+          </div>
           <div class="modal-actions">
             <button class="next-button" disabled>다음 교육영상 보기 (준비중)</button>
             <button class="home-button" @click="goHome">홈으로</button>
@@ -76,12 +88,13 @@
   </div>
 </template>
 
-<script setup>import { BASE_URL } from "@/js/baseUrl";
+<script setup>
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { ref, onMounted, nextTick } from 'vue'
+import ModalView from '@/components/ModalView.vue'
+import CardView from '@/components/CardView.vue'
 import { db } from '@/services/supabase'
 import { useUserStore } from '@/stores/user'
-import ModalView from '@/components/ModalView.vue'
 import confetti from 'canvas-confetti'
 
 const router = useRouter()
@@ -96,239 +109,136 @@ const modalType = ref('alert')
 const isPlaying = ref(false)
 const playerReady = ref(false)
 
-// 10초 건너뛰기용: 시청한 최대 위치 추적
-const maxPlayedSeconds = ref(0)
+const currentTime = ref(0)
+const duration = ref(0)
 
-const correctAnswer = 3
+const currentDisplayTime = computed(() => formatTime(currentTime.value))
+const durationDisplayTime = computed(() => formatTime(duration.value))
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+const correctAnswer = 4
 const quizId = 1
-const options = [
-  '직업훈련 교육학원',
-  '동사무소',
-  '학교밖청소년 지원센터',
-  '청소년 문화의 집'
-]
+const options = ['소지', '시청', '제작', '신고']
 
 let player
+let progressInterval = null
 
 function onPlayerStateChange(event) {
-  // console.log('[YT 이벤트] 상태 변화:', event.data)
   if (event.data === YT.PlayerState.ENDED) {
     videoWatched.value = true
     isPlaying.value = false
-    maxPlayedSeconds.value = player.getDuration()
-    // console.log('[YT 이벤트] 영상 끝까지 시청함, videoWatched:', videoWatched.value)
+    stopTrackProgress()
   } else if (event.data === YT.PlayerState.PLAYING) {
     isPlaying.value = true
     event.target.unMute()
-    // console.log('[YT 이벤트] 영상 재생 중 (PLAYING)')
-    // maxPlayedSeconds 갱신
-    trackProgress()
+    startTrackProgress()
   } else if (event.data === YT.PlayerState.PAUSED) {
     isPlaying.value = false
-    // console.log('[YT 이벤트] 영상 일시정지 (PAUSED)')
     stopTrackProgress()
   }
 }
 
-let progressInterval = null
-function trackProgress() {
+function startTrackProgress() {
   stopTrackProgress()
   progressInterval = setInterval(() => {
-    if (player && typeof player.getCurrentTime === 'function') {
-      const now = player.getCurrentTime()
-      if (now > maxPlayedSeconds.value) maxPlayedSeconds.value = now
+    if (player?.getCurrentTime) {
+      currentTime.value = player.getCurrentTime()
+      const d = player.getDuration()
+      if (!isNaN(d)) duration.value = d
     }
-  }, 500)
+  }, 200)
 }
+
 function stopTrackProgress() {
-  if (progressInterval) {
-    clearInterval(progressInterval)
-    progressInterval = null
-  }
+  if (progressInterval) clearInterval(progressInterval)
+  progressInterval = null
 }
 
-// 재생/일시정지 버튼
 function togglePlay() {
-  if (!player) {
-    // console.log('[togglePlay] player 없음!')
-    return
-  }
+  if (!player) return
   const state = player.getPlayerState()
-  // console.log('[togglePlay] 현재 상태:', state)
-  if (state === YT.PlayerState.PLAYING) {
-    player.pauseVideo()
-  } else {
-    player.playVideo()
-  }
+  state === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo()
 }
 
-// 10초 이동 버튼 (범위 제한)
 function seek(sec) {
   if (!player) return
-  const now = player.getCurrentTime()
-  let target = now + sec
-  // max 범위로 강제 제한
-  if (sec > 0) {
-    target = Math.min(target, maxPlayedSeconds.value)
-  }
-  if (sec < 0) {
-    target = Math.max(0, target)
-  }
+  let target = player.getCurrentTime() + sec
+  target = sec > 0 ? Math.min(target, duration.value) : Math.max(0, target)
   player.seekTo(target, true)
 }
+
 function canSeek(sec) {
-  if (!player || !playerReady.value) return false
-  const now = player.getCurrentTime ? player.getCurrentTime() : 0
-  if (sec < 0) return now > 0
-  if (sec > 0) return now + sec <= maxPlayedSeconds.value
-  return false
+  if (!playerReady.value || !player) return false
+  const now = player.getCurrentTime()
+  return sec < 0 ? now > 0 : now + sec <= duration.value
 }
 
-// 유튜브 플레이어 생성
 function createPlayer() {
-  // console.log('[createPlayer] 유튜브 플레이어 생성 시도')
   player = new YT.Player('youtubePlayer', {
     height: '260',
     width: '100%',
-    videoId: 'Ab8Yi4IQhJM',
-    playerVars: {
-      autoplay: 0,
-      mute: 0,
-      controls: 0,
-      rel: 0,
-      disablekb: 1,
-      modestbranding: 1,
-      playsinline: 1
-    },
+    videoId: 'STJm09McLNw',
+    playerVars: { autoplay: 0, mute: 0, controls: 0, rel: 0, disablekb: 1, modestbranding: 1, playsinline: 1 },
     events: {
-      onReady: () => {
-        playerReady.value = true
-        stopTrackProgress()
-        maxPlayedSeconds.value = 0
-        // console.log('[YT 이벤트] 플레이어 준비(onReady)')
-      },
+      onReady: () => { playerReady.value = true },
       onStateChange: onPlayerStateChange
     }
   })
 }
 
-// 정답 확인 및 포인트 지급
 async function checkAnswer() {
-  // console.log('[checkAnswer] 정답 시도:', selectedAnswer.value)
   if (selectedAnswer.value === correctAnswer) {
     quizCompleted.value = true
-    // console.log('[정답] 정답 체크됨, quizCompleted:', quizCompleted.value)
-
     try {
-      // 1. participation 테이블 기록
-      const { error } = await db.from('edu_quiz_participation').insert({
-        user_id: user.id,
-        quiz_id: quizId,
-        is_correct: true,
-        reward_given: true
-      })
-
-      if (error) {
-        console.error('[DB ERROR] participation insert:', error)
-      } else {
-        // console.log('[DB] participation 저장 성공!')
-      }
-
-      // 2. user 테이블 포인트 업데이트
-      await db.from('user')
-        .update({ total_point: user.total_point + 100 })
-        .eq('id', user.id)
-      // console.log('[DB] user 포인트 업데이트')
-
-      // 3. point_history 이력 기록
-      await db.from('point_history').insert({
-        user_id: user.id,
-        point: 100,
-        reason: '영상 퀴즈 정답 포인트 지급'
-      })
-      // console.log('[DB] point_history 저장')
-
-      // 4. 사용자 스토어 포인트 반영
-      user.point += 100
-
-    } catch (error) {
-      console.error('[DB ERROR] 포인트 지급 중 오류:', error)
+      await db.from('edu_quiz_participation').insert({ user_id: user.id, quiz_id: quizId, is_correct: true, reward_given: true })
+      await db.from('user').update({ total_point: user.total_point + 100 }).eq('id', user.id)
+      await db.from('point_history').insert({ user_id: user.id, point: 100, reason: '영상 퀴즈 정답 포인트 지급' })
+      user.total_point += 100
+    } catch (e) {
       modalMessage.value = '포인트 지급 중 오류가 발생했습니다.'
     }
-
-    // 5. 축하 이펙트
     nextTick(() => {
       const canvas = document.getElementById('confetti-canvas')
-      if (canvas) {
-        confetti.create(canvas, { resize: true })({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 }
-        })
-      }
+      if (canvas) confetti.create(canvas, { resize: true })({ particleCount: 150, spread: 70, origin: { y: 0.6 } })
     })
-
   } else {
     modalMessage.value = '조금만 더 고민해보세요!'
-    // console.log('[오답] 오답! modalMessage:', modalMessage.value)
   }
-
   showModal.value = true
 }
 
-// 모달 닫기
 function handleModalConfirm() {
   showModal.value = false
 }
 
-// 홈으로 이동
 function goHome() {
   router.push('/main')
 }
 
-// 유튜브 API 삽입 및 초기화
-onMounted(async () => {
-  await nextTick()
-  // console.log('[onMounted] 시작')
+onMounted(() => {
   if (!window.YT) {
-    // console.log('[onMounted] YT 없음. 스크립트 삽입')
     const tag = document.createElement('script')
     tag.src = 'https://www.youtube.com/iframe_api'
     document.body.appendChild(tag)
-    window.onYouTubeIframeAPIReady = () => {
-      // console.log('[onYouTubeIframeAPIReady] 콜백 실행')
-      createPlayer()
-    }
-  } else if (window.YT && window.YT.Player) {
-    // console.log('[onMounted] YT 이미 있음, createPlayer 호출')
+    window.onYouTubeIframeAPIReady = createPlayer
+  } else if (window.YT?.Player) {
     createPlayer()
   } else {
-    // console.log('[onMounted] YT 로딩 중, 주기적 체크')
     const waitYT = setInterval(() => {
-      if (window.YT && window.YT.Player) {
-        // console.log('[waitYT] YT.Player 발견, createPlayer')
+      if (window.YT?.Player) {
         createPlayer()
         clearInterval(waitYT)
       }
     }, 500)
   }
-
-  // ✅ 이미 퀴즈 참여했는지 체크
-  const { data, error } = await db
-    .from('edu_quiz_participation')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('quiz_id', quizId)
-    .eq('reward_given', true)
-  // console.log('[onMounted] participation DB 결과:', data, error)
-  if (!error && data && data.length > 0) {
-    quizCompleted.value = true
-    videoWatched.value = true
-    // console.log('[onMounted] 이미 퀴즈 참여완료 (blur 해제)')
-  }
 })
-
 </script>
+
 
 <style scoped>
 .quiz-container {
@@ -395,7 +305,13 @@ onMounted(async () => {
   /* background: #fff; */
   /* border-radius: 12px; */
 }
-
+.video-times {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: #333;
+  text-align: left;
+  line-height: 1.4;
+}
 .play-toggle-button,
 .control-btn {
   padding: 10px 20px;
