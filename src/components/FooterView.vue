@@ -70,6 +70,7 @@ const go = (path) => { router.push(path) }
 
 .footer-logo-wrap {
   height: 4rem;
+  min-width: 3rem;
   position: relative;
   bottom: 0.6rem;
 }
@@ -77,6 +78,7 @@ const go = (path) => { router.push(path) }
 .footer-logo {
   height: 100%;
   width: 100%;
+  object-fit: scale-down;
 }
 
 .footer-btn {
@@ -92,6 +94,7 @@ const go = (path) => { router.push(path) }
     width: 100%;
     height: 100%;
     display: block;
+    object-fit: scale-down;
   }
 
   &:hover {
