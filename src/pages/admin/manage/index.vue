@@ -5,6 +5,9 @@
       <select v-model="tableType" style="padding: 0.5em 1.2em; border-radius: 0.4em;">
         <option value="videos">교육영상</option>
         <option value="quizzes">퀴즈</option>
+        <option value="survey">설문</option>
+        <option value="user">사용자</option>
+        <option value="point-transaction">포인트 지급</option>
       </select>
       <button v-if="tableType === 'videos'" class="add-btn" @click="openAddModal">+ 새 교육영상 추가</button>
     </div>
@@ -101,12 +104,22 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { videoData } from '@/data/videoData'
 import { quizData } from '@/data/quizData'
+import { useAlertStore } from '@/stores/alert';
+
+const alertStore = useAlertStore();
 
 // 선택 테이블
 const tableType = ref('videos')
+
+watch(tableType, (newVal, oldVal) => {
+  console.log(newVal)
+  if (!['videos', 'quizzes'].includes(newVal)) {
+    alertStore.notImplemented();
+  }
+})
 
 // 테이블별 데이터
 const tableMap = {

@@ -1,12 +1,12 @@
 <template>
     <div class="header-wrap">
         <img class="brand" :src="`${BASE_URL}/images/brand.png`">
-        <div class="admin-indicator">
+        <div class="admin-indicator" v-if="adminStore.isLogined">
             <div class="icon-value">
                 <img class="icon" :src="`${BASE_URL}/images/header/user_icon.png`">
-                <p class="value">김철수 님</p>
+                <p class="value">{{ adminStore.name }} 님</p>
             </div>
-            <button class="logout-btn">로그아웃</button>
+            <button class="logout-btn" @click="logout">로그아웃</button>
         </div>
     </div>
 </template>
@@ -14,11 +14,22 @@
 
 <script setup>
 import { BASE_URL } from '@/js/baseUrl';
+import { useAdminStore } from '@/stores/admin';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const adminStore = useAdminStore();
+
+function logout() {
+    adminStore.logout();
+    router.push('/admin/login');
+}
 </script>
 
 <style lang="scss" scoped>
 .header-wrap {
     width: 100%;
+    height: 5rem;
     padding: 1rem;
     border-bottom: 1px solid $color-secondary;
     background-color: white;
