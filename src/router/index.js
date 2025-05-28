@@ -33,13 +33,13 @@ router.beforeEach(async (to, from, next) => {
   const adminStore = useAdminStore()
   const alertStore = useAlertStore()
 
-  // 1. 일반유저 세션 복구
-  if (!userStore.loginChecked) {
-    await userStore.syncLoginCookieState()
-  }
-  // 2. 관리자 세션 복구
-  if (!adminStore.loginChecked) {
-    await adminStore.syncLoginCookieState()
+  // 체크가 아직 안끝났으면 먼저 대기
+  if (!userStore.loginChecked || !adminStore.loginChecked) {
+    // 세션 동기화 (Promise.all로 병렬 대기 가능)
+    await Promise.all([
+      userStore.syncLoginCookieState(),
+      adminStore.syncLoginCookieState(),
+    ])
   }
 
   // 3. 관리자 로그인 상태로 /admin/login 접근 → /admin/main 이동
