@@ -30,7 +30,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup>import { BASE_URL } from "@/js/baseUrl";
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import OrderList from '@/components/OrderList.vue'
