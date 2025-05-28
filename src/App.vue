@@ -112,7 +112,9 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .page-container {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   height: var(--app-vh, 100vh);

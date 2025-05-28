@@ -2,7 +2,7 @@
   <div class="mypage">
     <!-- 프로필 -->
     <section class="profile">
-      <div class="avatar">
+      <div class="avatar" @click="onAvatarClick">
         <img :src="`${BASE_URL}/images/mypage/knight-and-horse.png`" alt="아바타 이미지" />
       </div>
       <p class="badge">
@@ -131,7 +131,6 @@ function handleIconButtonClick(index) {
 
 // 메뉴 리스트 항목
 const menuItems = [
-  "시연용 치트 활성화",
   "나의 찜 내역",
   "나의 주문 조회",
   "나의 반품 / 교환 내역",
@@ -191,7 +190,29 @@ function handleMenuClick(index) {
     router.push("shop/wishlist");
   } else if (menuItems[index] === "나의 주문 조회") {
     router.push("/shop/OrderLog");
-  } else if (menuItems[index] === "시연용 치트 활성화") {
+  } else {
+    alertStore.notImplemented();
+  }
+}
+
+// 아바타 연타 치트 관련
+const avatarClickCount = ref(0)
+let avatarClickTimer = null
+
+function onAvatarClick() {
+  // 첫 클릭 시 타이머 시작
+  if (avatarClickCount.value === 0) {
+    avatarClickTimer = setTimeout(() => {
+      avatarClickCount.value = 0
+    }, 2000) // 2초 타이머
+  }
+
+  avatarClickCount.value++
+
+  // 5번 클릭 시 치트 실행
+  if (avatarClickCount.value >= 5) {
+    avatarClickCount.value = 0
+    clearTimeout(avatarClickTimer)
     runCheat({ userId: userStore.id, point: 5432, reason: '시연용 치트', continuousDays: 5 });
     userStore.setPoint(5432);
     userStore.progressDays = userStore.continuousDays = 5;
@@ -199,11 +220,10 @@ function handleMenuClick(index) {
     surveyStore.data.forEach((item, idx) => {
       if (idx !== 0) item.lastComplete = null;
     });
-    alertStore.success('시연용 치트가 실행되었습니다! 포인트와 진행일 수 초기화!', 3000);
-  } else {
-    alertStore.notImplemented();
+    alertStore.success('🐴 치트 발동! 포인트와 진행일 수 초기화!', 3000);
   }
 }
+
 </script>
 
 <style lang="scss" scoped>

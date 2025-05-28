@@ -24,12 +24,6 @@
       </section>
     </div>
     <!-- 총평 -->
-    <section>
-      <h3>총평</h3>
-      <div class="summary">
-        <p v-for="(line, i) in summaryLines" :key="i">{{ line }}</p>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -112,15 +106,9 @@ const insights = {
   contentExposure: "청소년들이 가장 빈번하게 접한 유해 콘텐츠는 사이버 도박과 성착취 콘텐츠였습니다. 이에 대한 강력한 대응책이 필요합니다.",
   dangerFeeling: "체감 위험도가 가장 높은 콘텐츠는 성착취 및 자살유도 콘텐츠로 나타났으며, 적극적인 심리 상담 및 교육 프로그램의 도입이 필요합니다.",
   issueTrend: "성착취·도박 이슈가 꾸준히 증가하고 있어, 집중 모니터링이 시급합니다.",
-  summary: [
-    "최근 청소년들은 다양한 경로를 통해 유해 콘텐츠에 노출되고 있으며, 그 중에서도 사이버 도박과 성착취, 자살유도 콘텐츠의 위험성이 두드러지고 있습니다.",
-    "특히 16-18세 연령대에서의 노출 비율과 심리적 불안 경험이 높아, 집중적인 모니터링 및 심리 지원 강화가 필요합니다.",
-    "정책적으로는 자동필터, 신고제도 강화와 함께 심층 교육·상담, 플랫폼별 모니터링을 종합적으로 추진해야 하며, 유해 노출 시간 관리 및 자기조절 역량 강화를 위한 프로그램 도입도 시급합니다.",
-    "데이터에 기반한 실효적 대응을 통해 청소년의 디지털 안전을 실질적으로 개선할 수 있을 것입니다."
-  ]
 }
 
-const summaryLines = insights.summary
+
 </script>
 
 <style lang="scss" scoped>
@@ -155,17 +143,6 @@ const summaryLines = insights.summary
   border-left: 4px solid #3182ce;
   padding: 0.6rem 0.9rem;
   margin: 0;
-}
-.summary {
-  font-size: 1rem;
-  color: #222;
-  background: #eaf6ff;
-  border-radius: 8px;
-  padding: 1.3rem 1.3rem;
-  margin-top: 0.7rem;
-  border-left: 6px solid #3182ce;
-  font-weight: 400;
-  p { margin: 0 0 0.7em 0; }
 }
 
 .its-dummy {
