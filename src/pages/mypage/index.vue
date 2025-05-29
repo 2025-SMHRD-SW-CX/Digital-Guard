@@ -6,7 +6,7 @@
         <img :src="`${BASE_URL}/images/mypage/knight-and-horse.png`" alt="아바타 이미지" />
       </div>
       <p class="badge">
-        {{ userStore.continuousDays }}일 동안 열심히 활동해주신
+        {{ userStore.progressDays }}일 동안 열심히 활동해주신
         <span class="title-name" @click="openTitleModal">
           {{ currentTitle }}
           <img :src="`${BASE_URL}/images/mypage/pen-icon-white.png`" alt="수정 아이콘" class="edit-icon"
@@ -215,7 +215,8 @@ function onAvatarClick() {
     clearTimeout(avatarClickTimer)
     runCheat({ userId: userStore.id, point: 5432, reason: '시연용 치트', continuousDays: 5 });
     userStore.setPoint(5432);
-    userStore.progressDays = userStore.continuousDays = 5;
+    userStore.progressDays = 5;
+    userStore.continuousDays = 5;
     userStore.lastParticiPate = null;
     surveyStore.data.forEach((item, idx) => {
       if (idx !== 0) item.lastComplete = null;
