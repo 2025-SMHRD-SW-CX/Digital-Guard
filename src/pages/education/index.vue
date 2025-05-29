@@ -200,8 +200,6 @@ function canSeek(sec) {
 function createPlayer() {
   // console.log('[createPlayer] 유튜브 플레이어 생성 시도')
   player = new YT.Player('youtubePlayer', {
-    height: '260',
-    width: '100%',
     videoId: 'STJm09McLNw',
     playerVars: {
       autoplay: 0,
@@ -209,8 +207,8 @@ function createPlayer() {
       controls: 0,
       rel: 0,
       disablekb: 1,
-      modestbranding: 1,
-      playsinline: 1
+      modestbranding: 0, // ← 브랜드 제거 대신 기본 설정 사용
+      playsinline: 0     // ← 강제 전체화면으로 가게 해서 레터박스 제거
     },
     events: {
       onReady: () => {
@@ -340,6 +338,19 @@ onMounted(async () => {
     videoWatched.value = true
     // console.log('[onMounted] 이미 퀴즈 참여완료 (blur 해제)')
   }
+
+  const waitIframe = setTimeout(() => {
+    const iframe = document.querySelector('iframe#youtubePlayer');
+
+    if (iframe) {
+      iframe.removeAttribute('width');
+      iframe.removeAttribute('height');
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      clearInterval(waitIframe);
+    }
+  }, 300);
+
 })
 
 function selectAnswer(idx) {
@@ -351,10 +362,11 @@ function selectAnswer(idx) {
 <style lang="scss" scoped>
 .quiz-container {
   font-family: Arial, sans-serif;
-  max-width: 480px;
+  // max-width: 480px;
   margin: auto;
   background: #f5f5f5;
   padding-bottom: 2rem;
+  width: 100%;
 }
 
 .header {
@@ -382,12 +394,25 @@ function selectAnswer(idx) {
   width: 100%;
   aspect-ratio: 16 / 9;
   background: black;
+  overflow: hidden;
 }
 
-#youtubePlayer {
-  width: 100%;
-  height: 100%;
+#youtubePlayer,
+#youtubePlayer>iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover;
+  border: none;
+  display: block;
 }
+
+
 
 .click-blocker {
   position: absolute;

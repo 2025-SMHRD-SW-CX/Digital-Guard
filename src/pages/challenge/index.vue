@@ -129,6 +129,7 @@ function calcContinuousBonus(todayReward, progressDays) {
   align-items: center;
   gap: 1.5rem;
   min-height: 100vh;
+  width: 100%;
 }
 
 .section-title {

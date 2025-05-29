@@ -63,29 +63,22 @@
     </footer>
   </div>
 
-  <!-- 결제 확인 모달 -->
-  <ModalView
-    v-model:modelValue="showConfirmModal"
-    title="결제 정보를 확인해주세요"
-    type="confirm"
-    @confirm="handleConfirmPayment"
-  >
-    <template #default>
-      <p style="white-space: pre-line">{{ confirmMessage }}</p>
-    </template>
-  </ModalView>
+    <!-- 결제 확인 모달 -->
+    <ModalView
+      v-model:modelValue="showConfirmModal"
+      title="결제 정보를 확인해주세요"
+      type="confirm"
+      @confirm="handleConfirmPayment"
+      @cancel="handleCancelPayment"
+    >
+      <template #default>
+        <p style="white-space: pre-line">{{ confirmMessage }}</p>
+      </template>
+    </ModalView>
+    
+  <!-- 로딩 화면 -->
+  <LoadingView v-if="showLoading" />
 
-  <!-- 결제 완료 모달 -->
-  <ModalView
-    v-model:modelValue="showSuccessModal"
-    title="완료"
-    type="alert"
-    @confirm="router.push('/shop/OrderFinish')"
-  >
-    <template #default>
-      <p>✅ 결제가 완료되었습니다!</p>
-    </template>
-  </ModalView>
 </template>
 
 <script setup>
@@ -97,10 +90,12 @@ import { useAlertStore } from '@/stores/alert'
 import ModalView from '@/components/ModalView.vue'
 import { addPoint, PointReason, updateUserTotalPoint } from "@/services/pointService"
 import { useHead } from '@vueuse/head'
+import LoadingView from '@/pages/Loading/index.vue'
+import { nextTick } from 'vue'
 
 const showConfirmModal = ref(false)
-const showSuccessModal = ref(false)
 const confirmMessage = ref('')
+const showLoading = ref(false)
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -141,6 +136,10 @@ const totalPrice = computed(() =>
 
 const remainingPoint = computed(() => userStore.total_point - totalPrice.value)
 
+function goOrderFinish() {
+  router.push('/shop/OrderFinish')
+}
+
 function isValidPhone(phone) {
   // 010, 011, 016, 017, 018, 019 - 하이픈 없는 10~11자리만 허용
   return /^01[016789]\d{7,8}$/.test(phone)
@@ -154,32 +153,17 @@ function openAddressSearch() {
   }).open()
 }
 
-async function submitOrder() {
-  if (!address.value) return alertStore.warning("배송지를 선택해 주세요.", 5000)
-  if (!selectedRequest.value) return alertStore.warning("배송 요청사항을 선택해 주세요.", 5000)
-  if (!name.value.trim()) return alertStore.warning("이름을 입력해 주세요.", 5000)
-  if (!isValidPhone(phone.value)) return alertStore.warning("올바른 전화번호 형식이 아닙니다. 예: 01012345678", 5000)
-  if (remainingPoint.value < 0) return alertStore.warning("포인트가 부족합니다.", 5000)
-
-  const productList = shopStore.orderItems
-    .filter(i => selectedIds.value.includes(i.id))
-    .map(i => `• ${i.brand} - ${i.name} (${i.price.toLocaleString()}P)`)
-    .join('\n')
-
-  confirmMessage.value = `✅ 결제 정보를 확인해주세요:\n\n🧾 주문 내역:\n${productList}\n\n📍 배송지: ${address.value}\n👤 수령인: ${name.value}\n📞 연락처: ${phone.value}\n📦 요청사항: ${selectedRequest.value}\n\n💰 결제 금액: -${totalPrice.value.toLocaleString()}P\n💳 남은 포인트: ${remainingPoint.value.toLocaleString()}P`
-
-  // 실제 결제 확정 전까지는 포인트 차감/로컬스토리지 저장 하지 않음!
-  showConfirmModal.value = true
-}
-
+// "네" 버튼 (결제 확인)
 async function handleConfirmPayment() {
   showConfirmModal.value = false
+  showLoading.value = true
+  await nextTick()
 
+  // 실제 결제 처리
   const orderedItems = shopStore.orderItems.filter(i => selectedIds.value.includes(i.id))
   const total = totalPrice.value
   const futureRemaining = userStore.total_point - total
 
-  // 실제 결제 확정시 포인트 차감 및 내역 기록
   userStore.addPoint(-total)
   await addPoint(userStore.id, -total, PointReason.PURCHASE_ITEM)
   await updateUserTotalPoint(userStore.id)
@@ -212,7 +196,33 @@ async function handleConfirmPayment() {
   shopStore.cart = shopStore.cart.filter(i => !selectedIds.value.includes(i.id))
   shopStore.selectedCartIds = shopStore.selectedCartIds.filter(id => !selectedIds.value.includes(id))
 
-  showSuccessModal.value = true
+  // 2초 후 자동 이동
+  setTimeout(() => {
+    showLoading.value = false
+    router.push('/shop/OrderFinish')
+  }, 2000)
+}
+
+// "아니오" 버튼 (모달 닫기)
+function handleCancelPayment() {
+  showConfirmModal.value = false
+}
+
+async function submitOrder() {
+  if (!address.value) return alertStore.warning("배송지를 선택해 주세요.", 5000)
+  if (!selectedRequest.value) return alertStore.warning("배송 요청사항을 선택해 주세요.", 5000)
+  if (!name.value.trim()) return alertStore.warning("이름을 입력해 주세요.", 5000)
+  if (!isValidPhone(phone.value)) return alertStore.warning("올바른 전화번호 형식이 아닙니다. 예: 01012345678", 5000)
+  if (remainingPoint.value < 0) return alertStore.warning("포인트가 부족합니다.", 5000)
+
+  const productList = shopStore.orderItems
+    .filter(i => selectedIds.value.includes(i.id))
+    .map(i => `• ${i.brand} - ${i.name} (${i.price.toLocaleString()}P)`)
+    .join('\n')
+
+  confirmMessage.value = `✅ 결제 정보를 확인해주세요:\n\n🧾 주문 내역:\n${productList}\n\n📍 배송지: ${address.value}\n👤 수령인: ${name.value}\n📞 연락처: ${phone.value}\n📦 요청사항: ${selectedRequest.value}\n\n💰 결제 금액: -${totalPrice.value.toLocaleString()}P\n💳 남은 포인트: ${remainingPoint.value.toLocaleString()}P`
+
+  showConfirmModal.value = true
 }
 </script>
 
