@@ -25,8 +25,8 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const gifList = [
-  '/animation_gif/cute-knight.gif',
-  '/animation_gif/lying-knight.gif',
+  `${ BASE_URL }/animation_gif/cute-knight.gif`,
+  `${ BASE_URL }/animation_gif/lying-knight.gif`
 ]
 
 const visibleDots = ref(0)

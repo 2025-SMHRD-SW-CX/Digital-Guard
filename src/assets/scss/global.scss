@@ -81,3 +81,19 @@ a {
     -webkit-tap-highlight-color: transparent !important;
     outline: none;
 }
+
+//--------------------------------
+
+#youtubePlayer iframe {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  inset: 0;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover;
+  border: none;
+  display: block;
+}
