@@ -66,6 +66,11 @@
         <div v-if="quizCompleted">
           <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
           <p>정답입니다! 100포인트가 적립되었습니다.</p>
+          <p>
+        🛑 <strong>해설:</strong><br />
+        딥페이크 기술을 이용한 허위 영상물과 관련해 <strong>제작, 배포, 소지, 구입, 저장, 시청</strong>은 모두 형사처벌 대상입니다.<br />
+        하지만 <strong>‘신고’는 우리가 해야 할 일</strong> 입니다.
+      </p>
           <div class="modal-actions">
             <button class="next-button" disabled>다음 교육영상 보기 (준비중)</button>
             <button class="home-button" @click="goHome">홈으로</button>
