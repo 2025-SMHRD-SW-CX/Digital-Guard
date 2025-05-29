@@ -102,7 +102,7 @@ const playerReady = ref(false)
 // 10초 건너뛰기용: 시청한 최대 위치 추적
 const maxPlayedSeconds = ref(0)
 
-const correctAnswer = 3
+const correctAnswer = 4
 const quizId = 1
 const options = ['소지', '시청', '제작', '신고'];
 
